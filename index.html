@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Molt the Mole</title>
+<!-- TODO: Replace ca-pub-XXXXXXXXXXXXXXXX with your Google AdSense publisher ID -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: #000;
+    overflow: hidden;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  #game-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    height: 100%;
+  }
+  canvas {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    flex-shrink: 0;
+  }
+  #ad-container {
+    flex-shrink: 0;
+  }
+  .ad-skyscraper {
+    display: inline-block;
+    width: 300px;
+    height: 600px;
+    background: #111;
+    border: 1px solid #333;
+  }
+  .ad-banner {
+    display: none;
+    width: 320px;
+    height: 100px;
+    background: #111;
+    border: 1px solid #333;
+  }
+  @media (max-width: 759px) {
+    #game-container {
+      flex-direction: column;
+    }
+    .ad-skyscraper {
+      display: none !important;
+    }
+    .ad-banner {
+      display: inline-block;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="game-container">
+  <canvas id="game"></canvas>
+  <div id="ad-container">
+    <!-- TODO: Replace ca-pub-XXXXXXXXXXXXXXXX and XXXXXXXXXX with your AdSense publisher ID and ad slot ID -->
+    <!-- Desktop skyscraper ad (300x600) -->
+    <ins class="adsbygoogle ad-skyscraper"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"></ins>
+    <!-- Mobile banner ad (320x100) — shown on narrow screens -->
+    <ins class="adsbygoogle ad-banner"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"></ins>
+  </div>
+</div>
+<script>
+// Initialize AdSense (will only work with valid publisher ID on a real domain)
+(window.adsbygoogle = window.adsbygoogle || []).push({});
+(window.adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<script>
+// ============================================================
+// SECTION 1: CANVAS SETUP & RESPONSIVE SCALING
+// ============================================================
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+const W = 400;  // Design width
+const H = 600;  // Design height
+canvas.width = W;
+canvas.height = H;
+
+function resizeCanvas() {
+  const isWide = window.innerWidth >= 760;
+  let availW, availH;
+
+  if (isWide) {
+    // Desktop: reserve space for 300px skyscraper + 16px gap + 16px padding
+    availW = window.innerWidth - 300 - 32;
+    availH = window.innerHeight - 16;
+  } else {
+    // Mobile: reserve space for 100px banner + 16px gap + 16px padding
+    availW = window.innerWidth - 16;
+    availH = window.innerHeight - 100 - 32;
+  }
+
+  const scaleX = availW / W;
+  const scaleY = availH / H;
+  const scale = Math.min(scaleX, scaleY);
+  canvas.style.width = Math.floor(W * scale) + 'px';
+  canvas.style.height = Math.floor(H * scale) + 'px';
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// ============================================================
+// SECTION 2: CONSTANTS
+// ============================================================
+const GRAVITY = 0.45;
+const FLAP_IMPULSE = -7.5;
+const BASE_SCROLL_SPEED = 2.5;
+const SPEED_RAMP = 0.04;
+const MAX_SCROLL_SPEED = 5.0;
+const TERMINAL_VELOCITY = 10;
+
+const MOLE_X = 100;           // Fixed horizontal position
+const MOLE_SIZE = 3;          // Pixel scale for mole sprite
+const HITBOX_INSET = 3;       // Pixels inset for forgiving collision
+
+const OBSTACLE_WIDTH = 52;
+const OBSTACLE_SPACING = 220; // Horizontal distance between pairs
+const INITIAL_GAP = 150;
+const GAP_SHRINK = 1.5;       // Per point scored
+const MIN_GAP = 100;
+const GAP_TOP_MIN = 60;       // Minimum distance from top
+const GAP_BOTTOM_MIN = 60;    // Minimum distance from bottom (above ground)
+
+const GROUND_HEIGHT = 50;
+const GROUND_Y = H - GROUND_HEIGHT;
+
+const DYING_FRAMES = 45;
+
+// State enum
+const STATE = { START: 0, PLAYING: 1, DYING: 2, GAME_OVER: 3 };
+
+// ============================================================
+// SECTION 3: COLOR PALETTE SYSTEM
+// ============================================================
+const EARTHY = {
+  bg1: [42, 28, 18],       // Dark brown top
+  bg2: [65, 43, 21],       // Medium brown bottom
+  ground: [90, 62, 35],    // Ground brown
+  groundDetail: [110, 78, 42],
+  obstacle: [80, 70, 60],  // Stone gray
+  obstacleDark: [55, 48, 40],
+  obstacleLight: [110, 95, 78],
+  obstacleLED: [180, 140, 60],
+  particle: [140, 100, 50],
+  text: [220, 200, 170],
+  textGlow: [180, 140, 80],
+  tunnelLine: [55, 38, 22],
+  bgDetail: [52, 36, 22],
+};
+
+const CYBER = {
+  bg1: [10, 5, 30],        // Deep purple top
+  bg2: [20, 10, 45],       // Dark purple bottom
+  ground: [15, 60, 80],    // Teal ground
+  groundDetail: [0, 200, 220],
+  obstacle: [30, 20, 60],  // Dark purple
+  obstacleDark: [15, 10, 35],
+  obstacleLight: [80, 40, 160],
+  obstacleLED: [0, 255, 200],
+  particle: [0, 255, 255],
+  text: [0, 255, 200],
+  textGlow: [0, 180, 255],
+  tunnelLine: [20, 10, 50],
+  bgDetail: [40, 0, 80],
+};
+
+function lerpColor(a, b, t) {
+  return [
+    Math.round(a[0] + (b[0] - a[0]) * t),
+    Math.round(a[1] + (b[1] - a[1]) * t),
+    Math.round(a[2] + (b[2] - a[2]) * t),
+  ];
+}
+
+function rgb(c) { return `rgb(${c[0]},${c[1]},${c[2]})`; }
+function rgba(c, a) { return `rgba(${c[0]},${c[1]},${c[2]},${a})`; }
+
+function getPalette(score) {
+  const t = Math.min(score / 30, 1.0);
+  const p = {};
+  for (const key in EARTHY) {
+    p[key] = lerpColor(EARTHY[key], CYBER[key], t);
+  }
+  return p;
+}
+
+// ============================================================
+// SECTION 4: MOLE PIXEL SPRITE
+// ============================================================
+// 17 wide x 14 tall pixel grid
+// Color keys: 0=transparent, B=body(copper), D=dark metal, S=snout, E=eye(LED),
+// C=chrome, N=nose, P=paw/claw, T=teeth, H=highlight
+const MOLE_SPRITE = [
+  '00000CCHCC0000000',
+  '0000CBBBBBC000000',
+  '000CBBBBBBBCD0000',
+  '00DBBBBBBBBBD0000',
+  '00DBBBEBBEBBDC000',
+  '0DBBBBBBBBBBBC000',
+  '0DBBBBNNBBBBBC000',
+  '0CBBBBTTBBBBBCP00',
+  '00CBBBBBBBBBCP000',
+  '000DBBBBBBBBCP000',
+  '0000DBBHBBBD00000',
+  '000P0DBBBBD0P0000',
+  '000PP0DDDD0PP0000',
+  '0000P000000P00000',
+];
+
+const MOLE_COLORS = {
+  'B': [180, 70, 50],    // Copper body
+  'D': [90, 40, 30],     // Dark metal
+  'C': [190, 185, 175],  // Chrome
+  'E': [255, 30, 30],    // Red LED eyes
+  'S': [200, 140, 110],  // Snout
+  'N': [50, 30, 25],     // Nose
+  'P': [140, 60, 45],    // Paws
+  'T': [220, 215, 200],  // Teeth
+  'H': [230, 160, 100],  // Highlight
+};
+
+const MOLE_W = MOLE_SPRITE[0].length;
+const MOLE_H = MOLE_SPRITE.length;
+
+function drawMole(x, y, rotation, squash) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(rotation);
+  ctx.scale(squash, 2 - squash); // Squash-stretch
+
+  const ox = -(MOLE_W * MOLE_SIZE) / 2;
+  const oy = -(MOLE_H * MOLE_SIZE) / 2;
+
+  for (let row = 0; row < MOLE_H; row++) {
+    for (let col = 0; col < MOLE_W; col++) {
+      const ch = MOLE_SPRITE[row][col];
+      if (ch === '0') continue;
+      const c = MOLE_COLORS[ch];
+      if (!c) continue;
+      ctx.fillStyle = rgb(c);
+      ctx.fillRect(ox + col * MOLE_SIZE, oy + row * MOLE_SIZE, MOLE_SIZE, MOLE_SIZE);
+    }
+  }
+  ctx.restore();
+}
+
+// ============================================================
+// SECTION 5: PARTICLE SYSTEM
+// ============================================================
+const MAX_PARTICLES = 80;
+const particles = [];
+for (let i = 0; i < MAX_PARTICLES; i++) {
+  particles.push({ active: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 0, color: [0,0,0], size: 2 });
+}
+
+function spawnParticle(x, y, vx, vy, color, life, size) {
+  for (let i = 0; i < MAX_PARTICLES; i++) {
+    if (!particles[i].active) {
+      const p = particles[i];
+      p.active = true;
+      p.x = x; p.y = y;
+      p.vx = vx; p.vy = vy;
+      p.color = color;
+      p.life = life;
+      p.maxLife = life;
+      p.size = size || 2;
+      return;
+    }
+  }
+}
+
+function spawnFlapParticles(x, y, palette) {
+  for (let i = 0; i < 6; i++) {
+    const vx = (Math.random() - 0.5) * 3;
+    const vy = Math.random() * 3 + 1;
+    const c = palette.particle;
+    const variation = [
+      c[0] + Math.random() * 40 - 20,
+      c[1] + Math.random() * 40 - 20,
+      c[2] + Math.random() * 40 - 20,
+    ];
+    spawnParticle(x + Math.random() * 10 - 5, y + 10, vx, vy, variation, 20 + Math.random() * 15, 2 + Math.random() * 2);
+  }
+}
+
+function spawnDeathParticles(x, y, palette) {
+  for (let i = 0; i < 18; i++) {
+    const angle = (Math.PI * 2 / 18) * i + Math.random() * 0.3;
+    const speed = 2 + Math.random() * 4;
+    const vx = Math.cos(angle) * speed;
+    const vy = Math.sin(angle) * speed;
+    const c = i % 2 === 0 ? [255, 80, 40] : palette.particle;
+    spawnParticle(x, y, vx, vy, c, 30 + Math.random() * 20, 2 + Math.random() * 3);
+  }
+}
+
+function updateParticles() {
+  for (let i = 0; i < MAX_PARTICLES; i++) {
+    const p = particles[i];
+    if (!p.active) continue;
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.1; // Particle gravity
+    p.life--;
+    if (p.life <= 0) p.active = false;
+  }
+}
+
+function drawParticles() {
+  for (let i = 0; i < MAX_PARTICLES; i++) {
+    const p = particles[i];
+    if (!p.active) continue;
+    const alpha = p.life / p.maxLife;
+    ctx.fillStyle = rgba(p.color, alpha);
+    ctx.fillRect(Math.round(p.x), Math.round(p.y), Math.round(p.size), Math.round(p.size));
+  }
+}
+
+// ============================================================
+// SECTION 6: OBSTACLE SYSTEM
+// ============================================================
+let obstacles = [];
+
+function getGapSize(score) {
+  return Math.max(MIN_GAP, INITIAL_GAP - score * GAP_SHRINK);
+}
+
+function getScrollSpeed(score) {
+  return Math.min(MAX_SCROLL_SPEED, BASE_SCROLL_SPEED + score * SPEED_RAMP);
+}
+
+function generateObstacle(x, score) {
+  const gap = getGapSize(score);
+  const minGapY = GAP_TOP_MIN + gap / 2;
+  const maxGapY = GROUND_Y - GAP_BOTTOM_MIN - gap / 2;
+  const gapCenterY = minGapY + Math.random() * (maxGapY - minGapY);
+
+  return {
+    x: x,
+    gapCenterY: gapCenterY,
+    gapSize: gap,
+    scored: false,
+    // Visual variety
+    variant: Math.floor(Math.random() * 3), // 0=server, 1=data claw, 2=algorithm wall
+    ledPositions: Array.from({length: 4 + Math.floor(Math.random() * 4)}, () => ({
+      y: Math.random(),
+      side: Math.random() > 0.5 ? 0 : 1,
+      blink: Math.random() * Math.PI * 2,
+    })),
+  };
+}
+
+function drawObstacleSection(x, y, w, h, palette, variant, leds, time) {
+  if (h <= 0) return;
+
+  // Main body
+  ctx.fillStyle = rgb(palette.obstacle);
+  ctx.fillRect(x, y, w, h);
+
+  // Panel border
+  ctx.fillStyle = rgb(palette.obstacleDark);
+  ctx.fillRect(x, y, 3, h);
+  ctx.fillRect(x + w - 3, y, 3, h);
+  ctx.fillRect(x, y, w, 3);
+  ctx.fillRect(x, y + h - 3, w, 3);
+
+  // Internal panels (server rack style)
+  const panelH = 18;
+  const panelPad = 5;
+  for (let py = y + panelPad; py + panelH < y + h - panelPad; py += panelH + 4) {
+    ctx.fillStyle = rgb(palette.obstacleDark);
+    ctx.fillRect(x + panelPad, py, w - panelPad * 2, panelH);
+
+    // Lighter stripe
+    ctx.fillStyle = rgb(palette.obstacleLight);
+    ctx.fillRect(x + panelPad + 2, py + 2, w - panelPad * 2 - 4, 2);
+
+    // Circuit lines (variant-dependent)
+    if (variant === 0) {
+      // Server: horizontal lines
+      ctx.fillStyle = rgb(palette.obstacleLight);
+      for (let lx = x + panelPad + 4; lx < x + w - panelPad - 8; lx += 8) {
+        ctx.fillRect(lx, py + 8, 6, 1);
+      }
+    } else if (variant === 1) {
+      // Data claw: diagonal hash
+      ctx.fillStyle = rgba(palette.obstacleLight, 0.3);
+      for (let dx = 0; dx < w - panelPad * 2; dx += 6) {
+        ctx.fillRect(x + panelPad + dx, py + 6, 1, 6);
+      }
+    } else {
+      // Algorithm wall: grid dots
+      for (let gx = x + panelPad + 6; gx < x + w - panelPad - 4; gx += 7) {
+        for (let gy = py + 6; gy < py + panelH - 4; gy += 7) {
+          ctx.fillStyle = rgba(palette.obstacleLight, 0.4);
+          ctx.fillRect(gx, gy, 2, 2);
+        }
+      }
+    }
+  }
+
+  // LED indicators
+  for (const led of leds) {
+    const ly = y + led.y * h;
+    if (ly < y + 5 || ly > y + h - 5) continue;
+    const lx = led.side === 0 ? x + 7 : x + w - 10;
+    const blink = Math.sin(time * 0.05 + led.blink) > 0 ? 1 : 0.3;
+    ctx.fillStyle = rgba(palette.obstacleLED, blink);
+    ctx.fillRect(lx, ly, 3, 3);
+  }
+}
+
+function drawObstacles(palette, time) {
+  for (const obs of obstacles) {
+    const topH = obs.gapCenterY - obs.gapSize / 2;
+    const bottomY = obs.gapCenterY + obs.gapSize / 2;
+    const bottomH = GROUND_Y - bottomY;
+
+    // Top obstacle (hangs from ceiling)
+    drawObstacleSection(obs.x, 0, OBSTACLE_WIDTH, topH, palette, obs.variant, obs.ledPositions, time);
+    // Bottom teeth on top obstacle
+    for (let tx = obs.x + 4; tx < obs.x + OBSTACLE_WIDTH - 4; tx += 10) {
+      ctx.fillStyle = rgb(palette.obstacleDark);
+      ctx.fillRect(tx, topH, 6, 8);
+      ctx.fillRect(tx + 1, topH + 8, 4, 4);
+    }
+
+    // Bottom obstacle (rises from ground)
+    drawObstacleSection(obs.x, bottomY, OBSTACLE_WIDTH, bottomH, palette, obs.variant, obs.ledPositions, time);
+    // Top teeth on bottom obstacle
+    for (let tx = obs.x + 4; tx < obs.x + OBSTACLE_WIDTH - 4; tx += 10) {
+      ctx.fillStyle = rgb(palette.obstacleDark);
+      ctx.fillRect(tx, bottomY - 12, 6, 8);
+      ctx.fillRect(tx + 1, bottomY - 16, 4, 4);
+    }
+  }
+}
+
+// ============================================================
+// SECTION 7: BACKGROUND RENDERER
+// ============================================================
+let bgOffset = 0;
+
+function drawBackground(palette, score) {
+  // Gradient background
+  const grd = ctx.createLinearGradient(0, 0, 0, H);
+  grd.addColorStop(0, rgb(palette.bg1));
+  grd.addColorStop(1, rgb(palette.bg2));
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, W, H);
+
+  // Tunnel ceiling lines
+  ctx.fillStyle = rgba(palette.tunnelLine, 0.5);
+  for (let i = 0; i < 5; i++) {
+    const y = 5 + i * 3;
+    ctx.fillRect(0, y, W, 1);
+  }
+
+  // Background details (rocks -> circuits)
+  const t = Math.min(score / 30, 1.0);
+  ctx.fillStyle = rgba(palette.bgDetail, 0.3 + t * 0.3);
+  const detailSpacing = t < 0.5 ? 40 : 25; // Denser in cyber mode
+  for (let dx = -bgOffset % detailSpacing; dx < W; dx += detailSpacing) {
+    for (let dy = 30; dy < GROUND_Y - 10; dy += detailSpacing) {
+      const hash = (Math.sin(dx * 12.345 + dy * 67.89) * 43758.5453) % 1;
+      if (Math.abs(hash) < 0.3) {
+        if (t < 0.5) {
+          // Rocks: irregular small rects
+          const sz = 2 + Math.abs(hash) * 3;
+          ctx.fillRect(dx, dy, sz, sz * 0.7);
+        } else {
+          // Circuit: lines and dots
+          ctx.fillRect(dx, dy, 1, 5);
+          ctx.fillRect(dx, dy, 5, 1);
+          ctx.fillRect(dx + 4, dy, 2, 2);
+        }
+      }
+    }
+  }
+
+  // Ground
+  ctx.fillStyle = rgb(palette.ground);
+  ctx.fillRect(0, GROUND_Y, W, GROUND_HEIGHT);
+
+  // Ground surface detail
+  ctx.fillStyle = rgb(palette.groundDetail);
+  for (let gx = -bgOffset % 12; gx < W; gx += 12) {
+    ctx.fillRect(gx, GROUND_Y, 8, 2);
+    ctx.fillRect(gx + 3, GROUND_Y + 4, 5, 1);
+  }
+
+  // Ground bottom detail
+  ctx.fillStyle = rgba(palette.groundDetail, 0.3);
+  for (let gx = -bgOffset % 20; gx < W; gx += 20) {
+    ctx.fillRect(gx, GROUND_Y + 15, 3, 3);
+  }
+}
+
+// ============================================================
+// SECTION 8: TEXT RENDERING (Pixel font)
+// ============================================================
+// Simple bitmap font approach using canvas fillText with a blocky font
+function drawText(text, x, y, size, color, align) {
+  ctx.save();
+  ctx.font = `bold ${size}px monospace`;
+  ctx.textAlign = align || 'center';
+  ctx.textBaseline = 'middle';
+
+  // Glow/shadow
+  ctx.fillStyle = rgba(color, 0.3);
+  ctx.fillText(text, x + 2, y + 2);
+
+  // Main text
+  ctx.fillStyle = rgb(color);
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+
+function drawPixelNumber(num, x, y, scale, color) {
+  // Draw score as large text
+  const text = String(num);
+  ctx.save();
+  ctx.font = `bold ${scale}px monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillText(text, x + 2, y + 2);
+
+  // Main
+  ctx.fillStyle = rgb(color);
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+
+// ============================================================
+// SECTION 9: GAME STATE
+// ============================================================
+let state = STATE.START;
+let score = 0;
+let bestScore = parseInt(localStorage.getItem('molt_best_score')) || 0;
+
+// Mole state
+let moleY = H / 2;
+let moleVY = 0;
+let moleRotation = 0;
+let moleSquash = 1.0;
+
+// Timing
+let frameCount = 0;
+let dyingTimer = 0;
+let shakeX = 0;
+let shakeY = 0;
+
+// Flap cooldown to prevent double inputs
+let flapCooldown = 0;
+
+function resetGame() {
+  moleY = H / 2;
+  moleVY = 0;
+  moleRotation = 0;
+  moleSquash = 1.0;
+  score = 0;
+  obstacles = [];
+  frameCount = 0;
+  dyingTimer = 0;
+  shakeX = 0;
+  shakeY = 0;
+  flapCooldown = 0;
+  bgOffset = 0;
+
+  // Clear particles
+  for (let i = 0; i < MAX_PARTICLES; i++) {
+    particles[i].active = false;
+  }
+
+  // Generate initial obstacles
+  for (let i = 0; i < 3; i++) {
+    obstacles.push(generateObstacle(W + 150 + i * OBSTACLE_SPACING, 0));
+  }
+}
+
+// ============================================================
+// SECTION 10: COLLISION DETECTION
+// ============================================================
+function checkCollision() {
+  const moleHalfW = (MOLE_W * MOLE_SIZE) / 2 - HITBOX_INSET;
+  const moleHalfH = (MOLE_H * MOLE_SIZE) / 2 - HITBOX_INSET;
+
+  const mLeft = MOLE_X - moleHalfW;
+  const mRight = MOLE_X + moleHalfW;
+  const mTop = moleY - moleHalfH;
+  const mBottom = moleY + moleHalfH;
+
+  // Ground collision
+  if (mBottom >= GROUND_Y) return true;
+
+  // Ceiling collision
+  if (mTop <= 0) return true;
+
+  // Obstacle collision
+  for (const obs of obstacles) {
+    const oLeft = obs.x;
+    const oRight = obs.x + OBSTACLE_WIDTH;
+
+    // Check horizontal overlap
+    if (mRight > oLeft && mLeft < oRight) {
+      const gapTop = obs.gapCenterY - obs.gapSize / 2;
+      const gapBottom = obs.gapCenterY + obs.gapSize / 2;
+
+      // Check if mole is outside the gap
+      if (mTop < gapTop || mBottom > gapBottom) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+// ============================================================
+// SECTION 11: INPUT HANDLING
+// ============================================================
+let inputPressed = false;
+
+function onInput() {
+  inputPressed = true;
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' || e.code === 'ArrowUp') {
+    e.preventDefault();
+    onInput();
+  }
+});
+
+canvas.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  onInput();
+});
+
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  onInput();
+}, { passive: false });
+
+function handleInput() {
+  if (!inputPressed) return;
+  inputPressed = false;
+
+  if (state === STATE.START) {
+    resetGame();
+    state = STATE.PLAYING;
+    return;
+  }
+
+  if (state === STATE.PLAYING && flapCooldown <= 0) {
+    moleVY = FLAP_IMPULSE;
+    moleSquash = 0.75; // Squash on flap
+    flapCooldown = 5;
+    const palette = getPalette(score);
+    spawnFlapParticles(MOLE_X, moleY, palette);
+    return;
+  }
+
+  if (state === STATE.GAME_OVER) {
+    state = STATE.START;
+    return;
+  }
+}
+
+// ============================================================
+// SECTION 12: UPDATE LOGIC
+// ============================================================
+function update() {
+  frameCount++;
+  handleInput();
+
+  if (state === STATE.START) {
+    // Idle bob animation
+    moleY = H / 2 + Math.sin(frameCount * 0.03) * 15;
+    moleRotation = Math.sin(frameCount * 0.02) * 0.05;
+    updateParticles();
+    return;
+  }
+
+  if (state === STATE.PLAYING) {
+    // Physics
+    moleVY += GRAVITY;
+    if (moleVY > TERMINAL_VELOCITY) moleVY = TERMINAL_VELOCITY;
+    moleY += moleVY;
+
+    // Rotation based on velocity
+    const targetRotation = Math.max(-0.5, Math.min(0.8, moleVY * 0.08));
+    moleRotation += (targetRotation - moleRotation) * 0.15;
+
+    // Squash recovery
+    moleSquash += (1.0 - moleSquash) * 0.15;
+
+    // Flap cooldown
+    if (flapCooldown > 0) flapCooldown--;
+
+    // Scroll
+    const speed = getScrollSpeed(score);
+    bgOffset += speed;
+
+    // Move obstacles
+    for (const obs of obstacles) {
+      obs.x -= speed;
+
+      // Score check
+      if (!obs.scored && obs.x + OBSTACLE_WIDTH < MOLE_X) {
+        obs.scored = true;
+        score++;
+        if (score > bestScore) {
+          bestScore = score;
+          localStorage.setItem('molt_best_score', bestScore);
+        }
+      }
+    }
+
+    // Remove off-screen obstacles
+    while (obstacles.length > 0 && obstacles[0].x + OBSTACLE_WIDTH < -10) {
+      obstacles.shift();
+    }
+
+    // Generate new obstacles
+    const lastObs = obstacles[obstacles.length - 1];
+    if (!lastObs || lastObs.x < W - OBSTACLE_SPACING + OBSTACLE_WIDTH) {
+      const newX = lastObs ? lastObs.x + OBSTACLE_SPACING : W + 50;
+      obstacles.push(generateObstacle(newX, score));
+    }
+
+    // Collision
+    if (checkCollision()) {
+      state = STATE.DYING;
+      dyingTimer = DYING_FRAMES;
+      const palette = getPalette(score);
+      spawnDeathParticles(MOLE_X, moleY, palette);
+      // Screen shake
+      shakeX = 6;
+      shakeY = 6;
+    }
+
+    updateParticles();
+    return;
+  }
+
+  if (state === STATE.DYING) {
+    // Tumble animation
+    moleVY += GRAVITY * 0.5;
+    moleY += moleVY * 0.3;
+    moleRotation += 0.15;
+
+    // Screen shake decay
+    shakeX *= 0.85;
+    shakeY *= 0.85;
+
+    dyingTimer--;
+    if (dyingTimer <= 0) {
+      state = STATE.GAME_OVER;
+      shakeX = 0;
+      shakeY = 0;
+    }
+
+    updateParticles();
+    return;
+  }
+
+  if (state === STATE.GAME_OVER) {
+    updateParticles();
+    return;
+  }
+}
+
+// ============================================================
+// SECTION 13: RENDER
+// ============================================================
+function render() {
+  const palette = getPalette(score);
+
+  ctx.save();
+
+  // Screen shake
+  if (state === STATE.DYING) {
+    ctx.translate(
+      (Math.random() - 0.5) * shakeX,
+      (Math.random() - 0.5) * shakeY
+    );
+  }
+
+  // Background
+  drawBackground(palette, score);
+
+  // Obstacles
+  drawObstacles(palette, frameCount);
+
+  // Particles (behind mole)
+  drawParticles();
+
+  // Mole
+  if (state !== STATE.GAME_OVER) {
+    drawMole(MOLE_X, moleY, moleRotation, moleSquash);
+  }
+
+  ctx.restore(); // End shake transform
+
+  // HUD (not affected by shake)
+  if (state === STATE.PLAYING) {
+    drawPixelNumber(score, W / 2, 45, 36, palette.text);
+  }
+
+  // Start screen overlay
+  if (state === STATE.START) {
+    // Semi-transparent overlay
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillRect(0, 0, W, H);
+
+    // Title
+    drawText('MOLT THE MOLE', W / 2, 140, 32, [220, 180, 120]);
+
+    // Subtitle
+    const subtitleAlpha = 0.5 + Math.sin(frameCount * 0.05) * 0.3;
+    ctx.save();
+    ctx.globalAlpha = subtitleAlpha;
+    drawText('Tap or Press Space', W / 2, H - 140, 16, [200, 180, 150]);
+    ctx.restore();
+
+    // Mole is already drawn by the normal render path
+
+    // Best score
+    if (bestScore > 0) {
+      drawText('Best: ' + bestScore, W / 2, H - 100, 14, [180, 160, 130]);
+    }
+  }
+
+  // Game over overlay
+  if (state === STATE.GAME_OVER) {
+    // Dark overlay
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.fillRect(0, 0, W, H);
+
+    // Flavor text
+    drawText('MOLT HAS MOLTED', W / 2, 160, 26, palette.text);
+    drawText('Minor mutation applied.', W / 2, 200, 13, palette.textGlow);
+
+    // Score
+    drawText('Score', W / 2, 270, 14, palette.textGlow);
+    drawPixelNumber(score, W / 2, 310, 48, palette.text);
+
+    // Best score
+    drawText('Best', W / 2, 370, 14, palette.textGlow);
+    drawPixelNumber(bestScore, W / 2, 405, 36, palette.text);
+
+    // Restart prompt
+    const restartAlpha = 0.5 + Math.sin(frameCount * 0.05) * 0.3;
+    ctx.save();
+    ctx.globalAlpha = restartAlpha;
+    drawText('Tap or Press Space', W / 2, H - 100, 16, palette.text);
+    ctx.restore();
+  }
+
+  // Dying overlay (flash)
+  if (state === STATE.DYING && dyingTimer > DYING_FRAMES - 5) {
+    const flashAlpha = (dyingTimer - (DYING_FRAMES - 5)) / 5 * 0.4;
+    ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+}
+
+// ============================================================
+// SECTION 14: GAME LOOP (Fixed Timestep)
+// ============================================================
+const FIXED_DT = 1000 / 60;
+let lastTime = 0;
+let accumulator = 0;
+
+function gameLoop(timestamp) {
+  if (lastTime === 0) lastTime = timestamp;
+  let delta = timestamp - lastTime;
+  lastTime = timestamp;
+
+  // Clamp delta to prevent spiral of death
+  if (delta > 200) delta = 200;
+
+  accumulator += delta;
+
+  while (accumulator >= FIXED_DT) {
+    update();
+    accumulator -= FIXED_DT;
+  }
+
+  render();
+  requestAnimationFrame(gameLoop);
+}
+
+// ============================================================
+// SECTION 15: INITIALIZATION
+// ============================================================
+// Set initial mole position for start screen
+moleY = H / 2;
+
+// Start the game loop
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>
