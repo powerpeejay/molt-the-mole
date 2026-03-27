@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Molt the Mole — A Futuristic Underground Runner</title>
-<meta name="description" content="Molt the Mole is a free browser game where you guide a robotic mole through a glitchy underground world. Tap to flap, dodge obstacles, and watch the world transform from earthy tunnels to neon cyberspace.">
+<title>Easter Hop — A Spring Meadow Runner</title>
+<meta name="description" content="Easter Hop is a free browser game where you guide an Easter bunny through a blooming spring meadow. Tap to hop, dodge garden fences, and watch the world transform from spring to golden summer.">
 <!-- TODO: Replace ca-pub-XXXXXXXXXXXXXXXX with your Google AdSense publisher ID -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
      crossorigin="anonymous"></script>
@@ -13,36 +13,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --earth-dark: #1a120b;
-    --earth-mid: #2a1c12;
-    --earth-brown: #5a3d21;
-    --earth-tan: #a07848;
-    --copper: #b44632;
-    --copper-light: #e6a060;
-    --chrome: #beb9af;
-    --cyber-purple: #1a0a2e;
-    --cyber-teal: #00c8dc;
-    --cyber-green: #00ffc8;
-    --cyber-magenta: #c040a0;
-    --led-red: #ff1e1e;
-    --text-primary: #e8dcc8;
-    --text-muted: #8a7a64;
-    --text-bright: #fff0d8;
-    --font-display: 'Silkscreen', cursive;
-    --font-body: 'IBM Plex Mono', monospace;
+    --spring-sky:     #d0eef8;
+    --spring-light:   #e8f5e9;
+    --spring-mid:     #c8e6c9;
+    --spring-green:   #4a8c30;
+    --spring-dark:    #1e3d14;
+    --blossom-pink:   #f48fb1;
+    --blossom-light:  #fce4ec;
+    --egg-yellow:     #fff176;
+    --egg-lavender:   #ce93d8;
+    --wood-brown:     #8b5a2b;
+    --wood-light:     #c49a6c;
+    --text-primary:   #33691e;
+    --text-muted:     #558b2f;
+    --text-bright:    #1b5e20;
+    --font-display:   'Silkscreen', cursive;
+    --font-body:      'IBM Plex Mono', monospace;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html {
     scroll-behavior: smooth;
-    background: var(--earth-dark);
+    background: var(--spring-sky);
   }
 
   body {
     font-family: var(--font-body);
     color: var(--text-primary);
-    background: var(--earth-dark);
+    background: var(--spring-sky);
     line-height: 1.7;
     overflow-x: hidden;
   }
@@ -55,7 +54,7 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 9999;
-    opacity: 0.5;
+    opacity: 0.3;
   }
 
   /* ===== NAV ===== */
@@ -63,9 +62,9 @@
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 100;
-    background: rgba(26, 18, 11, 0.92);
+    background: rgba(208, 238, 248, 0.92);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(160, 120, 72, 0.15);
+    border-bottom: 1px solid rgba(74, 140, 48, 0.2);
     padding: 0 24px;
   }
   nav .nav-inner {
@@ -79,7 +78,7 @@
   nav .logo {
     font-family: var(--font-display);
     font-size: 16px;
-    color: var(--copper-light);
+    color: var(--spring-green);
     text-decoration: none;
     letter-spacing: 1px;
   }
@@ -95,7 +94,7 @@
     transition: color 0.2s;
   }
   nav .nav-links a:hover {
-    color: var(--cyber-teal);
+    color: var(--spring-green);
   }
 
   /* ===== SECTIONS ===== */
@@ -109,7 +108,7 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 3px;
-    color: var(--cyber-teal);
+    color: var(--spring-green);
     margin-bottom: 12px;
     display: block;
   }
@@ -139,33 +138,27 @@
     overflow: hidden;
   }
 
-  /* Animated background grid */
+  /* Spring sky gradient background */
   .hero::before {
     content: '';
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     background:
       linear-gradient(180deg,
-        var(--earth-dark) 0%,
-        var(--earth-mid) 40%,
-        var(--cyber-purple) 100%
+        #87ceeb 0%,
+        #b4ddb4 60%,
+        #6aaa4a 100%
       );
     z-index: -2;
   }
+  /* Soft dot pattern overlay */
   .hero::after {
     content: '';
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background-image:
-      linear-gradient(rgba(0, 200, 220, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 200, 220, 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    animation: gridScroll 20s linear infinite;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 30px 30px;
     z-index: -1;
-  }
-  @keyframes gridScroll {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(40px); }
   }
 
   .hero-title {
@@ -178,20 +171,20 @@
   }
   .hero-title span {
     display: block;
-    background: linear-gradient(135deg, var(--copper-light), var(--cyber-teal));
+    background: linear-gradient(135deg, var(--wood-light), var(--spring-green));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   .hero-subtitle {
     font-size: 16px;
-    color: var(--text-muted);
+    color: var(--text-bright);
     max-width: 480px;
     margin: 16px auto 40px;
     line-height: 1.6;
   }
 
-  /* Mole character pixel art in CSS */
+  /* Bunny character pixel art */
   .hero-mole {
     width: 120px;
     height: 96px;
@@ -216,20 +209,20 @@
     gap: 10px;
     font-family: var(--font-display);
     font-size: 18px;
-    color: var(--earth-dark);
-    background: linear-gradient(135deg, var(--copper-light), var(--cyber-teal));
+    color: #fff;
+    background: linear-gradient(135deg, var(--spring-green), #7bc843);
     padding: 16px 40px;
     text-decoration: none;
     border: none;
     cursor: pointer;
     transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 0 30px rgba(0, 200, 220, 0.2), 0 0 60px rgba(230, 160, 96, 0.1);
+    box-shadow: 0 4px 20px rgba(74, 140, 48, 0.35), 0 0 40px rgba(255, 241, 118, 0.15);
     position: relative;
     overflow: hidden;
   }
   .play-btn:hover {
     transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 0 40px rgba(0, 200, 220, 0.4), 0 0 80px rgba(230, 160, 96, 0.2);
+    box-shadow: 0 6px 28px rgba(74, 140, 48, 0.5), 0 0 60px rgba(255, 241, 118, 0.25);
   }
   .play-btn:active {
     transform: translateY(0) scale(0.98);
@@ -255,7 +248,7 @@
   .hero-stat .num {
     font-family: var(--font-display);
     font-size: 22px;
-    color: var(--cyber-teal);
+    color: var(--spring-green);
     display: block;
   }
   .hero-stat .label {
@@ -268,7 +261,7 @@
   /* ===== ABOUT ===== */
   .about {
     position: relative;
-    border-top: 1px solid rgba(160, 120, 72, 0.1);
+    border-top: 1px solid rgba(74, 140, 48, 0.15);
   }
   .about-grid {
     display: grid;
@@ -286,19 +279,19 @@
     gap: 24px;
   }
   .feature-card {
-    background: rgba(42, 28, 18, 0.6);
-    border: 1px solid rgba(160, 120, 72, 0.12);
+    background: rgba(232, 245, 233, 0.7);
+    border: 1px solid rgba(74, 140, 48, 0.18);
     padding: 20px;
     transition: border-color 0.3s, background 0.3s;
   }
   .feature-card:hover {
-    border-color: rgba(0, 200, 220, 0.3);
-    background: rgba(26, 10, 46, 0.3);
+    border-color: rgba(74, 140, 48, 0.45);
+    background: rgba(255, 255, 255, 0.5);
   }
   .feature-card h3 {
     font-family: var(--font-display);
     font-size: 13px;
-    color: var(--copper-light);
+    color: var(--spring-green);
     margin-bottom: 8px;
   }
   .feature-card p {
@@ -310,7 +303,7 @@
 
   /* ===== HOW TO PLAY ===== */
   .howto {
-    border-top: 1px solid rgba(160, 120, 72, 0.1);
+    border-top: 1px solid rgba(74, 140, 48, 0.15);
   }
   .steps {
     display: grid;
@@ -319,15 +312,15 @@
     margin-top: 24px;
   }
   .step {
-    background: rgba(42, 28, 18, 0.4);
-    border: 1px solid rgba(160, 120, 72, 0.1);
+    background: rgba(232, 245, 233, 0.5);
+    border: 1px solid rgba(74, 140, 48, 0.12);
     padding: 28px 24px;
     position: relative;
   }
   .step-num {
     font-family: var(--font-display);
     font-size: 48px;
-    color: rgba(0, 200, 220, 0.1);
+    color: rgba(74, 140, 48, 0.12);
     position: absolute;
     top: 12px;
     right: 16px;
@@ -362,9 +355,9 @@
   .key {
     font-family: var(--font-display);
     font-size: 11px;
-    color: var(--copper-light);
-    background: rgba(42, 28, 18, 0.8);
-    border: 1px solid rgba(160, 120, 72, 0.25);
+    color: var(--spring-green);
+    background: rgba(232, 245, 233, 0.9);
+    border: 1px solid rgba(74, 140, 48, 0.3);
     padding: 6px 12px;
     min-width: 40px;
     text-align: center;
@@ -382,13 +375,13 @@
     width: 728px;
     max-width: 100%;
     height: 90px;
-    background: rgba(17, 17, 17, 0.5);
-    border: 1px solid #333;
+    background: rgba(200, 230, 201, 0.3);
+    border: 1px solid rgba(74, 140, 48, 0.2);
   }
 
   /* ===== PRIVACY / TERMS / CONTACT ===== */
   .legal {
-    border-top: 1px solid rgba(160, 120, 72, 0.1);
+    border-top: 1px solid rgba(74, 140, 48, 0.15);
   }
   .legal h2 {
     font-size: 22px;
@@ -397,7 +390,7 @@
   .legal h3 {
     font-family: var(--font-display);
     font-size: 13px;
-    color: var(--copper-light);
+    color: var(--spring-green);
     margin-top: 24px;
     margin-bottom: 8px;
   }
@@ -414,7 +407,7 @@
     margin-bottom: 4px;
   }
   .legal a {
-    color: var(--cyber-teal);
+    color: var(--spring-green);
     text-decoration: none;
   }
   .legal a:hover {
@@ -424,7 +417,7 @@
   .contact-email {
     font-family: var(--font-display);
     font-size: 16px;
-    color: var(--cyber-teal);
+    color: var(--spring-green);
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -433,7 +426,7 @@
     transition: color 0.2s;
   }
   .contact-email:hover {
-    color: var(--cyber-green);
+    color: var(--text-bright);
   }
 
   /* ===== FOOTER ===== */
@@ -441,7 +434,7 @@
     max-width: 1000px;
     margin: 0 auto;
     padding: 40px 24px;
-    border-top: 1px solid rgba(160, 120, 72, 0.1);
+    border-top: 1px solid rgba(74, 140, 48, 0.15);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -464,7 +457,7 @@
     text-decoration: none;
   }
   footer .footer-links a:hover {
-    color: var(--cyber-teal);
+    color: var(--spring-green);
   }
 
   /* ===== RESPONSIVE ===== */
@@ -502,13 +495,13 @@
 <!-- ===== NAV ===== -->
 <nav>
   <div class="nav-inner">
-    <a href="#" class="logo">MOLT</a>
+    <a href="#" class="logo">HOP</a>
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
       <li><a href="#howto">How to Play</a></li>
       <li><a href="#privacy">Privacy</a></li>
       <li><a href="#contact">Contact</a></li>
-      <li><a href="play.html" style="color: var(--cyber-teal);">Play</a></li>
+      <li><a href="play.html" style="color: var(--spring-green);">Play</a></li>
     </ul>
   </div>
 </nav>
@@ -518,8 +511,8 @@
   <div class="hero-mole">
     <canvas id="mole-canvas" width="51" height="42"></canvas>
   </div>
-  <h1 class="hero-title"><span>Molt the Mole</span></h1>
-  <p class="hero-subtitle">Guide a robotic mole through a glitchy underground world that transforms from earthy tunnels into neon cyberspace. One tap. Endless depth.</p>
+  <h1 class="hero-title"><span>Easter Hop</span></h1>
+  <p class="hero-subtitle">Guide a fluffy Easter bunny through a blooming spring meadow that transforms into golden summer fields. One tap. Endless spring.</p>
   <a href="play.html" class="play-btn">Play Now <span class="arrow">&#9654;</span></a>
   <div class="hero-stats">
     <div class="hero-stat">
@@ -528,7 +521,7 @@
     </div>
     <div class="hero-stat">
       <span class="num">&infin;</span>
-      <span class="label">Depth</span>
+      <span class="label">Meadow</span>
     </div>
     <div class="hero-stat">
       <span class="num">0</span>
@@ -548,39 +541,39 @@
 <!-- ===== ABOUT ===== -->
 <section class="about" id="about">
   <span class="section-label">About the Game</span>
-  <h2>What is Molt the Mole?</h2>
+  <h2>What is Easter Hop?</h2>
   <div class="about-grid">
     <div class="about-main">
-      <p>Molt the Mole is a free, browser-based endless runner inspired by the iconic Flappy Bird formula, but reimagined with a unique twist. You control Molt, a small robotic mole with a reddish copper chassis, chrome plating, and glowing red LED eyes. Molt is trapped deep underground in a world that was once natural earth and stone, but is slowly being consumed by a digital corruption spreading through the soil.</p>
+      <p>Easter Hop is a free, browser-based endless runner inspired by the iconic Flappy Bird formula, reimagined with a cheerful Easter twist. You control a fluffy Easter bunny with cream fur, pink-lined ears, and rosy cheeks, hopping through a blooming spring meadow just in time for Easter.</p>
 
-      <p>The gameplay is deceptively simple: tap, click, or press spacebar to give Molt an upward boost. Gravity constantly pulls the mole downward, and the underground tunnel scrolls relentlessly from right to left. Your only goal is to thread Molt through the gaps between pairs of vertical obstacles that block the tunnel. Each pair you clear earns one point. Hit an obstacle, the ceiling, or the ground, and the run is over.</p>
+      <p>The gameplay is delightfully simple: tap, click, or press spacebar to give the bunny an upward boost. Gravity constantly pulls downward, and the meadow scrolls relentlessly from right to left. Your only goal is to thread the bunny through the gaps in pairs of wooden garden fences that line the path. Each fence pair you clear earns one point. Hit a fence, the sky, or the ground, and the run is over.</p>
 
-      <p>What sets Molt the Mole apart from other one-button games is its living, evolving world. When you begin a run, the environment is earthy and grounded: warm browns, rough stone textures, and dim amber lighting that feels like a real underground burrow. But as your score climbs, the world begins to change. The browns give way to deep purples. Stone surfaces develop circuit-like patterns. The obstacle panels, styled as server racks and data structures, start glowing with teal and magenta LEDs. By the time you reach a score of 30 or higher, you are flying through a fully realized cyberspace tunnel, pulsing with neon light.</p>
+      <p>What makes Easter Hop special is its living, evolving world. When you begin a run, the environment is fresh and bright: sky blue above, lush spring-green below, flowers dotting the background, and cheerful pastel Easter eggs scattered throughout. As your score climbs, the world deepens into rich summer colors. Sky blue deepens to a vibrant afternoon blue, greens saturate, and the flower accents shift from pink blossoms to golden sunflowers and orange poppies.</p>
 
-      <p>This color transition is not a sudden switch. Every color in the game, from the background gradient to the ground texture to the particle effects, smoothly interpolates between an earthy palette and a cyber palette based on your current score. The result is a visual journey that rewards skilled play with an increasingly dramatic and beautiful environment.</p>
+      <p>This color transition is seamless. Every element in the game, from the sky gradient to the grass texture to the particle effects, smoothly interpolates between a spring palette and a summer palette based on your current score. The result is a visual journey that rewards skilled play with an increasingly warm and beautiful environment.</p>
 
-      <p>The obstacles themselves are not simple pipes or blocks. They are rendered as futuristic server stacks with internal panel details, circuit-line engravings, and blinking LED status indicators. Three visual variants keep the scenery varied: standard server panels, data-claw arrays with vertical hash marks, and algorithm walls with grid-pattern readouts. Serrated teeth line the edges of each gap, adding to the sense of danger.</p>
+      <p>The fence obstacles are rendered as proper wooden garden fences with vertical planks, two horizontal rails, and decorative flower blooms on the sides. Pointed picket tips line the edges of each gap. Three plank-style variants keep the scenery varied. Flowers on the fence sides bloom and pulse as you pass, adding a living, organic feel to each obstacle.</p>
 
-      <p>The difficulty ramps gradually but relentlessly. The scroll speed increases slightly with each point scored, and the gap between obstacle pairs narrows over time. What starts as a comfortable 150-pixel opening shrinks to a minimum of 100 pixels, demanding pixel-perfect navigation from the player. Combined with the increasing speed, high scores require intense focus and precise timing.</p>
+      <p>Difficulty ramps gradually but relentlessly. The scroll speed increases slightly with each point, and the gap between fence pairs narrows over time. What starts as a comfortable 150-pixel opening shrinks to a minimum of 100 pixels, demanding precise timing. Combined with the increasing speed, high scores require real focus and coordination.</p>
 
-      <p>Molt the Mole is built entirely in vanilla JavaScript and HTML5 Canvas with no external dependencies. It runs in any modern browser on desktop or mobile, with full support for keyboard, mouse, and touch controls. Your best score is saved locally so you can always try to beat your personal record. The game uses a fixed-timestep physics loop to ensure consistent behavior regardless of your device's refresh rate.</p>
+      <p>Easter Hop is built entirely in vanilla JavaScript and HTML5 Canvas with no external dependencies. It runs in any modern browser on desktop or mobile, with full support for keyboard, mouse, and touch controls. Your best score is saved locally so you can always try to beat your personal record.</p>
     </div>
     <div class="about-sidebar">
       <div class="feature-card">
         <h3>Evolving World</h3>
-        <p>Watch the environment transform from earthy underground tunnels to glowing neon cyberspace as your score increases. Every color smoothly transitions across 30 score thresholds.</p>
+        <p>Watch the environment transform from a fresh spring meadow to golden summer fields as your score increases. Every color smoothly transitions across 30 score thresholds.</p>
       </div>
       <div class="feature-card">
-        <h3>Robotic Mole</h3>
-        <p>Molt is a hand-crafted pixel art character with copper plating, chrome details, and red LED eyes. Velocity-based rotation and squash-stretch animation bring the little bot to life.</p>
+        <h3>Easter Bunny</h3>
+        <p>A hand-crafted pixel art bunny with cream fur, pink ear detail, and rosy cheeks. Velocity-based rotation and squash-stretch animation bring the little hopper to life.</p>
       </div>
       <div class="feature-card">
-        <h3>Server Stack Obstacles</h3>
-        <p>Navigate between futuristic server racks complete with internal panels, circuit engravings, blinking LEDs, and three visual variants that keep every run visually fresh.</p>
+        <h3>Garden Fence Obstacles</h3>
+        <p>Navigate between wooden fence panels with vertical planks, horizontal rails, pointed picket tips, and small flower blooms that pulse as you pass.</p>
       </div>
       <div class="feature-card">
         <h3>Particle Effects</h3>
-        <p>Flap bursts and death explosions use a pooled particle system that adapts to the current color palette, matching the world's visual state at every moment.</p>
+        <p>Flap bursts and death explosions use a pooled particle system that adapts to the current palette — pink blossoms in spring, golden pollen in summer.</p>
       </div>
       <div class="feature-card">
         <h3>Zero Dependencies</h3>
@@ -598,17 +591,17 @@
     <div class="step">
       <span class="step-num">01</span>
       <h3>Launch</h3>
-      <p>Open the game and you will see Molt floating on the start screen. The mole bobs gently, waiting for your command.</p>
+      <p>Open the game and you will see the bunny floating on the start screen, bobbing gently against the spring sky, waiting for your command.</p>
     </div>
     <div class="step">
       <span class="step-num">02</span>
-      <h3>Flap</h3>
-      <p>Tap, click, or press Space to give Molt an upward boost. Gravity constantly pulls the mole down, so you need to keep tapping to stay airborne.</p>
+      <h3>Hop</h3>
+      <p>Tap, click, or press Space to give the bunny an upward boost. Gravity constantly pulls downward, so you need to keep hopping to stay airborne.</p>
     </div>
     <div class="step">
       <span class="step-num">03</span>
       <h3>Navigate</h3>
-      <p>Thread Molt through the gaps between obstacle pairs. Each pair cleared is one point. The gaps shrink and speed increases as you progress.</p>
+      <p>Thread the bunny through the gaps in the garden fences. Each fence pair cleared is one point. The gaps shrink and speed increases as you progress.</p>
     </div>
   </div>
   <div class="controls-row">
@@ -625,7 +618,7 @@
   <p>Last updated: February 2026</p>
 
   <h3>Information We Collect</h3>
-  <p>Molt the Mole is a client-side browser game. We do not collect, store, or transmit any personal information to our servers. The only data stored is your high score, which is saved locally on your device using your browser's localStorage feature. This data never leaves your device.</p>
+  <p>Easter Hop is a client-side browser game. We do not collect, store, or transmit any personal information to our servers. The only data stored is your high score, which is saved locally on your device using your browser's localStorage feature. This data never leaves your device.</p>
 
   <h3>Third-Party Advertising</h3>
   <p>This site uses Google AdSense to display advertisements. Google and its advertising partners may use cookies and similar technologies to serve ads based on your prior visits to this website or other websites. You can opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google's Ad Settings</a>.</p>
@@ -638,7 +631,7 @@
   <p>We do not currently use any analytics or tracking tools beyond what is provided by the third-party advertising platform.</p>
 
   <h3>Children's Privacy</h3>
-  <p>Molt the Mole does not knowingly collect personal information from children under 13. Since we do not collect any personal data at all, no special provisions are necessary. The advertising displayed is managed by Google AdSense and subject to their policies regarding child-directed content.</p>
+  <p>Easter Hop does not knowingly collect personal information from children under 13. Since we do not collect any personal data at all, no special provisions are necessary. The advertising displayed is managed by Google AdSense and subject to their policies regarding child-directed content.</p>
 
   <h3>Changes to This Policy</h3>
   <p>We may update this privacy policy from time to time. Any changes will be reflected on this page with an updated revision date.</p>
@@ -653,10 +646,10 @@
   <p>Last updated: February 2026</p>
 
   <h3>Acceptance of Terms</h3>
-  <p>By accessing and playing Molt the Mole, you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, please do not use this website.</p>
+  <p>By accessing and playing Easter Hop, you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, please do not use this website.</p>
 
   <h3>Description of Service</h3>
-  <p>Molt the Mole is a free, browser-based game provided "as is" for entertainment purposes. The game requires no account creation, no downloads, and no personal information to play.</p>
+  <p>Easter Hop is a free, browser-based game provided "as is" for entertainment purposes. The game requires no account creation, no downloads, and no personal information to play.</p>
 
   <h3>Intellectual Property</h3>
   <p>All game code, artwork, character designs, and written content on this website are the property of the site owner. You may not copy, modify, distribute, or create derivative works from this content without prior written permission.</p>
@@ -693,7 +686,7 @@
 
 <!-- ===== FOOTER ===== -->
 <footer>
-  <p>&copy; 2026 Molt the Mole. All rights reserved.</p>
+  <p>&copy; 2026 Easter Hop. All rights reserved.</p>
   <ul class="footer-links">
     <li><a href="#privacy">Privacy</a></li>
     <li><a href="#terms">Terms</a></li>
@@ -707,28 +700,34 @@
 (window.adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 
-<!-- Render mole sprite on hero canvas -->
+<!-- Render bunny sprite on hero canvas -->
 <script>
 (function() {
   const SPRITE = [
-    '00000CCHCC0000000',
-    '0000CBBBBBC000000',
-    '000CBBBBBBBCD0000',
-    '00DBBBBBBBBBD0000',
-    '00DBBBEBBEBBDC000',
-    '0DBBBBBBBBBBBC000',
-    '0DBBBBNNBBBBBC000',
-    '0CBBBBTTBBBBBCP00',
-    '00CBBBBBBBBBCP000',
-    '000DBBBBBBBBCP000',
-    '0000DBBHBBBD00000',
-    '000P0DBBBBD0P0000',
-    '000PP0DDDD0PP0000',
-    '0000P000000P00000',
+    '00000WW000WW00000',
+    '0000WWPW0WWPW0000',
+    '0000WPPW0WPPW0000',
+    '000WWPPWWWPPWW000',
+    '00WWWWWWWWWWWWD00',
+    '0WWWWETWWWTEWWWD0',
+    '0WWWWWKRWWWWWWWD0',
+    '0WWWWWKWWWWWWWWD0',
+    '00DKKKKKWWWWWDD00',
+    '00DWWKKKWWWWWWD00',
+    '000DWWWWWWWWDD000',
+    '000F0DWWWWD0F0000',
+    '000FF0DDDD0FF0000',
+    '0000F000000F00000',
   ];
   const COLORS = {
-    'B': '#b44632', 'D': '#5a2820', 'C': '#beb9af', 'E': '#ff1e1e',
-    'N': '#321a18', 'P': '#8c3c2d', 'T': '#dcd7c8', 'H': '#e6a060',
+    'W': '#f0ebe1',
+    'K': '#fffaf5',
+    'P': '#ffa0b4',
+    'R': '#f05a78',
+    'E': '#281e3c',
+    'T': '#ffc3cd',
+    'F': '#c8c3bc',
+    'D': '#afaaa2',
   };
   const canvas = document.getElementById('mole-canvas');
   if (!canvas) return;

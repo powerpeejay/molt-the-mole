@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Molt the Mole</title>
+<title>Easter Hop</title>
 <!-- TODO: Replace ca-pub-XXXXXXXXXXXXXXXX with your Google AdSense publisher ID -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
      crossorigin="anonymous"></script>
@@ -67,18 +67,15 @@
   <canvas id="game"></canvas>
   <div id="ad-container">
     <!-- TODO: Replace ca-pub-XXXXXXXXXXXXXXXX and XXXXXXXXXX with your AdSense publisher ID and ad slot ID -->
-    <!-- Desktop skyscraper ad (300x600) -->
     <ins class="adsbygoogle ad-skyscraper"
          data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
          data-ad-slot="XXXXXXXXXX"></ins>
-    <!-- Mobile banner ad (320x100) — shown on narrow screens -->
     <ins class="adsbygoogle ad-banner"
          data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
          data-ad-slot="XXXXXXXXXX"></ins>
   </div>
 </div>
 <script>
-// Initialize AdSense (will only work with valid publisher ID on a real domain)
 (window.adsbygoogle = window.adsbygoogle || []).push({});
 (window.adsbygoogle = window.adsbygoogle || []).push({});
 </script>
@@ -89,29 +86,23 @@
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 
-const W = 400;  // Design width
-const H = 600;  // Design height
+const W = 400;
+const H = 600;
 canvas.width = W;
 canvas.height = H;
 
 function resizeCanvas() {
   const isWide = window.innerWidth >= 760;
   let availW, availH;
-
   if (isWide) {
-    // Desktop: reserve space for 300px skyscraper + 16px gap + 16px padding
     availW = window.innerWidth - 300 - 32;
     availH = window.innerHeight - 16;
   } else {
-    // Mobile: reserve space for 100px banner + 16px gap + 16px padding
     availW = window.innerWidth - 16;
     availH = window.innerHeight - 100 - 32;
   }
-
-  const scaleX = availW / W;
-  const scaleY = availH / H;
-  const scale = Math.min(scaleX, scaleY);
-  canvas.style.width = Math.floor(W * scale) + 'px';
+  const scale = Math.min(availW / W, availH / H);
+  canvas.style.width  = Math.floor(W * scale) + 'px';
   canvas.style.height = Math.floor(H * scale) + 'px';
 }
 window.addEventListener('resize', resizeCanvas);
@@ -120,66 +111,65 @@ resizeCanvas();
 // ============================================================
 // SECTION 2: CONSTANTS
 // ============================================================
-const GRAVITY = 0.45;
-const FLAP_IMPULSE = -7.5;
+const GRAVITY          = 0.45;
+const FLAP_IMPULSE     = -7.5;
 const BASE_SCROLL_SPEED = 2.5;
-const SPEED_RAMP = 0.04;
+const SPEED_RAMP       = 0.04;
 const MAX_SCROLL_SPEED = 5.0;
 const TERMINAL_VELOCITY = 10;
 
-const MOLE_X = 100;           // Fixed horizontal position
-const MOLE_SIZE = 3;          // Pixel scale for mole sprite
-const HITBOX_INSET = 3;       // Pixels inset for forgiving collision
+const MOLE_X     = 100;
+const MOLE_SIZE  = 3;
+const HITBOX_INSET = 3;
 
-const OBSTACLE_WIDTH = 52;
-const OBSTACLE_SPACING = 220; // Horizontal distance between pairs
+const OBSTACLE_WIDTH   = 52;
+const OBSTACLE_SPACING = 220;
 const INITIAL_GAP = 150;
-const GAP_SHRINK = 1.5;       // Per point scored
-const MIN_GAP = 100;
-const GAP_TOP_MIN = 60;       // Minimum distance from top
-const GAP_BOTTOM_MIN = 60;    // Minimum distance from bottom (above ground)
+const GAP_SHRINK  = 1.5;
+const MIN_GAP     = 100;
+const GAP_TOP_MIN    = 60;
+const GAP_BOTTOM_MIN = 60;
 
 const GROUND_HEIGHT = 50;
 const GROUND_Y = H - GROUND_HEIGHT;
 
 const DYING_FRAMES = 45;
 
-// State enum
-const STATE = { START: 0, PLAYING: 1, DYING: 2, GAME_OVER: 3 };
+const STATE = { START: 0, PLAYING: 1, DYING: 2, GAME_OVER: 3, NAME_ENTRY: 4 };
 
 // ============================================================
 // SECTION 3: COLOR PALETTE SYSTEM
 // ============================================================
-const EARTHY = {
-  bg1: [42, 28, 18],       // Dark brown top
-  bg2: [65, 43, 21],       // Medium brown bottom
-  ground: [90, 62, 35],    // Ground brown
-  groundDetail: [110, 78, 42],
-  obstacle: [80, 70, 60],  // Stone gray
-  obstacleDark: [55, 48, 40],
-  obstacleLight: [110, 95, 78],
-  obstacleLED: [180, 140, 60],
-  particle: [140, 100, 50],
-  text: [220, 200, 170],
-  textGlow: [180, 140, 80],
-  tunnelLine: [55, 38, 22],
-  bgDetail: [52, 36, 22],
+const SPRING = {
+  bg1:          [135, 206, 235],
+  bg2:          [180, 230, 180],
+  ground:       [ 80, 160,  60],
+  groundDetail: [110, 190,  80],
+  obstacle:     [238, 233, 218],  // off-white painted fence
+  obstacleDark: [175, 168, 152],  // fence shadow / rail
+  obstacleLight:[255, 252, 245],  // fence highlight
+  obstacleLED:  [255, 200,  60],  // flower yellow
+  particle:     [255, 200, 210],
+  text:         [ 80,  50,  20],
+  textGlow:     [160,  90,  30],
+  tunnelLine:   [255, 255, 255],  // cloud white
+  bgDetail:     [255, 160, 190],  // pink blossom petals
 };
 
-const CYBER = {
-  bg1: [10, 5, 30],        // Deep purple top
-  bg2: [20, 10, 45],       // Dark purple bottom
-  ground: [15, 60, 80],    // Teal ground
-  groundDetail: [0, 200, 220],
-  obstacle: [30, 20, 60],  // Dark purple
-  obstacleDark: [15, 10, 35],
-  obstacleLight: [80, 40, 160],
-  obstacleLED: [0, 255, 200],
-  particle: [0, 255, 255],
-  text: [0, 255, 200],
-  textGlow: [0, 180, 255],
-  tunnelLine: [20, 10, 50],
-  bgDetail: [40, 0, 80],
+const SUMMER = {
+  bg1:          [ 30, 120, 200],
+  bg2:          [ 60, 180, 100],
+  ground:       [ 40, 130,  40],
+  groundDetail: [200, 210,  60],
+  obstacle:     [228, 222, 200],  // slightly warmer white
+  obstacleDark: [160, 152, 132],
+  obstacleLight:[248, 244, 228],
+  obstacleLED:  [255, 120,  40],  // orange poppy
+  particle:     [255, 240,  80],
+  text:         [255, 230, 160],
+  textGlow:     [240, 180,  40],
+  tunnelLine:   [255, 255, 255],
+  bgDetail:     [255, 220,  60],  // golden sunflower petals
 };
 
 function lerpColor(a, b, t) {
@@ -190,70 +180,66 @@ function lerpColor(a, b, t) {
   ];
 }
 
-function rgb(c) { return `rgb(${c[0]},${c[1]},${c[2]})`; }
-function rgba(c, a) { return `rgba(${c[0]},${c[1]},${c[2]},${a})`; }
+function rgb(c)    { return `rgb(${c[0]},${c[1]},${c[2]})`; }
+function rgba(c,a) { return `rgba(${c[0]},${c[1]},${c[2]},${a})`; }
 
 function getPalette(score) {
   const t = Math.min(score / 30, 1.0);
   const p = {};
-  for (const key in EARTHY) {
-    p[key] = lerpColor(EARTHY[key], CYBER[key], t);
+  for (const key in SPRING) {
+    p[key] = lerpColor(SPRING[key], SUMMER[key], t);
   }
   return p;
 }
 
 // ============================================================
-// SECTION 4: MOLE PIXEL SPRITE
+// SECTION 4: BUNNY PIXEL SPRITE
 // ============================================================
-// 17 wide x 14 tall pixel grid
-// Color keys: 0=transparent, B=body(copper), D=dark metal, S=snout, E=eye(LED),
-// C=chrome, N=nose, P=paw/claw, T=teeth, H=highlight
-const MOLE_SPRITE = [
-  '00000CCHCC0000000',
-  '0000CBBBBBC000000',
-  '000CBBBBBBBCD0000',
-  '00DBBBBBBBBBD0000',
-  '00DBBBEBBEBBDC000',
-  '0DBBBBBBBBBBBC000',
-  '0DBBBBNNBBBBBC000',
-  '0CBBBBTTBBBBBCP00',
-  '00CBBBBBBBBBCP000',
-  '000DBBBBBBBBCP000',
-  '0000DBBHBBBD00000',
-  '000P0DBBBBD0P0000',
-  '000PP0DDDD0PP0000',
-  '0000P000000P00000',
+const BUNNY_SPRITE = [
+  '00000WW000WW00000',
+  '0000WWPW0WWPW0000',
+  '0000WPPW0WPPW0000',
+  '000WWPPWWWPPWW000',
+  '00WWWWWWWWWWWWD00',
+  '0WWWWETWWWTEWWWD0',
+  '0WWWWWKRWWWWWWWD0',
+  '0WWWWWKWWWWWWWWD0',
+  '00DKKKKKWWWWWDD00',
+  '00DWWKKKWWWWWWD00',
+  '000DWWWWWWWWDD000',
+  '000F0DWWWWD0F0000',
+  '000FF0DDDD0FF0000',
+  '0000F000000F00000',
 ];
 
-const MOLE_COLORS = {
-  'B': [180, 70, 50],    // Copper body
-  'D': [90, 40, 30],     // Dark metal
-  'C': [190, 185, 175],  // Chrome
-  'E': [255, 30, 30],    // Red LED eyes
-  'S': [200, 140, 110],  // Snout
-  'N': [50, 30, 25],     // Nose
-  'P': [140, 60, 45],    // Paws
-  'T': [220, 215, 200],  // Teeth
-  'H': [230, 160, 100],  // Highlight
+const BUNNY_COLORS = {
+  'W': [240, 235, 225],
+  'K': [255, 250, 245],
+  'P': [255, 160, 180],
+  'R': [240,  90, 120],
+  'E': [ 40,  30,  60],
+  'T': [255, 195, 205],
+  'F': [200, 195, 188],
+  'D': [175, 168, 158],
 };
 
-const MOLE_W = MOLE_SPRITE[0].length;
-const MOLE_H = MOLE_SPRITE.length;
+const BUNNY_W = BUNNY_SPRITE[0].length;
+const BUNNY_H = BUNNY_SPRITE.length;
 
-function drawMole(x, y, rotation, squash) {
+function drawBunny(x, y, rotation, squash) {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(rotation);
-  ctx.scale(squash, 2 - squash); // Squash-stretch
+  ctx.scale(squash, 2 - squash);
 
-  const ox = -(MOLE_W * MOLE_SIZE) / 2;
-  const oy = -(MOLE_H * MOLE_SIZE) / 2;
+  const ox = -(BUNNY_W * MOLE_SIZE) / 2;
+  const oy = -(BUNNY_H * MOLE_SIZE) / 2;
 
-  for (let row = 0; row < MOLE_H; row++) {
-    for (let col = 0; col < MOLE_W; col++) {
-      const ch = MOLE_SPRITE[row][col];
+  for (let row = 0; row < BUNNY_H; row++) {
+    for (let col = 0; col < BUNNY_W; col++) {
+      const ch = BUNNY_SPRITE[row][col];
       if (ch === '0') continue;
-      const c = MOLE_COLORS[ch];
+      const c = BUNNY_COLORS[ch];
       if (!c) continue;
       ctx.fillStyle = rgb(c);
       ctx.fillRect(ox + col * MOLE_SIZE, oy + row * MOLE_SIZE, MOLE_SIZE, MOLE_SIZE);
@@ -292,12 +278,14 @@ function spawnFlapParticles(x, y, palette) {
     const vx = (Math.random() - 0.5) * 3;
     const vy = Math.random() * 3 + 1;
     const c = palette.particle;
-    const variation = [
-      c[0] + Math.random() * 40 - 20,
-      c[1] + Math.random() * 40 - 20,
-      c[2] + Math.random() * 40 - 20,
-    ];
-    spawnParticle(x + Math.random() * 10 - 5, y + 10, vx, vy, variation, 20 + Math.random() * 15, 2 + Math.random() * 2);
+    spawnParticle(
+      x + Math.random() * 10 - 5, y + 10,
+      vx, vy,
+      [c[0] + Math.random() * 40 - 20,
+       c[1] + Math.random() * 40 - 20,
+       c[2] + Math.random() * 40 - 20],
+      20 + Math.random() * 15, 2 + Math.random() * 2
+    );
   }
 }
 
@@ -305,10 +293,38 @@ function spawnDeathParticles(x, y, palette) {
   for (let i = 0; i < 18; i++) {
     const angle = (Math.PI * 2 / 18) * i + Math.random() * 0.3;
     const speed = 2 + Math.random() * 4;
-    const vx = Math.cos(angle) * speed;
-    const vy = Math.sin(angle) * speed;
-    const c = i % 2 === 0 ? [255, 80, 40] : palette.particle;
-    spawnParticle(x, y, vx, vy, c, 30 + Math.random() * 20, 2 + Math.random() * 3);
+    const c = i % 2 === 0 ? [255, 200, 220] : palette.particle;
+    spawnParticle(x, y, Math.cos(angle) * speed, Math.sin(angle) * speed,
+                  c, 30 + Math.random() * 20, 2 + Math.random() * 3);
+  }
+}
+
+const FIREWORK_COLORS = [
+  [255, 120, 170], // hot pink
+  [100, 200, 255], // sky blue
+  [255, 230,  60], // egg yellow
+  [200, 140, 255], // lavender
+  [120, 230, 130], // spring green
+  [255, 175,  80], // warm orange
+];
+
+function spawnFirework(x, y) {
+  const count = 28;
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 / count) * i + Math.random() * 0.2;
+    const speed = 3.5 + Math.random() * 4.5;
+    const c = FIREWORK_COLORS[i % FIREWORK_COLORS.length];
+    spawnParticle(
+      x + (Math.random() - 0.5) * 8,
+      y + (Math.random() - 0.5) * 8,
+      Math.cos(angle) * speed,
+      Math.sin(angle) * speed - 1.5,
+      [c[0] + Math.random() * 30 - 15,
+       c[1] + Math.random() * 30 - 15,
+       c[2] + Math.random() * 30 - 15],
+      40 + Math.random() * 25,
+      2 + Math.random() * 3
+    );
   }
 }
 
@@ -316,11 +332,9 @@ function updateParticles() {
   for (let i = 0; i < MAX_PARTICLES; i++) {
     const p = particles[i];
     if (!p.active) continue;
-    p.x += p.vx;
-    p.y += p.vy;
-    p.vy += 0.1; // Particle gravity
-    p.life--;
-    if (p.life <= 0) p.active = false;
+    p.x += p.vx; p.y += p.vy;
+    p.vy += 0.1;
+    if (--p.life <= 0) p.active = false;
   }
 }
 
@@ -328,10 +342,31 @@ function drawParticles() {
   for (let i = 0; i < MAX_PARTICLES; i++) {
     const p = particles[i];
     if (!p.active) continue;
-    const alpha = p.life / p.maxLife;
-    ctx.fillStyle = rgba(p.color, alpha);
+    ctx.fillStyle = rgba(p.color, p.life / p.maxLife);
     ctx.fillRect(Math.round(p.x), Math.round(p.y), Math.round(p.size), Math.round(p.size));
   }
+}
+
+// ============================================================
+// SECTION 5b: LEADERBOARD
+// ============================================================
+function loadLeaderboard() {
+  try { return JSON.parse(localStorage.getItem('easter_leaderboard')) || []; }
+  catch { return []; }
+}
+function saveLeaderboard(lb) {
+  localStorage.setItem('easter_leaderboard', JSON.stringify(lb));
+}
+function qualifiesForLeaderboard(s) {
+  const lb = loadLeaderboard();
+  return lb.length < 3 || s > lb[lb.length - 1].score;
+}
+function addToLeaderboard(name, s) {
+  const lb = loadLeaderboard();
+  lb.push({ name: name.trim().toUpperCase().slice(0, 10) || 'BUNNY', score: s });
+  lb.sort((a, b) => b.score - a.score);
+  lb.splice(3);
+  saveLeaderboard(lb);
 }
 
 // ============================================================
@@ -339,27 +374,17 @@ function drawParticles() {
 // ============================================================
 let obstacles = [];
 
-function getGapSize(score) {
-  return Math.max(MIN_GAP, INITIAL_GAP - score * GAP_SHRINK);
-}
-
-function getScrollSpeed(score) {
-  return Math.min(MAX_SCROLL_SPEED, BASE_SCROLL_SPEED + score * SPEED_RAMP);
-}
+function getGapSize(score)   { return Math.max(MIN_GAP, INITIAL_GAP - score * GAP_SHRINK); }
+function getScrollSpeed(score) { return Math.min(MAX_SCROLL_SPEED, BASE_SCROLL_SPEED + score * SPEED_RAMP); }
 
 function generateObstacle(x, score) {
   const gap = getGapSize(score);
-  const minGapY = GAP_TOP_MIN + gap / 2;
-  const maxGapY = GROUND_Y - GAP_BOTTOM_MIN - gap / 2;
+  const minGapY  = GAP_TOP_MIN + gap / 2;
+  const maxGapY  = GROUND_Y - GAP_BOTTOM_MIN - gap / 2;
   const gapCenterY = minGapY + Math.random() * (maxGapY - minGapY);
-
   return {
-    x: x,
-    gapCenterY: gapCenterY,
-    gapSize: gap,
-    scored: false,
-    // Visual variety
-    variant: Math.floor(Math.random() * 3), // 0=server, 1=data claw, 2=algorithm wall
+    x, gapCenterY, gapSize: gap, scored: false,
+    variant: Math.floor(Math.random() * 3),
     ledPositions: Array.from({length: 4 + Math.floor(Math.random() * 4)}, () => ({
       y: Math.random(),
       side: Math.random() > 0.5 ? 0 : 1,
@@ -368,88 +393,85 @@ function generateObstacle(x, score) {
   };
 }
 
+// White picket fence section
 function drawObstacleSection(x, y, w, h, palette, variant, leds, time) {
   if (h <= 0) return;
 
-  // Main body
+  // Main fence body (off-white)
   ctx.fillStyle = rgb(palette.obstacle);
   ctx.fillRect(x, y, w, h);
 
-  // Panel border
+  // Left and right posts (slightly darker, full height)
   ctx.fillStyle = rgb(palette.obstacleDark);
-  ctx.fillRect(x, y, 3, h);
-  ctx.fillRect(x + w - 3, y, 3, h);
-  ctx.fillRect(x, y, w, 3);
-  ctx.fillRect(x, y + h - 3, w, 3);
+  ctx.fillRect(x,         y, 5, h);
+  ctx.fillRect(x + w - 5, y, 5, h);
 
-  // Internal panels (server rack style)
-  const panelH = 18;
-  const panelPad = 5;
-  for (let py = y + panelPad; py + panelH < y + h - panelPad; py += panelH + 4) {
-    ctx.fillStyle = rgb(palette.obstacleDark);
-    ctx.fillRect(x + panelPad, py, w - panelPad * 2, panelH);
+  // Post highlight
+  ctx.fillStyle = rgb(palette.obstacleLight);
+  ctx.fillRect(x + 1,     y, 1, h);
+  ctx.fillRect(x + w - 4, y, 1, h);
 
-    // Lighter stripe
-    ctx.fillStyle = rgb(palette.obstacleLight);
-    ctx.fillRect(x + panelPad + 2, py + 2, w - panelPad * 2 - 4, 2);
+  // Two horizontal rails at ~20% and ~65% of height
+  const r1Y = y + Math.max(6,  Math.floor(h * 0.20));
+  const r2Y = y + Math.max(18, Math.floor(h * 0.65));
+  ctx.fillStyle = rgb(palette.obstacleDark);
+  if (r1Y + 5 < y + h) ctx.fillRect(x, r1Y, w, 5);
+  if (r2Y + 5 < y + h) ctx.fillRect(x, r2Y, w, 5);
+  ctx.fillStyle = rgb(palette.obstacleLight);
+  if (r1Y + 5 < y + h) ctx.fillRect(x, r1Y, w, 1);
+  if (r2Y + 5 < y + h) ctx.fillRect(x, r2Y, w, 1);
 
-    // Circuit lines (variant-dependent)
-    if (variant === 0) {
-      // Server: horizontal lines
-      ctx.fillStyle = rgb(palette.obstacleLight);
-      for (let lx = x + panelPad + 4; lx < x + w - panelPad - 8; lx += 8) {
-        ctx.fillRect(lx, py + 8, 6, 1);
-      }
-    } else if (variant === 1) {
-      // Data claw: diagonal hash
-      ctx.fillStyle = rgba(palette.obstacleLight, 0.3);
-      for (let dx = 0; dx < w - panelPad * 2; dx += 6) {
-        ctx.fillRect(x + panelPad + dx, py + 6, 1, 6);
-      }
-    } else {
-      // Algorithm wall: grid dots
-      for (let gx = x + panelPad + 6; gx < x + w - panelPad - 4; gx += 7) {
-        for (let gy = py + 6; gy < py + panelH - 4; gy += 7) {
-          ctx.fillStyle = rgba(palette.obstacleLight, 0.4);
-          ctx.fillRect(gx, gy, 2, 2);
-        }
-      }
-    }
+  // Vertical plank divider lines (shadow between planks)
+  // Planks are 6px wide, 1px gap = 7px spacing, starting at x+5
+  ctx.fillStyle = rgb(palette.obstacleDark);
+  for (let px = x + 12; px < x + w - 5; px += 7) {
+    ctx.fillRect(px, y, 1, h);
   }
 
-  // LED indicators
+  // Flower dot accents (matching palette LED color, pulsing)
   for (const led of leds) {
     const ly = y + led.y * h;
     if (ly < y + 5 || ly > y + h - 5) continue;
     const lx = led.side === 0 ? x + 7 : x + w - 10;
-    const blink = Math.sin(time * 0.05 + led.blink) > 0 ? 1 : 0.3;
+    const blink = Math.sin(time * 0.05 + led.blink) > 0 ? 1 : 0.4;
     ctx.fillStyle = rgba(palette.obstacleLED, blink);
-    ctx.fillRect(lx, ly, 3, 3);
+    ctx.fillRect(lx,     ly + 1, 4, 4);
+    ctx.fillRect(lx + 1, ly,     2, 6);
   }
 }
 
 function drawObstacles(palette, time) {
   for (const obs of obstacles) {
-    const topH = obs.gapCenterY - obs.gapSize / 2;
+    const topH    = obs.gapCenterY - obs.gapSize / 2;
     const bottomY = obs.gapCenterY + obs.gapSize / 2;
     const bottomH = GROUND_Y - bottomY;
 
-    // Top obstacle (hangs from ceiling)
+    // Top fence section
     drawObstacleSection(obs.x, 0, OBSTACLE_WIDTH, topH, palette, obs.variant, obs.ledPositions, time);
-    // Bottom teeth on top obstacle
-    for (let tx = obs.x + 4; tx < obs.x + OBSTACLE_WIDTH - 4; tx += 10) {
-      ctx.fillStyle = rgb(palette.obstacleDark);
-      ctx.fillRect(tx, topH, 6, 8);
-      ctx.fillRect(tx + 1, topH + 8, 4, 4);
+    // Downward pointed pickets into the gap
+    ctx.fillStyle = rgb(palette.obstacle);
+    for (let px = obs.x + 5; px < obs.x + OBSTACLE_WIDTH - 5; px += 7) {
+      ctx.fillRect(px,     topH,     6, 4);
+      ctx.fillRect(px + 1, topH + 4, 4, 3);
+      ctx.fillRect(px + 2, topH + 7, 2, 3);
+    }
+    ctx.fillStyle = rgb(palette.obstacleLight);
+    for (let px = obs.x + 5; px < obs.x + OBSTACLE_WIDTH - 5; px += 7) {
+      ctx.fillRect(px, topH, 1, 4);
     }
 
-    // Bottom obstacle (rises from ground)
+    // Bottom fence section
     drawObstacleSection(obs.x, bottomY, OBSTACLE_WIDTH, bottomH, palette, obs.variant, obs.ledPositions, time);
-    // Top teeth on bottom obstacle
-    for (let tx = obs.x + 4; tx < obs.x + OBSTACLE_WIDTH - 4; tx += 10) {
-      ctx.fillStyle = rgb(palette.obstacleDark);
-      ctx.fillRect(tx, bottomY - 12, 6, 8);
-      ctx.fillRect(tx + 1, bottomY - 16, 4, 4);
+    // Upward pointed pickets into the gap
+    ctx.fillStyle = rgb(palette.obstacle);
+    for (let px = obs.x + 5; px < obs.x + OBSTACLE_WIDTH - 5; px += 7) {
+      ctx.fillRect(px,     bottomY - 10, 6, 4);
+      ctx.fillRect(px + 1, bottomY - 6,  4, 3);
+      ctx.fillRect(px + 2, bottomY - 3,  2, 3);
+    }
+    ctx.fillStyle = rgb(palette.obstacleLight);
+    for (let px = obs.x + 5; px < obs.x + OBSTACLE_WIDTH - 5; px += 7) {
+      ctx.fillRect(px, bottomY - 10, 1, 4);
     }
   }
 }
@@ -459,39 +481,55 @@ function drawObstacles(palette, time) {
 // ============================================================
 let bgOffset = 0;
 
+// Pre-built egg color strings — avoids per-frame string allocation
+const EGG_COLS   = ['rgb(240,148,178)', 'rgb(128,192,240)', 'rgb(252,224,72)', 'rgb(196,158,224)'];
+const EGG_STRIPE = 'rgba(255,255,255,0.65)';
+
 function drawBackground(palette, score) {
-  // Gradient background
+  // Sky gradient
   const grd = ctx.createLinearGradient(0, 0, 0, H);
   grd.addColorStop(0, rgb(palette.bg1));
   grd.addColorStop(1, rgb(palette.bg2));
   ctx.fillStyle = grd;
   ctx.fillRect(0, 0, W, H);
 
-  // Tunnel ceiling lines
-  ctx.fillStyle = rgba(palette.tunnelLine, 0.5);
-  for (let i = 0; i < 5; i++) {
-    const y = 5 + i * 3;
-    ctx.fillRect(0, y, W, 1);
+  // Scrolling clouds — y position derived from stable slot index, not pixel position
+  const cloudSpacing = 150;
+  const cloudOff = bgOffset * 0.18;
+  ctx.fillStyle = rgba(palette.tunnelLine, 0.8);
+  const startSlot = Math.floor(cloudOff / cloudSpacing) - 1;
+  for (let slot = startSlot; slot <= startSlot + Math.ceil(W / cloudSpacing) + 2; slot++) {
+    const cx = slot * cloudSpacing - cloudOff;
+    if (cx > W + 40) break;
+    const hash = Math.abs((Math.sin(slot * 127.1 + 311.7) * 43758.5453) % 1);
+    const cy = 18 + hash * 32;
+    ctx.fillRect(cx,      cy,     26, 10);
+    ctx.fillRect(cx + 8,  cy - 7, 20, 9);
+    ctx.fillRect(cx + 20, cy,     16, 10);
   }
 
-  // Background details (rocks -> circuits)
+  // Background flowers — two passes, one fillStyle each
   const t = Math.min(score / 30, 1.0);
-  ctx.fillStyle = rgba(palette.bgDetail, 0.3 + t * 0.3);
-  const detailSpacing = t < 0.5 ? 40 : 25; // Denser in cyber mode
-  for (let dx = -bgOffset % detailSpacing; dx < W; dx += detailSpacing) {
-    for (let dy = 30; dy < GROUND_Y - 10; dy += detailSpacing) {
-      const hash = (Math.sin(dx * 12.345 + dy * 67.89) * 43758.5453) % 1;
-      if (Math.abs(hash) < 0.3) {
-        if (t < 0.5) {
-          // Rocks: irregular small rects
-          const sz = 2 + Math.abs(hash) * 3;
-          ctx.fillRect(dx, dy, sz, sz * 0.7);
-        } else {
-          // Circuit: lines and dots
-          ctx.fillRect(dx, dy, 1, 5);
-          ctx.fillRect(dx, dy, 5, 1);
-          ctx.fillRect(dx + 4, dy, 2, 2);
-        }
+  const fsp = t < 0.5 ? 44 : 30;
+  const fdy = t < 0.5 ? 52 : 36;
+  // Pass 1: yellow centers
+  ctx.fillStyle = 'rgba(255,215,40,0.85)';
+  for (let dx = -bgOffset % fsp; dx < W; dx += fsp) {
+    for (let dy = 40; dy < GROUND_Y - 15; dy += fdy) {
+      const h2 = (Math.sin(dx * 12.345 + dy * 67.89) * 43758.5453) % 1;
+      if (Math.abs(h2) < 0.32) ctx.fillRect(dx + 1, dy + 1, 3, 3);
+    }
+  }
+  // Pass 2: petals (spring=pink, summer=yellow)
+  ctx.fillStyle = rgba(palette.bgDetail, 0.6);
+  for (let dx = -bgOffset % fsp; dx < W; dx += fsp) {
+    for (let dy = 40; dy < GROUND_Y - 15; dy += fdy) {
+      const h2 = (Math.sin(dx * 12.345 + dy * 67.89) * 43758.5453) % 1;
+      if (Math.abs(h2) < 0.32) {
+        ctx.fillRect(dx - 1, dy + 1, 2, 3);
+        ctx.fillRect(dx + 4, dy + 1, 2, 3);
+        ctx.fillRect(dx + 1, dy - 1, 3, 2);
+        ctx.fillRect(dx + 1, dy + 4, 3, 2);
       }
     }
   }
@@ -500,14 +538,29 @@ function drawBackground(palette, score) {
   ctx.fillStyle = rgb(palette.ground);
   ctx.fillRect(0, GROUND_Y, W, GROUND_HEIGHT);
 
-  // Ground surface detail
+  // Easter eggs sitting on the lawn
+  for (let ex = -(bgOffset % 56); ex < W; ex += 56) {
+    const h2 = Math.abs((Math.sin(ex * 7.331) * 4375.9) % 1);
+    if (h2 < 0.62) {
+      const ey = GROUND_Y - 10;
+      ctx.fillStyle = EGG_COLS[Math.floor(h2 * 4)];
+      ctx.fillRect(ex + 2, ey,     4, 2);
+      ctx.fillRect(ex + 1, ey + 2, 6, 3);
+      ctx.fillRect(ex + 1, ey + 5, 6, 2);
+      ctx.fillRect(ex + 2, ey + 7, 4, 1);
+      ctx.fillStyle = EGG_STRIPE;
+      ctx.fillRect(ex + 1, ey + 4, 6, 1);
+    }
+  }
+
+  // Grass surface
   ctx.fillStyle = rgb(palette.groundDetail);
   for (let gx = -bgOffset % 12; gx < W; gx += 12) {
-    ctx.fillRect(gx, GROUND_Y, 8, 2);
+    ctx.fillRect(gx,     GROUND_Y, 8, 2);
     ctx.fillRect(gx + 3, GROUND_Y + 4, 5, 1);
   }
 
-  // Ground bottom detail
+  // Ground dots
   ctx.fillStyle = rgba(palette.groundDetail, 0.3);
   for (let gx = -bgOffset % 20; gx < W; gx += 20) {
     ctx.fillRect(gx, GROUND_Y + 15, 3, 3);
@@ -515,38 +568,28 @@ function drawBackground(palette, score) {
 }
 
 // ============================================================
-// SECTION 8: TEXT RENDERING (Pixel font)
+// SECTION 8: TEXT RENDERING
 // ============================================================
-// Simple bitmap font approach using canvas fillText with a blocky font
 function drawText(text, x, y, size, color, align) {
   ctx.save();
   ctx.font = `bold ${size}px monospace`;
   ctx.textAlign = align || 'center';
   ctx.textBaseline = 'middle';
-
-  // Glow/shadow
   ctx.fillStyle = rgba(color, 0.3);
   ctx.fillText(text, x + 2, y + 2);
-
-  // Main text
   ctx.fillStyle = rgb(color);
   ctx.fillText(text, x, y);
   ctx.restore();
 }
 
 function drawPixelNumber(num, x, y, scale, color) {
-  // Draw score as large text
   const text = String(num);
   ctx.save();
   ctx.font = `bold ${scale}px monospace`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-
-  // Shadow
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
   ctx.fillText(text, x + 2, y + 2);
-
-  // Main
   ctx.fillStyle = rgb(color);
   ctx.fillText(text, x, y);
   ctx.restore();
@@ -557,22 +600,20 @@ function drawPixelNumber(num, x, y, scale, color) {
 // ============================================================
 let state = STATE.START;
 let score = 0;
-let bestScore = parseInt(localStorage.getItem('molt_best_score')) || 0;
+let bestScore = parseInt(localStorage.getItem('easter_best_score')) || 0;
 
-// Mole state
 let moleY = H / 2;
 let moleVY = 0;
 let moleRotation = 0;
 let moleSquash = 1.0;
 
-// Timing
 let frameCount = 0;
 let dyingTimer = 0;
 let shakeX = 0;
 let shakeY = 0;
-
-// Flap cooldown to prevent double inputs
 let flapCooldown = 0;
+let nameInput = '';
+let nameCursor = 0;
 
 function resetGame() {
   moleY = H / 2;
@@ -583,17 +624,10 @@ function resetGame() {
   obstacles = [];
   frameCount = 0;
   dyingTimer = 0;
-  shakeX = 0;
-  shakeY = 0;
+  shakeX = 0; shakeY = 0;
   flapCooldown = 0;
   bgOffset = 0;
-
-  // Clear particles
-  for (let i = 0; i < MAX_PARTICLES; i++) {
-    particles[i].active = false;
-  }
-
-  // Generate initial obstacles
+  for (let i = 0; i < MAX_PARTICLES; i++) particles[i].active = false;
   for (let i = 0; i < 3; i++) {
     obstacles.push(generateObstacle(W + 150 + i * OBSTACLE_SPACING, 0));
   }
@@ -603,37 +637,24 @@ function resetGame() {
 // SECTION 10: COLLISION DETECTION
 // ============================================================
 function checkCollision() {
-  const moleHalfW = (MOLE_W * MOLE_SIZE) / 2 - HITBOX_INSET;
-  const moleHalfH = (MOLE_H * MOLE_SIZE) / 2 - HITBOX_INSET;
+  const moleHalfW = (BUNNY_W * MOLE_SIZE) / 2 - HITBOX_INSET;
+  const moleHalfH = (BUNNY_H * MOLE_SIZE) / 2 - HITBOX_INSET;
 
-  const mLeft = MOLE_X - moleHalfW;
-  const mRight = MOLE_X + moleHalfW;
-  const mTop = moleY - moleHalfH;
-  const mBottom = moleY + moleHalfH;
+  const mLeft   = MOLE_X - moleHalfW;
+  const mRight  = MOLE_X + moleHalfW;
+  const mTop    = moleY  - moleHalfH;
+  const mBottom = moleY  + moleHalfH;
 
-  // Ground collision
   if (mBottom >= GROUND_Y) return true;
-
-  // Ceiling collision
   if (mTop <= 0) return true;
 
-  // Obstacle collision
   for (const obs of obstacles) {
-    const oLeft = obs.x;
-    const oRight = obs.x + OBSTACLE_WIDTH;
-
-    // Check horizontal overlap
-    if (mRight > oLeft && mLeft < oRight) {
-      const gapTop = obs.gapCenterY - obs.gapSize / 2;
+    if (mRight > obs.x && mLeft < obs.x + OBSTACLE_WIDTH) {
+      const gapTop    = obs.gapCenterY - obs.gapSize / 2;
       const gapBottom = obs.gapCenterY + obs.gapSize / 2;
-
-      // Check if mole is outside the gap
-      if (mTop < gapTop || mBottom > gapBottom) {
-        return true;
-      }
+      if (mTop < gapTop || mBottom > gapBottom) return true;
     }
   }
-
   return false;
 }
 
@@ -641,47 +662,50 @@ function checkCollision() {
 // SECTION 11: INPUT HANDLING
 // ============================================================
 let inputPressed = false;
-
-function onInput() {
-  inputPressed = true;
-}
+function onInput() { inputPressed = true; }
 
 document.addEventListener('keydown', (e) => {
-  if (e.code === 'Space' || e.code === 'ArrowUp') {
+  if (state === STATE.NAME_ENTRY) {
     e.preventDefault();
-    onInput();
+    if (e.key === 'Enter') {
+      addToLeaderboard(nameInput, score);
+      nameInput = '';
+      state = STATE.GAME_OVER;
+    } else if (e.key === 'Backspace') {
+      nameInput = nameInput.slice(0, -1);
+    } else if (e.key.length === 1 && nameInput.length < 10) {
+      nameInput += e.key;
+    }
+    return;
   }
+  if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); onInput(); }
 });
-
-canvas.addEventListener('mousedown', (e) => {
-  e.preventDefault();
-  onInput();
-});
-
-canvas.addEventListener('touchstart', (e) => {
-  e.preventDefault();
-  onInput();
-}, { passive: false });
+canvas.addEventListener('mousedown',  (e) => { e.preventDefault(); onInput(); });
+canvas.addEventListener('touchstart', (e) => { e.preventDefault(); onInput(); }, { passive: false });
 
 function handleInput() {
   if (!inputPressed) return;
   inputPressed = false;
 
+  if (state === STATE.NAME_ENTRY) {
+    // tap/click confirms the name
+    addToLeaderboard(nameInput, score);
+    nameInput = '';
+    state = STATE.GAME_OVER;
+    return;
+  }
   if (state === STATE.START) {
     resetGame();
     state = STATE.PLAYING;
     return;
   }
-
   if (state === STATE.PLAYING && flapCooldown <= 0) {
     moleVY = FLAP_IMPULSE;
-    moleSquash = 0.75; // Squash on flap
+    moleSquash = 0.75;
     flapCooldown = 5;
-    const palette = getPalette(score);
-    spawnFlapParticles(MOLE_X, moleY, palette);
+    spawnFlapParticles(MOLE_X, moleY, getPalette(score));
     return;
   }
-
   if (state === STATE.GAME_OVER) {
     state = STATE.START;
     return;
@@ -696,7 +720,6 @@ function update() {
   handleInput();
 
   if (state === STATE.START) {
-    // Idle bob animation
     moleY = H / 2 + Math.sin(frameCount * 0.03) * 15;
     moleRotation = Math.sin(frameCount * 0.02) * 0.05;
     updateParticles();
@@ -704,61 +727,45 @@ function update() {
   }
 
   if (state === STATE.PLAYING) {
-    // Physics
     moleVY += GRAVITY;
     if (moleVY > TERMINAL_VELOCITY) moleVY = TERMINAL_VELOCITY;
     moleY += moleVY;
 
-    // Rotation based on velocity
     const targetRotation = Math.max(-0.5, Math.min(0.8, moleVY * 0.08));
     moleRotation += (targetRotation - moleRotation) * 0.15;
-
-    // Squash recovery
     moleSquash += (1.0 - moleSquash) * 0.15;
-
-    // Flap cooldown
     if (flapCooldown > 0) flapCooldown--;
 
-    // Scroll
     const speed = getScrollSpeed(score);
     bgOffset += speed;
 
-    // Move obstacles
     for (const obs of obstacles) {
       obs.x -= speed;
-
-      // Score check
       if (!obs.scored && obs.x + OBSTACLE_WIDTH < MOLE_X) {
         obs.scored = true;
         score++;
         if (score > bestScore) {
           bestScore = score;
-          localStorage.setItem('molt_best_score', bestScore);
+          localStorage.setItem('easter_best_score', bestScore);
         }
+        if (score % 10 === 0) spawnFirework(MOLE_X, moleY);
       }
     }
 
-    // Remove off-screen obstacles
     while (obstacles.length > 0 && obstacles[0].x + OBSTACLE_WIDTH < -10) {
       obstacles.shift();
     }
 
-    // Generate new obstacles
     const lastObs = obstacles[obstacles.length - 1];
     if (!lastObs || lastObs.x < W - OBSTACLE_SPACING + OBSTACLE_WIDTH) {
-      const newX = lastObs ? lastObs.x + OBSTACLE_SPACING : W + 50;
-      obstacles.push(generateObstacle(newX, score));
+      obstacles.push(generateObstacle(lastObs ? lastObs.x + OBSTACLE_SPACING : W + 50, score));
     }
 
-    // Collision
     if (checkCollision()) {
       state = STATE.DYING;
       dyingTimer = DYING_FRAMES;
-      const palette = getPalette(score);
-      spawnDeathParticles(MOLE_X, moleY, palette);
-      // Screen shake
-      shakeX = 6;
-      shakeY = 6;
+      spawnDeathParticles(MOLE_X, moleY, getPalette(score));
+      shakeX = 6; shakeY = 6;
     }
 
     updateParticles();
@@ -766,22 +773,25 @@ function update() {
   }
 
   if (state === STATE.DYING) {
-    // Tumble animation
     moleVY += GRAVITY * 0.5;
-    moleY += moleVY * 0.3;
+    moleY  += moleVY * 0.3;
     moleRotation += 0.15;
-
-    // Screen shake decay
-    shakeX *= 0.85;
-    shakeY *= 0.85;
-
-    dyingTimer--;
-    if (dyingTimer <= 0) {
-      state = STATE.GAME_OVER;
-      shakeX = 0;
-      shakeY = 0;
+    shakeX *= 0.85; shakeY *= 0.85;
+    if (--dyingTimer <= 0) {
+      shakeX = 0; shakeY = 0;
+      if (score > 0 && qualifiesForLeaderboard(score)) {
+        nameInput = '';
+        state = STATE.NAME_ENTRY;
+      } else {
+        state = STATE.GAME_OVER;
+      }
     }
+    updateParticles();
+    return;
+  }
 
+  if (state === STATE.NAME_ENTRY) {
+    nameCursor++;
     updateParticles();
     return;
   }
@@ -799,116 +809,135 @@ function render() {
   const palette = getPalette(score);
 
   ctx.save();
-
-  // Screen shake
   if (state === STATE.DYING) {
-    ctx.translate(
-      (Math.random() - 0.5) * shakeX,
-      (Math.random() - 0.5) * shakeY
-    );
+    ctx.translate((Math.random() - 0.5) * shakeX, (Math.random() - 0.5) * shakeY);
   }
 
-  // Background
   drawBackground(palette, score);
-
-  // Obstacles
   drawObstacles(palette, frameCount);
-
-  // Particles (behind mole)
   drawParticles();
 
-  // Mole
   if (state !== STATE.GAME_OVER) {
-    drawMole(MOLE_X, moleY, moleRotation, moleSquash);
+    drawBunny(MOLE_X, moleY, moleRotation, moleSquash);
   }
 
-  ctx.restore(); // End shake transform
+  ctx.restore();
 
-  // HUD (not affected by shake)
   if (state === STATE.PLAYING) {
     drawPixelNumber(score, W / 2, 45, 36, palette.text);
   }
 
-  // Start screen overlay
+  // Start screen
   if (state === STATE.START) {
-    // Semi-transparent overlay
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillStyle = 'rgba(220, 245, 255, 0.35)';
     ctx.fillRect(0, 0, W, H);
 
-    // Title
-    drawText('MOLT THE MOLE', W / 2, 140, 32, [220, 180, 120]);
+    drawText('EASTER HOP', W / 2, 145, 36, [60, 40, 15]);
 
-    // Subtitle
-    const subtitleAlpha = 0.5 + Math.sin(frameCount * 0.05) * 0.3;
+    const sub = 0.5 + Math.sin(frameCount * 0.05) * 0.3;
     ctx.save();
-    ctx.globalAlpha = subtitleAlpha;
-    drawText('Tap or Press Space', W / 2, H - 140, 16, [200, 180, 150]);
+    ctx.globalAlpha = sub;
+    drawText('Tap or Press Space', W / 2, H - 140, 16, [80, 55, 20]);
     ctx.restore();
 
-    // Mole is already drawn by the normal render path
-
-    // Best score
     if (bestScore > 0) {
-      drawText('Best: ' + bestScore, W / 2, H - 100, 14, [180, 160, 130]);
+      drawText('Best: ' + bestScore, W / 2, H - 100, 14, [100, 65, 20]);
     }
   }
 
-  // Game over overlay
+  // Name entry
+  if (state === STATE.NAME_ENTRY) {
+    ctx.fillStyle = 'rgba(20, 10, 40, 0.75)';
+    ctx.fillRect(0, 0, W, H);
+
+    drawText('NEW HIGH SCORE!', W / 2, 130, 28, [255, 220, 60]);
+    drawPixelNumber(score, W / 2, 185, 48, [255, 255, 255]);
+
+    drawText('ENTER YOUR NAME', W / 2, 260, 15, [200, 180, 255]);
+
+    // Name input box
+    const boxW = 220, boxH = 44;
+    const boxX = (W - boxW) / 2;
+    const boxY = 280;
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeStyle = 'rgba(255,220,60,0.8)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+    const cursor = nameCursor % 60 < 30 ? '_' : ' ';
+    ctx.save();
+    ctx.font = 'bold 22px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fff';
+    ctx.fillText((nameInput + cursor).toUpperCase(), W / 2, boxY + boxH / 2);
+    ctx.restore();
+
+    drawText('ENTER to confirm', W / 2, 355, 13, [160, 150, 200]);
+  }
+
+  // Game over
   if (state === STATE.GAME_OVER) {
-    // Dark overlay
     ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
     ctx.fillRect(0, 0, W, H);
 
-    // Flavor text
-    drawText('MOLT HAS MOLTED', W / 2, 160, 26, palette.text);
-    drawText('Minor mutation applied.', W / 2, 200, 13, palette.textGlow);
+    drawText('THE BUNNY FLOPPED', W / 2, 130, 24, palette.text);
+    drawText('Back in the basket.', W / 2, 165, 13, palette.textGlow);
 
-    // Score
-    drawText('Score', W / 2, 270, 14, palette.textGlow);
-    drawPixelNumber(score, W / 2, 310, 48, palette.text);
+    drawText('Score', W / 2, 210, 14, palette.textGlow);
+    drawPixelNumber(score, W / 2, 248, 42, palette.text);
 
-    // Best score
-    drawText('Best', W / 2, 370, 14, palette.textGlow);
-    drawPixelNumber(bestScore, W / 2, 405, 36, palette.text);
+    // Leaderboard
+    const lb = loadLeaderboard();
+    if (lb.length > 0) {
+      drawText('TOP SCORES', W / 2, 300, 13, [255, 220, 60]);
+      const medals = ['#FFD700', '#C0C0C0', '#CD7F32'];
+      lb.forEach((entry, i) => {
+        const ey = 325 + i * 34;
+        ctx.save();
+        ctx.font = 'bold 16px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = medals[i] || '#aaa';
+        ctx.fillText(`${i + 1}. ${entry.name.toUpperCase()}`, W / 2 - 20, ey);
+        ctx.textAlign = 'right';
+        ctx.fillText(String(entry.score), W / 2 + 80, ey);
+        ctx.restore();
+      });
+    }
 
-    // Restart prompt
-    const restartAlpha = 0.5 + Math.sin(frameCount * 0.05) * 0.3;
+    const ra = 0.5 + Math.sin(frameCount * 0.05) * 0.3;
     ctx.save();
-    ctx.globalAlpha = restartAlpha;
-    drawText('Tap or Press Space', W / 2, H - 100, 16, palette.text);
+    ctx.globalAlpha = ra;
+    drawText('Tap or Press Space', W / 2, H - 60, 16, palette.text);
     ctx.restore();
   }
 
-  // Dying overlay (flash)
+  // Death flash
   if (state === STATE.DYING && dyingTimer > DYING_FRAMES - 5) {
-    const flashAlpha = (dyingTimer - (DYING_FRAMES - 5)) / 5 * 0.4;
-    ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+    ctx.fillStyle = `rgba(255,255,255,${(dyingTimer - (DYING_FRAMES - 5)) / 5 * 0.4})`;
     ctx.fillRect(0, 0, W, H);
   }
 }
 
 // ============================================================
-// SECTION 14: GAME LOOP (Fixed Timestep)
+// SECTION 14: GAME LOOP
 // ============================================================
 const FIXED_DT = 1000 / 60;
-let lastTime = 0;
+let lastTime   = 0;
 let accumulator = 0;
 
 function gameLoop(timestamp) {
   if (lastTime === 0) lastTime = timestamp;
   let delta = timestamp - lastTime;
   lastTime = timestamp;
-
-  // Clamp delta to prevent spiral of death
   if (delta > 200) delta = 200;
-
   accumulator += delta;
-
   while (accumulator >= FIXED_DT) {
     update();
     accumulator -= FIXED_DT;
   }
-
   render();
   requestAnimationFrame(gameLoop);
 }
@@ -916,10 +945,7 @@ function gameLoop(timestamp) {
 // ============================================================
 // SECTION 15: INITIALIZATION
 // ============================================================
-// Set initial mole position for start screen
 moleY = H / 2;
-
-// Start the game loop
 requestAnimationFrame(gameLoop);
 </script>
 </body>
