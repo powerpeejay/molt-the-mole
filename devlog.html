@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devlog — Easter Hop</title>
+<meta name="description" content="Development log for Easter Hop — a browser-based spring runner game. Read about the design decisions, pixel art process, and feature updates.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --spring-sky:    #d0eef8;
+    --spring-green:  #4a8c30;
+    --spring-dark:   #1e3d14;
+    --blossom-pink:  #f48fb1;
+    --egg-yellow:    #fff176;
+    --text-primary:  #33691e;
+    --text-muted:    #558b2f;
+    --font-display:  'Silkscreen', cursive;
+    --font-body:     'IBM Plex Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; background: var(--spring-sky); }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--spring-sky);
+    line-height: 1.8;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(208, 238, 248, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(74, 140, 48, 0.2);
+    padding: 0 24px;
+  }
+  nav .nav-inner {
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  nav .logo {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--spring-dark);
+    text-decoration: none;
+  }
+  nav .nav-links { list-style: none; display: flex; gap: 24px; }
+  nav .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 13px; }
+  nav .nav-links a:hover { color: var(--spring-dark); }
+
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 96px 24px 80px;
+  }
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 5vw, 36px);
+    color: var(--spring-dark);
+    margin-bottom: 8px;
+  }
+  .page-subtitle {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 56px;
+  }
+
+  .entry {
+    border-left: 3px solid var(--blossom-pink);
+    padding: 0 0 48px 28px;
+    position: relative;
+  }
+  .entry + .entry {
+    border-left: 3px solid var(--blossom-pink);
+  }
+  .entry::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 6px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--blossom-pink);
+  }
+
+  .entry-date {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+  .entry-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--spring-dark);
+    margin-bottom: 14px;
+  }
+  .entry p { font-size: 14px; margin-bottom: 12px; }
+  .entry p:last-child { margin-bottom: 0; }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-right: 6px;
+    margin-bottom: 10px;
+    background: rgba(74, 140, 48, 0.12);
+    color: var(--spring-green);
+  }
+
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(74, 140, 48, 0.15);
+  }
+  footer a { color: var(--text-muted); text-decoration: none; margin: 0 8px; }
+  footer a:hover { color: var(--spring-dark); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">HOP</a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#howto">How to Play</a></li>
+      <li><a href="devlog.html" style="color: var(--spring-dark);">Devlog</a></li>
+      <li><a href="play.html" style="color: var(--spring-green);">Play</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <h1 class="page-title">Devlog</h1>
+  <p class="page-subtitle">Notes on building Easter Hop — a browser game made entirely in vanilla HTML5 Canvas.</p>
+
+  <!-- ENTRY 4 -->
+  <article class="entry">
+    <p class="entry-date">March 2026</p>
+    <h2 class="entry-title">#4 — Mobile Polish &amp; Global Leaderboard</h2>
+    <span class="tag">feature</span><span class="tag">mobile</span><span class="tag">backend</span>
+    <p>The local high score was fine for solo play but felt lonely. I added a global top-3 leaderboard backed by Supabase — a Postgres database with a simple REST API. No backend server required; the game posts scores directly from the browser using <code>fetch()</code>.</p>
+    <p>When a score qualifies for the top 3, the game transitions to a name-entry screen. Getting the keyboard to pop up on iOS was the trickiest part: canvas elements can't receive focus, so I added an off-screen <code>&lt;input&gt;</code> element that gets programmatically focused. Android triggers the keyboard automatically on focus; iOS Safari requires the focus call to originate from a touch event, so I hooked it into the <code>touchstart</code> listener.</p>
+    <p>Also fixed a longstanding visual bug where Easter eggs and clouds appeared to jump up and down. The root cause was computing their vertical position from the current pixel offset, which changed every frame. Switching to a slot-index-based hash — where each cloud or egg derives its position from a stable integer ID — made them scroll smoothly.</p>
+  </article>
+
+  <!-- ENTRY 3 -->
+  <article class="entry">
+    <p class="entry-date">March 2026</p>
+    <h2 class="entry-title">#3 — Fireworks, Fences &amp; Lawn Decorations</h2>
+    <span class="tag">gameplay</span><span class="tag">visual</span>
+    <p>Three visual improvements this sprint. First, the brown wall-style obstacles got replaced with proper white picket fences — posts, horizontal rails, vertical planks, and pointed picket tips that extend into the gap from both sides. The fence body is off-white with a subtle shadow rail and a highlight strip on the leading edge of each post.</p>
+    <p>Second, Easter eggs now sit on the lawn and scroll past with the ground. They're tiny 8×10 pixel ovals in four color variants (pink, blue, yellow, lavender) with a white horizontal stripe. Combined with the scattered background flowers, the world feels genuinely inhabited.</p>
+    <p>Third: every 10 fences cleared triggers a small firework burst. 28 particles fan out from the bunny in all directions using Easter egg colors, with a slight upward bias and individual fade-out. It reuses the existing particle pool with no new data structures.</p>
+  </article>
+
+  <!-- ENTRY 2 -->
+  <article class="entry">
+    <p class="entry-date">March 2026</p>
+    <h2 class="entry-title">#2 — Easter Hop: The Rebrand</h2>
+    <span class="tag">design</span><span class="tag">art</span>
+    <p>With Easter approaching I decided to transform the game's entire visual identity. The copper robot mole became a cream-white Easter bunny, drawn in the same 17×14 pixel grid. The bunny has pink ear interiors, a rose nose, dark eye pupils, blush cheeks, and shadowed paws — all defined by a colour key lookup table so no image assets are needed.</p>
+    <p>The underground cyber-cave aesthetic gave way to a spring meadow that transitions to golden summer as your score climbs. Two palette objects (SPRING and SUMMER) define sky, ground, obstacle, and particle colours; every frame lerps between them based on score. At score 30 the transformation is complete — the sky deepens to summer blue, ground turns rich green, and flower petals shift from pink blossoms to sunflower yellow.</p>
+    <p>Obstacles changed from server racks to wooden garden fences. The background gained scrolling clouds (three overlapping rectangles per cloud, parallax at 0.18× game speed), scattered pixel flowers in a two-pass render (centers first, then petals, to minimise canvas state changes), and a simple sky gradient.</p>
+  </article>
+
+  <!-- ENTRY 1 -->
+  <article class="entry">
+    <p class="entry-date">February 2026</p>
+    <h2 class="entry-title">#1 — Building the Core: Molt the Mole</h2>
+    <span class="tag">architecture</span><span class="tag">gameplay</span>
+    <p>Easter Hop started life as "Molt the Mole" — a Flappy Bird-style runner with a copper robot mole navigating server racks in an underground tunnel. The entire game runs in a single HTML file with no dependencies, no build step, and no external assets. Everything — sprite, physics, particles, UI — is rendered on an HTML5 Canvas element using the 2D API.</p>
+    <p>The game loop uses a fixed-timestep accumulator pattern: wall-clock delta time is accumulated and consumed in 16.67 ms (60 Hz) chunks. This decouples update logic from render rate and prevents the simulation from running at different speeds on different devices.</p>
+    <p>The player character is a 17×14 pixel sprite defined as an array of character strings, each character mapping to an RGB colour. At render time the sprite is drawn as a grid of filled rectangles scaled by <code>MOLE_SIZE = 3</code>. Canvas <code>save()</code> / <code>restore()</code> handle the rotation and squash-stretch applied on flap. Physics are simple: constant gravity accumulates into a vertical velocity clamped at terminal velocity; a flap applies an upward impulse.</p>
+    <p>Obstacle gaps shrink and scroll speed increases with score, creating a smooth difficulty ramp without abrupt jumps. A particle pool of 80 pre-allocated objects handles both flap dust and the death burst — avoiding mid-game garbage collection pauses by never allocating new objects during play.</p>
+  </article>
+
+</main>
+
+<footer>
+  <p>&copy; 2026 Easter Hop &mdash; Peter Jacob</p>
+  <a href="index.html">Home</a>
+  <a href="play.html">Play</a>
+  <a href="index.html#privacy">Privacy</a>
+  <a href="index.html#impressum">Impressum</a>
+</footer>
+
+</body>
+</html>
