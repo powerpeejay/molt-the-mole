@@ -63,6 +63,8 @@
 </style>
 </head>
 <body>
+<input id="name-input" type="text" maxlength="10" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+  style="position:fixed;left:-9999px;top:50%;width:1px;height:1px;opacity:0;font-size:16px;border:none;outline:none;background:transparent;">
 <div id="game-container">
   <canvas id="game"></canvas>
   <div id="ad-container">
@@ -557,12 +559,16 @@ function drawBackground(palette, score) {
   ctx.fillStyle = rgb(palette.ground);
   ctx.fillRect(0, GROUND_Y, W, GROUND_HEIGHT);
 
-  // Easter eggs sitting on the lawn
-  for (let ex = -(bgOffset % 56); ex < W; ex += 56) {
-    const h2 = Math.abs((Math.sin(ex * 7.331) * 4375.9) % 1);
-    if (h2 < 0.62) {
+  // Easter eggs sitting on the lawn — slot-based so they don't jump
+  const eggSpacing = 56;
+  const eggStart = Math.floor(bgOffset / eggSpacing) - 1;
+  for (let slot = eggStart; slot <= eggStart + Math.ceil(W / eggSpacing) + 2; slot++) {
+    const ex = slot * eggSpacing - bgOffset;
+    if (ex > W + 20) break;
+    const hash = Math.abs((Math.sin(slot * 73.156 + 19.3) * 43758.5453) % 1);
+    if (hash < 0.62) {
       const ey = GROUND_Y - 10;
-      ctx.fillStyle = EGG_COLS[Math.floor(h2 * 4)];
+      ctx.fillStyle = EGG_COLS[Math.floor(hash * 4)];
       ctx.fillRect(ex + 2, ey,     4, 2);
       ctx.fillRect(ex + 1, ey + 2, 6, 3);
       ctx.fillRect(ex + 1, ey + 5, 6, 2);
@@ -683,34 +689,60 @@ function checkCollision() {
 let inputPressed = false;
 function onInput() { inputPressed = true; }
 
+const nameInputEl = document.getElementById('name-input');
+
+// Sync typed characters from the native input element → nameInput
+nameInputEl.addEventListener('input', () => {
+  nameInput = nameInputEl.value.toUpperCase().slice(0, 10);
+  nameInputEl.value = nameInput;
+});
+nameInputEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    if (nameInput.includes('96')) {
+      alert('Liebe Bittners, das ist in diesem Spiel eine verbotene Zahl :-)');
+      return;
+    }
+    submitScore(nameInput, score);
+    nameInput = '';
+    nameInputEl.value = '';
+    nameInputEl.blur();
+    state = STATE.GAME_OVER;
+  }
+});
+
 document.addEventListener('keydown', (e) => {
   if (state === STATE.NAME_ENTRY) {
-    e.preventDefault();
     if (e.key === 'Enter') {
+      e.preventDefault();
+      if (nameInput.includes('96')) {
+        alert('Liebe Bittners, das ist in diesem Spiel eine verbotene Zahl :-)');
+        return;
+      }
       submitScore(nameInput, score);
       nameInput = '';
+      nameInputEl.value = '';
+      nameInputEl.blur();
       state = STATE.GAME_OVER;
-    } else if (e.key === 'Backspace') {
-      nameInput = nameInput.slice(0, -1);
-    } else if (e.key.length === 1 && nameInput.length < 10) {
-      nameInput += e.key;
     }
+    // All other keys handled natively by nameInputEl
     return;
   }
   if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); onInput(); }
 });
-canvas.addEventListener('mousedown',  (e) => { e.preventDefault(); onInput(); });
-canvas.addEventListener('touchstart', (e) => { e.preventDefault(); onInput(); }, { passive: false });
+canvas.addEventListener('mousedown', (e) => { e.preventDefault(); onInput(); });
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  if (state === STATE.NAME_ENTRY) { nameInputEl.focus(); return; }
+  onInput();
+}, { passive: false });
 
 function handleInput() {
   if (!inputPressed) return;
   inputPressed = false;
 
   if (state === STATE.NAME_ENTRY) {
-    submitScore(nameInput, score);
-    nameInput = '';
-    state = STATE.GAME_OVER;
-    return;
+    return; // handled by nameInputEl + keydown
   }
   if (state === STATE.START) {
     resetGame();
@@ -799,7 +831,9 @@ function update() {
       shakeX = 0; shakeY = 0;
       if (score > 0 && qualifiesForLeaderboard(score)) {
         nameInput = '';
+        nameInputEl.value = '';
         state = STATE.NAME_ENTRY;
+        nameInputEl.focus();
       } else {
         state = STATE.GAME_OVER;
       }
