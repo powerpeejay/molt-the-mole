@@ -348,25 +348,44 @@ function drawParticles() {
 }
 
 // ============================================================
-// SECTION 5b: LEADERBOARD
+// SECTION 5b: LEADERBOARD (Supabase + localStorage cache)
 // ============================================================
-function loadLeaderboard() {
-  try { return JSON.parse(localStorage.getItem('easter_leaderboard')) || []; }
-  catch { return []; }
+const SB_URL = 'https://lhciizninqhcisffoybb.supabase.co';
+const SB_KEY = 'sb_publishable_YXoWLTIJPnUYIWGxB9JGxg_whokIhvi';
+const SB_HEADERS = { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+
+let cachedLeaderboard = [];
+try { cachedLeaderboard = JSON.parse(localStorage.getItem('easter_lb_cache')) || []; } catch {}
+
+async function fetchLeaderboard() {
+  try {
+    const res = await fetch(
+      SB_URL + '/rest/v1/scores?select=name,score&order=score.desc&limit=3',
+      { headers: SB_HEADERS }
+    );
+    if (res.ok) {
+      cachedLeaderboard = await res.json();
+      localStorage.setItem('easter_lb_cache', JSON.stringify(cachedLeaderboard));
+    }
+  } catch {}
 }
-function saveLeaderboard(lb) {
-  localStorage.setItem('easter_leaderboard', JSON.stringify(lb));
+
+async function submitScore(name, s) {
+  const cleanName = name.trim().toUpperCase().slice(0, 10) || 'BUNNY';
+  try {
+    await fetch(SB_URL + '/rest/v1/scores', {
+      method: 'POST',
+      headers: { ...SB_HEADERS, Prefer: 'return=minimal' },
+      body: JSON.stringify({ name: cleanName, score: s }),
+    });
+  } catch {}
+  await fetchLeaderboard();
 }
+
+function loadLeaderboard() { return cachedLeaderboard; }
+
 function qualifiesForLeaderboard(s) {
-  const lb = loadLeaderboard();
-  return lb.length < 3 || s > lb[lb.length - 1].score;
-}
-function addToLeaderboard(name, s) {
-  const lb = loadLeaderboard();
-  lb.push({ name: name.trim().toUpperCase().slice(0, 10) || 'BUNNY', score: s });
-  lb.sort((a, b) => b.score - a.score);
-  lb.splice(3);
-  saveLeaderboard(lb);
+  return cachedLeaderboard.length < 3 || s > cachedLeaderboard[cachedLeaderboard.length - 1].score;
 }
 
 // ============================================================
@@ -668,7 +687,7 @@ document.addEventListener('keydown', (e) => {
   if (state === STATE.NAME_ENTRY) {
     e.preventDefault();
     if (e.key === 'Enter') {
-      addToLeaderboard(nameInput, score);
+      submitScore(nameInput, score);
       nameInput = '';
       state = STATE.GAME_OVER;
     } else if (e.key === 'Backspace') {
@@ -688,8 +707,7 @@ function handleInput() {
   inputPressed = false;
 
   if (state === STATE.NAME_ENTRY) {
-    // tap/click confirms the name
-    addToLeaderboard(nameInput, score);
+    submitScore(nameInput, score);
     nameInput = '';
     state = STATE.GAME_OVER;
     return;
@@ -946,6 +964,7 @@ function gameLoop(timestamp) {
 // SECTION 15: INITIALIZATION
 // ============================================================
 moleY = H / 2;
+fetchLeaderboard();
 requestAnimationFrame(gameLoop);
 </script>
 </body>
