@@ -140,6 +140,31 @@ const DYING_FRAMES = 45;
 const STATE = { START: 0, PLAYING: 1, DYING: 2, GAME_OVER: 3, NAME_ENTRY: 4 };
 
 // ============================================================
+// SECTION 2b: AUDIO
+// ============================================================
+const bgMusic = new Audio('./assets/song.mp4');
+bgMusic.loop = true;
+bgMusic.volume = 0.4;
+let musicOn = true;
+let musicStarted = false;
+
+function toggleMusic() {
+  musicOn = !musicOn;
+  if (musicOn && musicStarted) bgMusic.play().catch(() => {});
+  else bgMusic.pause();
+}
+function startMusicIfNeeded() {
+  if (!musicStarted && musicOn) {
+    bgMusic.play().catch(() => {});
+    musicStarted = true;
+  }
+}
+
+function isMusicToggle(cx, cy) {
+  return cx >= W - 36 && cx <= W - 8 && cy >= 8 && cy <= 30;
+}
+
+// ============================================================
 // SECTION 3: COLOR PALETTE SYSTEM
 // ============================================================
 const SPRING = {
@@ -735,9 +760,21 @@ document.addEventListener('keydown', (e) => {
   }
   if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); onInput(); }
 });
-canvas.addEventListener('mousedown', (e) => { e.preventDefault(); onInput(); });
+canvas.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const cx = (e.clientX - rect.left) * (W / rect.width);
+  const cy = (e.clientY - rect.top) * (H / rect.height);
+  if (isMusicToggle(cx, cy)) { toggleMusic(); return; }
+  onInput();
+});
 canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
+  const t = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  const cx = (t.clientX - rect.left) * (W / rect.width);
+  const cy = (t.clientY - rect.top) * (H / rect.height);
+  if (isMusicToggle(cx, cy)) { toggleMusic(); return; }
   if (state === STATE.NAME_ENTRY) { nameInputEl.focus(); return; }
   onInput();
 }, { passive: false });
@@ -752,6 +789,7 @@ function handleInput() {
   if (state === STATE.START) {
     resetGame();
     state = STATE.PLAYING;
+    startMusicIfNeeded();
     return;
   }
   if (state === STATE.PLAYING && flapCooldown <= 0) {
@@ -857,6 +895,18 @@ function update() {
     updateParticles();
     return;
   }
+}
+
+function drawMusicToggle() {
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.fillRect(W - 36, 8, 28, 22);
+  ctx.font = '14px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = musicOn ? 'rgba(255,255,255,0.9)' : 'rgba(255,100,100,0.85)';
+  ctx.fillText(musicOn ? '♪' : '✕', W - 22, 19);
+  ctx.restore();
 }
 
 // ============================================================
@@ -976,6 +1026,8 @@ function render() {
     ctx.fillStyle = `rgba(255,255,255,${(dyingTimer - (DYING_FRAMES - 5)) / 5 * 0.4})`;
     ctx.fillRect(0, 0, W, H);
   }
+
+  drawMusicToggle();
 }
 
 // ============================================================
