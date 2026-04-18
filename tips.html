@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tips &amp; Strategy — Easter Hop</title>
+<meta name="description" content="Practical tips for getting a high score in Easter Hop. Learn the core rhythm, how to read gaps, survive the difficulty ramp, and reach the summer palette.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --spring-sky:    #d0eef8;
+    --spring-green:  #4a8c30;
+    --spring-dark:   #1e3d14;
+    --blossom-pink:  #f48fb1;
+    --text-primary:  #33691e;
+    --text-muted:    #558b2f;
+    --font-display:  'Silkscreen', cursive;
+    --font-body:     'IBM Plex Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; background: var(--spring-sky); }
+  body {
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--spring-sky);
+    line-height: 1.8;
+  }
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(208, 238, 248, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(74, 140, 48, 0.2);
+    padding: 0 24px;
+  }
+  nav .nav-inner {
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  nav .logo { font-family: var(--font-display); font-size: 16px; color: var(--spring-dark); text-decoration: none; }
+  nav .nav-links { list-style: none; display: flex; gap: 24px; }
+  nav .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 13px; }
+  nav .nav-links a:hover { color: var(--spring-dark); }
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 96px 24px 80px;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 5vw, 36px);
+    color: var(--spring-dark);
+    margin-bottom: 8px;
+  }
+  .page-subtitle {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 48px;
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--spring-dark);
+    margin: 40px 0 12px;
+  }
+  p { font-size: 14px; margin-bottom: 14px; color: var(--text-primary); }
+  .tip-number {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 10px;
+    color: #fff;
+    background: var(--spring-green);
+    padding: 2px 8px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .callout {
+    background: rgba(232, 245, 233, 0.7);
+    border-left: 3px solid var(--blossom-pink);
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-size: 14px;
+  }
+  .callout strong {
+    font-family: var(--font-display);
+    font-size: 11px;
+    display: block;
+    margin-bottom: 6px;
+    color: var(--spring-dark);
+  }
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(74, 140, 48, 0.15);
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  footer a { color: var(--text-muted); text-decoration: none; margin: 0 8px; }
+  footer a:hover { color: var(--spring-dark); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">HOP</a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="about.html">Dev</a></li>
+      <li><a href="tips.html" style="color: var(--spring-dark);">Tips</a></li>
+      <li><a href="devlog.html">Devlog</a></li>
+      <li><a href="play.html" style="color: var(--spring-green);">Play</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <h1 class="page-title">Tips &amp; Strategy</h1>
+  <p class="page-subtitle">Honest advice from the person who built the game and still dies before score 10 sometimes.</p>
+
+  <h2><span class="tip-number">01</span> Learn the rhythm, not the tap</h2>
+  <p>The biggest mistake new players make is treating Easter Hop like a reflex game — tapping rapidly to keep the bunny airborne. That works for about three fences before you overshoot into the top post and it's over. The physics aren't designed for spam-tapping. Each flap applies a fixed upward impulse, and gravity is always pulling down at a constant rate. If you tap twice in quick succession, the bunny shoots up fast and you lose control of the descent.</p>
+  <p>What actually works: let the bunny drop a bit, then give one deliberate tap to arrest the fall and start a new arc. You're not fighting gravity — you're working with it in pulses. Once that rhythm clicks, everything else gets easier.</p>
+
+  <h2><span class="tip-number">02</span> Focus on the gap, not the fence</h2>
+  <p>When a fence is approaching, your eyes naturally lock onto the obstacle — the thing that'll kill you. This is the wrong place to look. Fix your gaze on the center of the gap instead. Your brain will naturally guide your taps toward where you're looking. It sounds almost too simple, but players who consciously shift their focus from "avoid the fence" to "aim for the gap" usually improve their scores within a few runs.</p>
+
+  <div class="callout">
+    <strong>Quick tip</strong>
+    Try to keep the bunny in the upper third of each gap as you enter it. The pointed picket tips at the bottom are easy to clip if you come in low.
+  </div>
+
+  <h2><span class="tip-number">03</span> Understand the difficulty ramp</h2>
+  <p>Easter Hop doesn't suddenly get hard — it gets hard gradually and continuously. The gap between fence pairs starts at 150 pixels and shrinks by a small amount each point, down to a minimum of 100 pixels. The scroll speed also increases slightly with every fence you clear. Neither change is dramatic on its own, but by score 20 the combination is noticeably more demanding than the first few seconds.</p>
+  <p>Score 10–15 is where most runs end. This is the zone where the gap is meaningfully smaller than it was at the start, and the fences are coming faster. If you can survive through score 15 with your rhythm intact, you have a real shot at a good run.</p>
+
+  <h2><span class="tip-number">04</span> Use the season change as a checkpoint</h2>
+  <p>At score 10, the world starts shifting from spring to summer — sky blue deepens, greens saturate, pink blossoms give way to golden pollen in the particle effects. The transition completes fully at score 30. I added this progression as a visual reward for playing well, but it also works as a useful mental checkpoint. Reaching the summer palette (score 30) is a concrete goal that's harder than it sounds. If you're aiming for a personal best, "reach summer" is a better target than chasing a raw score number.</p>
+
+  <h2><span class="tip-number">05</span> Common mistakes</h2>
+  <p><strong>Flinching after a near-miss.</strong> You squeak through a gap with barely a pixel to spare and your hands tighten up. The next tap is either too hard or too soft. Take a breath — the game's physics haven't changed, only your state of mind has.</p>
+  <p><strong>Looking at the score.</strong> Your current score displays at the top of the screen. Glancing at it mid-run is tempting and almost always costs you a fence. Check it on the game-over screen instead.</p>
+  <p><strong>Playing immediately after a bad run.</strong> If you just died frustratingly, hammering the restart button and diving straight back in rarely goes well. One second to reset is worth it.</p>
+
+  <h2><span class="tip-number">06</span> Mobile vs desktop</h2>
+  <p>The game is fully playable on both, but there are real differences. On desktop with a spacebar, your tap timing is very precise — there's almost no latency between intent and action. On mobile with touch, there's a tiny amount of additional lag (screen refresh and touch event processing), and the physical act of tapping a glass surface gives you slightly less fine-grained control over impulse timing.</p>
+  <p>Neither is "better" — some people genuinely score higher on mobile. But if you're switching between the two, give yourself a few warm-up runs to adjust.</p>
+
+  <h2><span class="tip-number">07</span> Challenge runs</h2>
+  <p>Once you've got the basics down, self-imposed challenges keep things interesting. A few I find fun: reach score 30 (full summer) without dying once. Clear 10 consecutive fences without tapping more than once per gap. Play exclusively on mobile touch for a week. None of these change the game, but they sharpen specific aspects of your control.</p>
+  <p>Good luck out there. The bunny believes in you.</p>
+</main>
+
+<footer>
+  <p>&copy; 2026 Easter Hop</p>
+  <a href="index.html">Home</a>
+  <a href="play.html">Play</a>
+  <a href="about.html">About</a>
+  <a href="tech.html">How It Works</a>
+  <a href="blog-browser-games.html">Blog</a>
+  <a href="devlog.html">Devlog</a>
+  <a href="index.html#privacy">Privacy</a>
+  <a href="index.html#impressum">Impressum</a>
+</footer>
+
+</body>
+</html>
