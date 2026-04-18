@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why I Make Browser Games — Easter Hop</title>
+<meta name="description" content="A personal essay on why browser games — playable instantly, no install, no account — are worth making in 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --spring-sky:    #d0eef8;
+    --spring-green:  #4a8c30;
+    --spring-dark:   #1e3d14;
+    --blossom-pink:  #f48fb1;
+    --text-primary:  #33691e;
+    --text-muted:    #558b2f;
+    --font-display:  'Silkscreen', cursive;
+    --font-body:     'IBM Plex Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; background: var(--spring-sky); }
+  body {
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--spring-sky);
+    line-height: 1.8;
+  }
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(208, 238, 248, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(74, 140, 48, 0.2);
+    padding: 0 24px;
+  }
+  nav .nav-inner {
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  nav .logo { font-family: var(--font-display); font-size: 16px; color: var(--spring-dark); text-decoration: none; }
+  nav .nav-links { list-style: none; display: flex; gap: 24px; }
+  nav .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 13px; }
+  nav .nav-links a:hover { color: var(--spring-dark); }
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 96px 24px 80px;
+  }
+  .post-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 48px;
+    letter-spacing: 0.05em;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 4vw, 30px);
+    color: var(--spring-dark);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--spring-dark);
+    margin: 40px 0 12px;
+  }
+  p { font-size: 14px; margin-bottom: 14px; color: var(--text-primary); }
+  blockquote {
+    border-left: 3px solid var(--blossom-pink);
+    padding: 12px 20px;
+    margin: 24px 0;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(74, 140, 48, 0.15);
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  footer a { color: var(--text-muted); text-decoration: none; margin: 0 8px; }
+  footer a:hover { color: var(--spring-dark); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">HOP</a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="about.html">Dev</a></li>
+      <li><a href="tips.html">Tips</a></li>
+      <li><a href="devlog.html">Devlog</a></li>
+      <li><a href="play.html" style="color: var(--spring-green);">Play</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <h1 class="page-title">Why I Make Browser Games</h1>
+  <p class="post-meta">April 2026 &mdash; a personal essay</p>
+
+  <p>Someone asked me recently why I make browser games instead of publishing on Steam, or itch.io, or building a mobile app. The question surprised me because to me the answer is obvious, but when I tried to articulate it I realized it was less obvious than I thought. So here's my attempt at an answer.</p>
+
+  <h2>The frictionless thing</h2>
+  <p>A browser game has a property that no other distribution platform has: zero friction. Not low friction — zero. You send someone a link. They click it. They're playing. No app store, no install prompt, no account creation, no loading screen with a progress bar that stops at 97%. The game is just there, immediately, in a tab they already know how to use.</p>
+  <p>This sounds trivial until you watch someone try to share a mobile game with a family member. "It's on the App Store, search for..." The moment the friction appears, half the potential players are gone. With a browser game, you put the link in a WhatsApp message and that's it. The barrier is one tap.</p>
+  <p>I think about this frictionlessness a lot because I make games for people who are not gamers. My parents, for instance. My parents will never install an app to play a game I made. But they will click a link. That matters to me.</p>
+
+  <h2>The constraint is the point</h2>
+  <p>I have a rule: no dependencies, no build tools, no bundlers. The game must work as a single HTML file (or a small handful of files). No npm, no webpack, no TypeScript compiler, no deployment pipeline. Open the file. Done.</p>
+  <p>People sometimes hear this and think it's a limitation I'm tolerating. It's the opposite — it's a creative choice I actively want. Constraints force clarity. When you can't reach for a library, you write simpler code. When there's no build step, there's nothing to configure or break. When the whole thing fits in one file, you can actually hold it in your head.</p>
+
+  <blockquote>The best code I've ever written has been under the most constraints.</blockquote>
+
+  <p>Easter Hop's particle system is about 40 lines. The physics engine is six constants and three lines of math per step. I'm genuinely proud of how small these systems are, in a way I'm not proud of much larger codebases I've worked on professionally. Small, complete, understood — that's the feeling I'm going for.</p>
+
+  <h2>Making something finished</h2>
+  <p>Most side projects don't get finished. They get started, reach maybe 30% completion, and then get abandoned when something else demands attention. I've been guilty of this for most of my adult life — there's a graveyard of unfinished things on various hard drives.</p>
+  <p>Browser games are the format where I actually finish things. The scope is naturally bounded. You don't need a level editor, a tutorial system, a save system with cloud sync, a settings menu, an accessibility audit. You need the core loop to be fun and the basic experience to work. You can ship something complete in a weekend.</p>
+  <p>That feeling of completing something — a thing that works, a thing someone else can use right now, a thing that didn't exist three days ago — is what keeps me coming back. It's not about audience size or revenue. It's about the finished-thing feeling. I don't get that from work projects very often. I get it from these.</p>
+
+  <h2>The web is still good</h2>
+  <p>There's a school of thought that says the open web is dying — walled gardens, app stores, platform lock-in, everything moving toward native apps or locked-down ecosystems. I find this view genuinely sad, and I also think it's somewhat wrong. The web is still there. HTML still works. Canvas still renders at 60fps. A page I put on GitHub Pages today will be accessible to anyone with a browser for the foreseeable future, with no platform owner able to remove it, delist it, or change the revenue terms.</p>
+  <p>Making browser games is, in a small way, a vote for that version of the internet. One where you can put a thing on a URL and anyone can reach it. It's not going to change anything at scale. But I'd rather spend my hobby time building for the open web than for a platform that can pull the rug whenever it wants.</p>
+  <p>That's why I make browser games. Small, finished, frictionless, free, and mine.</p>
+</main>
+
+<footer>
+  <p>&copy; 2026 Easter Hop</p>
+  <a href="index.html">Home</a>
+  <a href="play.html">Play</a>
+  <a href="about.html">About</a>
+  <a href="tips.html">Tips</a>
+  <a href="tech.html">How It Works</a>
+  <a href="devlog.html">Devlog</a>
+  <a href="index.html#privacy">Privacy</a>
+  <a href="index.html#impressum">Impressum</a>
+</footer>
+
+</body>
+</html>
