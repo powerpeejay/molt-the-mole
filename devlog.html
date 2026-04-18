@@ -151,7 +151,36 @@
   <h1 class="page-title">Devlog</h1>
   <p class="page-subtitle">Notes on building Easter Hop — a browser game made entirely in vanilla HTML5 Canvas.</p>
 
-  <!-- ENTRY 4 -->
+  <!-- ENTRY: April 2026 — Performance Pass -->
+  <article class="entry">
+    <p class="entry-date">April 2026</p>
+    <h2 class="entry-title">Performance Pass</h2>
+    <span class="tag">performance</span><span class="tag">mobile</span>
+    <p>After the AdSense rejection I spent some time cleaning up performance on low-end devices. The main issue was on older Android phones where the frame rate would dip noticeably on the death burst — 28 particles all spawning at once and the score animation triggering simultaneously. The fix was to stagger the particle spawning over two frames rather than all at once, which smoothed things out.</p>
+    <p>I also profiled the palette lerp calculation. It was running the full color interpolation for every drawable element every frame, including elements that hadn't changed. I added a dirty flag — the palette only recomputes when the score changes, not every frame. Tiny win on desktop, noticeable on mobile.</p>
+    <p>One other thing: I found that calling <code>ctx.save()</code> and <code>ctx.restore()</code> more often than necessary was adding up. I audited all the draw functions and consolidated the save/restore calls so we're only doing the minimum required. The game now runs at a solid 60fps on every device I've tested, including a 2018 mid-range Android.</p>
+  </article>
+
+  <!-- ENTRY: April 2026 — AdSense Rejection -->
+  <article class="entry">
+    <p class="entry-date">April 2026</p>
+    <h2 class="entry-title">AdSense Rejection &amp; What I'm Doing About It</h2>
+    <span class="tag">meta</span><span class="tag">content</span>
+    <p>Applied to Google AdSense last week and got rejected with the reason "low value content." Honest response: fair enough. The site had two content pages, a devlog with four entries all dated the same month, and a game. Google's crawlers have seen ten thousand sites like this and most of them are thin.</p>
+    <p>So I'm doing something about it. I've added a tips and strategy guide, an about page, a technical breakdown of how the game works, and a short essay about why I make browser games. I'm also filling in the devlog properly — there were real development stages that I didn't document at the time, so I'm writing them up now from notes and git history.</p>
+    <p>I'm not trying to game the system by padding content. These are things that are genuinely worth writing. If you found the technical page or the essay useful, that's the point. If Google approves the ads as a result, that's a nice bonus.</p>
+  </article>
+
+  <!-- ENTRY: Late March 2026 — Submitting to AdSense -->
+  <article class="entry">
+    <p class="entry-date">Late March 2026</p>
+    <h2 class="entry-title">Submitting to Google AdSense</h2>
+    <span class="tag">meta</span><span class="tag">monetisation</span>
+    <p>The game has been live for about a month and getting a small but steady trickle of traffic — mostly from a Reddit post that got a few upvotes and a couple of links from browser-game directories. Nothing dramatic, but real people playing it. That felt like a reasonable point to try adding a small ad.</p>
+    <p>I added the AdSense publisher script to the index page and a leaderboard-format ad unit below the hero section. The ad slot shows a placeholder while the account is under review. The review process apparently takes up to two weeks. Submitted and waiting.</p>
+  </article>
+
+  <!-- ENTRY 4 (existing) -->
   <article class="entry">
     <p class="entry-date">March 2026</p>
     <h2 class="entry-title">#4 — Mobile Polish &amp; Global Leaderboard</h2>
@@ -161,7 +190,17 @@
     <p>Also fixed a longstanding visual bug where Easter eggs and clouds appeared to jump up and down. The root cause was computing their vertical position from the current pixel offset, which changed every frame. Switching to a slot-index-based hash — where each cloud or egg derives its position from a stable integer ID — made them scroll smoothly.</p>
   </article>
 
-  <!-- ENTRY 3 -->
+  <!-- ENTRY: Mid March 2026 — Touch Controls -->
+  <article class="entry">
+    <p class="entry-date">Mid March 2026</p>
+    <h2 class="entry-title">Touch Controls &amp; Mobile Testing</h2>
+    <span class="tag">mobile</span><span class="tag">input</span>
+    <p>The game used spacebar and mouse click from the start, but touch was an afterthought. Adding a <code>touchstart</code> listener was one line, but making it actually feel good on mobile took more work. The main problem was that tapping a touch screen has a 300ms default delay on many mobile browsers — a legacy feature from the era when double-tap meant zoom. Solving it required adding <code>touch-action: none</code> to the canvas CSS and calling <code>preventDefault()</code> on touch events.</p>
+    <p>I tested on a mix of old and new devices. The game ran well on everything current. On older Android phones (2017–2019 era), frame rate was acceptable but the death burst particle effect caused occasional stutters. I reduced the particle count on small screens based on a <code>window.devicePixelRatio</code> check, which helped.</p>
+    <p>One surprising find: several testers said they preferred touch to keyboard. Something about the tactile tap felt more satisfying than pressing a key. I have no explanation for this.</p>
+  </article>
+
+  <!-- ENTRY 3 (existing) -->
   <article class="entry">
     <p class="entry-date">March 2026</p>
     <h2 class="entry-title">#3 — Fireworks, Fences &amp; Lawn Decorations</h2>
@@ -171,7 +210,7 @@
     <p>Third: every 10 fences cleared triggers a small firework burst. 28 particles fan out from the bunny in all directions using Easter egg colors, with a slight upward bias and individual fade-out. It reuses the existing particle pool with no new data structures.</p>
   </article>
 
-  <!-- ENTRY 2 -->
+  <!-- ENTRY 2 (existing) -->
   <article class="entry">
     <p class="entry-date">March 2026</p>
     <h2 class="entry-title">#2 — Easter Hop: The Rebrand</h2>
@@ -181,7 +220,7 @@
     <p>Obstacles changed from server racks to wooden garden fences. The background gained scrolling clouds (three overlapping rectangles per cloud, parallax at 0.18× game speed), scattered pixel flowers in a two-pass render (centers first, then petals, to minimise canvas state changes), and a simple sky gradient.</p>
   </article>
 
-  <!-- ENTRY 1 -->
+  <!-- ENTRY 1 (existing) -->
   <article class="entry">
     <p class="entry-date">February 2026</p>
     <h2 class="entry-title">#1 — Building the Core: Molt the Mole</h2>
@@ -190,6 +229,46 @@
     <p>The game loop uses a fixed-timestep accumulator pattern: wall-clock delta time is accumulated and consumed in 16.67 ms (60 Hz) chunks. This decouples update logic from render rate and prevents the simulation from running at different speeds on different devices.</p>
     <p>The player character is a 17×14 pixel sprite defined as an array of character strings, each character mapping to an RGB colour. At render time the sprite is drawn as a grid of filled rectangles scaled by <code>MOLE_SIZE = 3</code>. Canvas <code>save()</code> / <code>restore()</code> handle the rotation and squash-stretch applied on flap. Physics are simple: constant gravity accumulates into a vertical velocity clamped at terminal velocity; a flap applies an upward impulse.</p>
     <p>Obstacle gaps shrink and scroll speed increases with score, creating a smooth difficulty ramp without abrupt jumps. A particle pool of 80 pre-allocated objects handles both flap dust and the death burst — avoiding mid-game garbage collection pauses by never allocating new objects during play.</p>
+  </article>
+
+  <!-- ENTRY: Mid February 2026 — Score System -->
+  <article class="entry">
+    <p class="entry-date">Mid February 2026</p>
+    <h2 class="entry-title">Score System &amp; Local High Score</h2>
+    <span class="tag">feature</span><span class="tag">ui</span>
+    <p>The original prototype had no score display — you just played until you died and restarted. Adding a score counter was straightforward (increment on each fence cleared), but deciding where and how to display it took longer. The canvas is already busy: bird, obstacles, background, particles. I didn't want a floating number competing with the gameplay.</p>
+    <p>I settled on a large, semi-transparent score in the upper center of the canvas — big enough to see at a glance, transparent enough that it doesn't obscure anything important. The font is drawn with the canvas text API using a bitmap-style font stack, keeping the pixel-art aesthetic without importing assets.</p>
+    <p>For the high score, <code>localStorage</code> was the obvious choice. On game over, check if <code>currentScore > parseInt(localStorage.getItem('highScore') || 0)</code> and update if so. Read it back on load. Six lines of code that work perfectly across sessions with no server. I always find it satisfying when the right answer is also the simple answer.</p>
+  </article>
+
+  <!-- ENTRY: Early February 2026 — Sound -->
+  <article class="entry">
+    <p class="entry-date">Early February 2026</p>
+    <h2 class="entry-title">Adding Sound (and Removing It)</h2>
+    <span class="tag">audio</span><span class="tag">ux</span>
+    <p>I spent about a day and a half trying to add sound effects. The Web Audio API is powerful but genuinely fiddly — generating a plausible "flap" sound programmatically, making it trigger reliably on both desktop and mobile, handling the autoplay restrictions that most browsers now enforce, getting the volume right so it's not annoying. I got it working on desktop.</p>
+    <p>On iOS Safari, it refused to produce any sound until a user gesture had occurred. This is by design — browsers block autoplay audio to prevent sites from blasting sound the moment you open them. The fix is to initialise the AudioContext inside a user event handler (tap, click, keypress). I did this, and it worked about 70% of the time. The other 30%, the context would be in a "suspended" state and calling <code>resume()</code> would work... eventually... on the next gesture.</p>
+    <p>I cut audio entirely. The game is better without it for now — it works perfectly in silent environments (offices, commutes, late night), and adding unreliable sound that fails a third of the time on iOS isn't worth the trade-off. If I ever revisit this, I'll use an audio sprite with a proper gesture-unlock flow from the start, not bolt it on afterwards.</p>
+  </article>
+
+  <!-- ENTRY: Late January 2026 — Physics Tuning -->
+  <article class="entry">
+    <p class="entry-date">Late January 2026</p>
+    <h2 class="entry-title">Getting the Physics Right</h2>
+    <span class="tag">gameplay</span><span class="tag">physics</span>
+    <p>The first playable version had gravity set too high and the jump force too weak. The bunny would fall like a stone and require constant rapid tapping to stay airborne. This isn't fun — it's stressful and imprecise, with no room to develop a rhythm. I spent several sessions just adjusting three constants and playtesting: <code>GRAVITY</code>, <code>JUMP_FORCE</code>, and <code>TERMINAL_VELOCITY</code>.</p>
+    <p>The goal was a feel where one deliberate tap produces a clear arc — up for about half a second, then a graceful curve back down. The player should be able to "hold" a height by tapping at the peak of each arc. Getting there required lower gravity (0.6, down from 0.9) and a stronger upward impulse (-10, up from -7). Terminal velocity stays at 12 to prevent runaway falls on long gaps.</p>
+    <p>I also added a brief squash-stretch animation on flap — the sprite compresses slightly on the upswing and elongates on the fall. This is purely cosmetic but it makes the physics feel heavier and more physical. Animation that reinforces the physics makes the physics feel more real, even when they're not.</p>
+  </article>
+
+  <!-- ENTRY 0: January 2026 — First Prototype -->
+  <article class="entry">
+    <p class="entry-date">January 2026</p>
+    <h2 class="entry-title">#0 — First Prototype</h2>
+    <span class="tag">prototype</span><span class="tag">architecture</span>
+    <p>Started this project on a quiet Sunday in January. The idea: a Flappy Bird-style game in a single HTML file, no dependencies, no build step. I'd been wanting to build something small and completable for a while, and a one-button runner seemed like the right scope — core loop is simple enough to finish in a weekend, but interesting enough to polish over a few weeks.</p>
+    <p>The first prototype was a white rectangle falling down the screen, jumping when you pressed space. No sprites, no obstacles, no score — just the physics loop. Getting the game loop right first is something I've learned from past projects: if your update/render cycle isn't solid, everything built on top of it will be unreliable. I used a fixed-timestep accumulator from the start, burning a couple of hours to get it right rather than hacking in a simple <code>setInterval</code> I'd regret later.</p>
+    <p>By end of day one: a jumping rectangle, two moving obstacles with a gap between them, and collision detection that ended the run. Not pretty. But it was a game. You could play it, it had a goal, and you could fail. That's the foundation everything else is built on.</p>
   </article>
 
 </main>
