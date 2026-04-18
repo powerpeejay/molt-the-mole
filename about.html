@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Easter Hop</title>
+<meta name="description" content="The story behind Easter Hop — a solo indie browser game built in Hamburg with vanilla JavaScript and no dependencies.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --spring-sky:    #d0eef8;
+    --spring-green:  #4a8c30;
+    --spring-dark:   #1e3d14;
+    --blossom-pink:  #f48fb1;
+    --text-primary:  #33691e;
+    --text-muted:    #558b2f;
+    --font-display:  'Silkscreen', cursive;
+    --font-body:     'IBM Plex Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; background: var(--spring-sky); }
+  body {
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--spring-sky);
+    line-height: 1.8;
+  }
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(208, 238, 248, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(74, 140, 48, 0.2);
+    padding: 0 24px;
+  }
+  nav .nav-inner {
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  nav .logo { font-family: var(--font-display); font-size: 16px; color: var(--spring-dark); text-decoration: none; }
+  nav .nav-links { list-style: none; display: flex; gap: 24px; }
+  nav .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 13px; }
+  nav .nav-links a:hover { color: var(--spring-dark); }
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 96px 24px 80px;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 5vw, 36px);
+    color: var(--spring-dark);
+    margin-bottom: 8px;
+  }
+  .page-subtitle {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 48px;
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--spring-dark);
+    margin: 40px 0 12px;
+  }
+  p { font-size: 14px; margin-bottom: 14px; color: var(--text-primary); }
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(74, 140, 48, 0.15);
+    margin: 48px 0;
+  }
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(74, 140, 48, 0.15);
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  footer a { color: var(--text-muted); text-decoration: none; margin: 0 8px; }
+  footer a:hover { color: var(--spring-dark); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">HOP</a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="about.html" style="color: var(--spring-dark);">Dev</a></li>
+      <li><a href="tips.html">Tips</a></li>
+      <li><a href="devlog.html">Devlog</a></li>
+      <li><a href="play.html" style="color: var(--spring-green);">Play</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <h1 class="page-title">About</h1>
+  <p class="page-subtitle">The story behind a small game made by one person in Hamburg.</p>
+
+  <p>I'm a solo developer based in Hamburg. I make browser games as a hobby — evenings and weekends, no team, no funding, no plan to monetise beyond a modest ad or two. Easter Hop is the latest thing I've shipped, but it's not the first. I've been building small games in the browser on and off for years, mostly for the pleasure of finishing something that actually runs.</p>
+
+  <p>I use real names in exactly one place on this site: the Impressum, because German law requires it. Everywhere else I'd rather just let the work speak for itself. I'm not trying to build a brand or grow an audience. I'm just making things I find interesting and putting them on the internet.</p>
+
+  <h2>Why Easter Hop</h2>
+  <p>The original game was called Molt the Mole — a Flappy Bird-style runner with a copper robot mole navigating underground server racks. I liked it, but it was a bit cold and grey. Easter 2026 was coming up, and I thought: what if the whole thing was spring? Cheerful colours, a bunny, garden fences instead of server racks. The core physics and architecture stayed the same; I rewrote everything visual.</p>
+  <p>The seasonal transformation mechanic — where the world shifts from spring to summer as your score climbs — was something I added almost as a joke, just to see if I could interpolate between two complete palettes in real time. It worked better than I expected, so I kept it and made it a feature.</p>
+  <p>The name Easter Hop came from my daughter. She's four. She watched me testing it, pointed at the bunny, and said "hop hop." That was the name.</p>
+
+  <h2>The no-dependencies rule</h2>
+  <p>I have a self-imposed rule for these small games: no dependencies, no build tools, no bundlers. The game must work as a single HTML file (or a small handful of files). No npm, no webpack, no TypeScript compiler, no deployment pipeline. Open the file. Done.</p>
+  <p>People sometimes hear this and think it's a limitation I'm tolerating. It's the opposite — it's a creative choice I actively want. Constraints force clarity. When you can't reach for a library, you write simpler code. When there's no build step, there's nothing to configure or break. When the whole thing fits in one file, you can actually hold it in your head.</p>
+
+  <h2>What's next</h2>
+  <p>Honestly, I don't know. I keep a list of ideas — a different seasonal theme, a two-player variant, maybe something that isn't a runner at all. Whether any of them become real projects depends on time and motivation. I have a day job and a four-year-old. But I'll keep tinkering.</p>
+  <p>If you want to say hello, the contact address is on the <a href="index.html#contact">main page</a>. If you found a bug, same place. High score screenshots also welcome.</p>
+
+  <hr class="divider">
+
+  <p style="font-size: 13px; color: var(--text-muted);">Easter Hop is free to play and always will be. The source is plain HTML/JavaScript — feel free to have a look.</p>
+</main>
+
+<footer>
+  <p>&copy; 2026 Easter Hop</p>
+  <a href="index.html">Home</a>
+  <a href="play.html">Play</a>
+  <a href="tips.html">Tips</a>
+  <a href="tech.html">How It Works</a>
+  <a href="blog-browser-games.html">Blog</a>
+  <a href="devlog.html">Devlog</a>
+  <a href="index.html#privacy">Privacy</a>
+  <a href="index.html#impressum">Impressum</a>
+</footer>
+
+</body>
+</html>
