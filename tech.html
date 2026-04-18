@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How It Works — Easter Hop</title>
+<meta name="description" content="A technical walkthrough of how Easter Hop works: the game loop, physics, pixel art sprite system, palette interpolation, particle pooling, and collision detection.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --spring-sky:    #d0eef8;
+    --spring-green:  #4a8c30;
+    --spring-dark:   #1e3d14;
+    --blossom-pink:  #f48fb1;
+    --text-primary:  #33691e;
+    --text-muted:    #558b2f;
+    --font-display:  'Silkscreen', cursive;
+    --font-body:     'IBM Plex Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; background: var(--spring-sky); }
+  body {
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--spring-sky);
+    line-height: 1.8;
+  }
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(208, 238, 248, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(74, 140, 48, 0.2);
+    padding: 0 24px;
+  }
+  nav .nav-inner {
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  nav .logo { font-family: var(--font-display); font-size: 16px; color: var(--spring-dark); text-decoration: none; }
+  nav .nav-links { list-style: none; display: flex; gap: 24px; }
+  nav .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 13px; }
+  nav .nav-links a:hover { color: var(--spring-dark); }
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 96px 24px 80px;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 5vw, 36px);
+    color: var(--spring-dark);
+    margin-bottom: 8px;
+  }
+  .page-subtitle {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 48px;
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--spring-dark);
+    margin: 40px 0 12px;
+  }
+  p { font-size: 14px; margin-bottom: 14px; color: var(--text-primary); }
+  pre {
+    background: rgba(30, 61, 20, 0.06);
+    border: 1px solid rgba(74, 140, 48, 0.2);
+    padding: 16px 20px;
+    margin: 16px 0 20px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  code { font-family: var(--font-body); }
+  .section-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    border-left: 3px solid rgba(74, 140, 48, 0.3);
+    padding-left: 14px;
+    margin: 20px 0;
+  }
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(74, 140, 48, 0.15);
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  footer a { color: var(--text-muted); text-decoration: none; margin: 0 8px; }
+  footer a:hover { color: var(--spring-dark); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">HOP</a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="about.html">Dev</a></li>
+      <li><a href="tips.html">Tips</a></li>
+      <li><a href="devlog.html">Devlog</a></li>
+      <li><a href="play.html" style="color: var(--spring-green);">Play</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <h1 class="page-title">How It Works</h1>
+  <p class="page-subtitle">A look under the hood — for curious developers and anyone who wonders what's happening behind the spring meadow.</p>
+
+  <p>Easter Hop is built entirely in vanilla JavaScript and HTML5 Canvas with no external libraries. This page explains how the current system works: the game loop, physics, sprite rendering, the live palette system, particles, collision, and score storage. None of this is novel — it's all standard game programming — but I find it useful to read how other people have solved these problems, so here's how I solved them.</p>
+
+  <h2>The game loop</h2>
+  <p>The loop uses a fixed-timestep accumulator. <code>requestAnimationFrame</code> fires a callback with the current timestamp; the delta from the last frame is accumulated, then consumed in 16.67 ms (60 Hz) chunks. This decouples physics from render rate — the simulation runs at exactly 60 steps per second regardless of whether the display is running at 60, 90, or 120 Hz, and regardless of whether a frame was dropped.</p>
+
+<pre><code>let accumulator = 0;
+const STEP = 1000 / 60;
+
+function loop(timestamp) {
+  const delta = Math.min(timestamp - lastTime, 100);
+  accumulator += delta;
+  while (accumulator >= STEP) {
+    update();
+    accumulator -= STEP;
+  }
+  render();
+  lastTime = timestamp;
+  requestAnimationFrame(loop);
+}</code></pre>
+
+  <p>The <code>Math.min(delta, 100)</code> cap prevents the spiral of death — if the tab loses focus for several seconds and then regains it, the loop would otherwise try to simulate hundreds of missed steps at once, freezing the browser.</p>
+
+  <h2>Physics</h2>
+  <p>The physics are intentionally minimal. Gravity is a constant added to vertical velocity every step. A jump applies a fixed upward impulse. Velocity is clamped at a terminal value to prevent the bunny from accelerating to absurd speeds during a long fall.</p>
+
+<pre><code>const GRAVITY         = 0.6;
+const JUMP_FORCE      = -10;
+const TERMINAL_VEL    = 12;
+
+bird.vy += GRAVITY;
+bird.vy = Math.min(bird.vy, TERMINAL_VEL);
+bird.y  += bird.vy;</code></pre>
+
+  <p>These three constants are the tuning knobs for the entire feel of the game. Increasing gravity makes runs shorter and more punishing. Decreasing jump force makes it harder to recover from a deep drop. Finding values that feel fair — challenging but not arbitrary — took more iteration than I expected.</p>
+
+  <h2>The sprite</h2>
+  <p>The Easter bunny is drawn without any image assets. The sprite is defined as an array of strings, where each character maps to an RGB colour. At render time, the code iterates over the array and fills a small rectangle for each non-transparent character.</p>
+
+<pre><code>const SPRITE = [
+  '00000WW000WW00000',
+  '0000WWPW0WWPW0000',
+  // ... 14 rows total
+];
+const COLORS = { W: '#f0ebe1', P: '#ffa0b4', /* ... */ };
+
+for (let r = 0; r &lt; SPRITE.length; r++) {
+  for (let c = 0; c &lt; SPRITE[r].length; c++) {
+    const ch = SPRITE[r][c];
+    if (ch === '0') continue;
+    ctx.fillStyle = COLORS[ch];
+    ctx.fillRect(c * SCALE, r * SCALE, SCALE, SCALE);
+  }
+}</code></pre>
+
+  <p>The canvas context is saved and restored around this draw call so the rotation and squash-stretch transforms applied during a flap don't bleed into the rest of the scene. The bunny is 17×14 pixels at scale 3, so 51×42 canvas pixels.</p>
+
+  <h2>The palette system</h2>
+  <p>The visual transition from spring to summer is driven by two palette objects — <code>SPRING</code> and <code>SUMMER</code> — each defining named colour values for sky, ground, obstacles, particles, and UI elements. Every frame, a <code>t</code> value (0 to 1) is computed from the current score, and all colours are linearly interpolated between the two palettes using a simple lerp on each RGB channel.</p>
+
+<pre><code>const t = Math.min(score / 30, 1);
+
+function lerpColor(a, b, t) {
+  const ra = parseInt(a.slice(1,3),16), rb = parseInt(b.slice(1,3),16);
+  const ga = parseInt(a.slice(3,5),16), gb = parseInt(b.slice(3,5),16);
+  const ba = parseInt(a.slice(5,7),16), bb = parseInt(b.slice(5,7),16);
+  const r = Math.round(ra + (rb - ra) * t);
+  const g = Math.round(ga + (gb - ga) * t);
+  const bl = Math.round(ba + (bb - ba) * t);
+  return `rgb(${r},${g},${bl})`;
+}</code></pre>
+
+  <p>Every element that changes colour — sky gradient stops, ground fill, fence tints, particle colours — calls this function with its pair of spring and summer hex values. The result is a smooth, continuous world transition that doesn't require any per-element animation code.</p>
+
+  <h2>The particle system</h2>
+  <p>Both flap bursts and the death explosion use the same pool of 80 pre-allocated particle objects. When a particle effect is triggered, the code activates particles from the pool and sets their position, velocity, lifetime, and colour. Active particles update their position and fade out each step. Dead particles go back to an <code>active: false</code> state.</p>
+  <p>The reason for pre-allocation is garbage collection. If new objects were created on every flap (roughly once per second during play), the JavaScript engine would periodically pause to collect them. On most modern devices this pause is imperceptible, but on older phones it produces a visible stutter. Pre-allocating 80 objects and reusing them eliminates GC pressure during a run entirely.</p>
+
+  <h2>Collision detection</h2>
+  <p>Collision uses AABB (axis-aligned bounding box) — check if two rectangles overlap on both axes. It's the simplest possible approach and entirely sufficient here because nothing rotates during collision checks. The bunny sprite's visual rotation is cosmetic only; the hitbox stays axis-aligned.</p>
+  <p>The hitbox is deliberately slightly smaller than the sprite, giving the player a small amount of invisible forgiveness on close passes. This is standard practice in games — pixel-perfect collision looks fair but often feels arbitrary and punishing.</p>
+
+  <h2>Score persistence</h2>
+  <p>The high score is stored in <code>localStorage</code> under a simple key. There's no server involved. When a run ends, the code checks if the score exceeds the stored value and updates it if so. When the page loads, the stored value is read and displayed. That's the entire persistence system — about six lines of code.</p>
+  <p>The global leaderboard (top 3 all-time) uses a small Supabase Postgres database with a public REST endpoint. Scores are only submitted if they qualify for the top 3, which limits write traffic to effectively nothing.</p>
+</main>
+
+<footer>
+  <p>&copy; 2026 Easter Hop</p>
+  <a href="index.html">Home</a>
+  <a href="play.html">Play</a>
+  <a href="about.html">About</a>
+  <a href="tips.html">Tips</a>
+  <a href="blog-browser-games.html">Blog</a>
+  <a href="devlog.html">Devlog</a>
+  <a href="index.html#privacy">Privacy</a>
+  <a href="index.html#impressum">Impressum</a>
+</footer>
+
+</body>
+</html>
