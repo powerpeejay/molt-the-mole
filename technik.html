@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wie Easter Hop funktioniert — Technik-Deep-Dive</title>
+<meta name="description" content="Ein technischer Blick unter die Haube von Easter Hop: Fixed-Timestep-Game-Loop, Physik mit echten Konstanten, Pixel-Sprites aus Zeichenketten, Paletten-Interpolation, Partikel-Pooling und AABB-Kollision — mit echtem Code aus dem Spiel.">
+<link rel="canonical" href="https://www.hopzy.de/technik.html">
+<meta property="og:title" content="Wie Easter Hop funktioniert — Technik-Deep-Dive">
+<meta property="og:description" content="Game-Loop, Physik, Pixel-Sprites, Paletten-Interpolation und Kollision — mit echtem Code aus dem Spiel.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.hopzy.de/technik.html">
+<meta property="og:locale" content="de_DE">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1969267771076427" crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Wie Easter Hop funktioniert — ein Blick unter die Haube",
+  "inLanguage": "de-DE",
+  "datePublished": "2026-04-16",
+  "dateModified": "2026-07-04",
+  "mainEntityOfPage": "https://www.hopzy.de/technik.html",
+  "author": {
+    "@type": "Person",
+    "@id": "https://www.hopzy.de/ueber-mich.html#person",
+    "name": "Peter Jacob",
+    "url": "https://www.hopzy.de/ueber-mich.html"
+  }
+}
+</script>
+<link rel="stylesheet" href="./assets/seiten.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">HOP</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Start</a></li>
+      <li><a href="tipps.html">Tipps</a></li>
+      <li><a href="technik.html" class="active">Technik</a></li>
+      <li><a href="devlog.html">Devlog</a></li>
+      <li class="hide-mobile"><a href="ueber-mich.html">Über mich</a></li>
+      <li><a href="play.html" class="play">Spielen</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <h1 class="page-title">Wie das Spiel funktioniert</h1>
+  <p class="page-subtitle">Ein Blick unter die Haube — für neugierige Entwickler und alle, die wissen wollen, was hinter der Frühlingswiese passiert.</p>
+
+  <div class="byline">
+    <img class="avatar" src="./assets/avatar-peter.svg" alt="Pixel-Avatar von Peter Jacob" width="42" height="42">
+    <div class="who">
+      <strong>Peter Jacob</strong> — Solo-Entwickler aus Hamburg<br>
+      Veröffentlicht: April 2026 · Aktualisiert: <time datetime="2026-07-04">Juli 2026</time> · <a href="ueber-mich.html">Über mich</a>
+    </div>
+  </div>
+
+  <p>Easter Hop ist komplett in Vanilla JavaScript und HTML5 Canvas gebaut — keine Bibliotheken, keine Build-Tools, eine einzige HTML-Datei. Auf dieser Seite erkläre ich, wie die einzelnen Systeme funktionieren: Game-Loop, Physik, Sprite-Rendering, das Paletten-System für den Jahreszeitenwechsel, Partikel, Kollision und die Bestenliste. Nichts davon ist neuartig — es ist klassisches Game-Programming. Aber ich lese selbst gern, wie andere Leute diese Standardprobleme gelöst haben, also schreibe ich hier auf, wie ich sie gelöst habe. Alle Code-Ausschnitte stammen unverändert aus dem Spiel; du kannst sie im Seitenquelltext von <a href="play.html">play.html</a> nachlesen.</p>
+
+  <h2>Der Game-Loop: Fixed Timestep</h2>
+  <p>Der Loop nutzt einen Fixed-Timestep-Akkumulator. <code>requestAnimationFrame</code> liefert bei jedem Bildschirm-Refresh einen Zeitstempel; die Differenz zum letzten Frame wandert in einen Akkumulator und wird dort in Häppchen von exakt 16,67 ms (60 Hz) abgearbeitet:</p>
+
+<pre><code>const FIXED_DT = 1000 / 60;
+let lastTime   = 0;
+let accumulator = 0;
+
+function gameLoop(timestamp) {
+  if (lastTime === 0) lastTime = timestamp;
+  let delta = timestamp - lastTime;
+  lastTime = timestamp;
+  if (delta &gt; 200) delta = 200;
+  accumulator += delta;
+  while (accumulator &gt;= FIXED_DT) {
+    update();
+    accumulator -= FIXED_DT;
+  }
+  render();
+  requestAnimationFrame(gameLoop);
+}</code></pre>
+
+  <p>Das entkoppelt die Simulation von der Bildrate: Die Physik rechnet auf jedem Gerät exakt 60 Schritte pro Sekunde — egal ob das Display mit 60, 90 oder 120 Hz läuft und egal ob ein Frame verschluckt wurde. Ohne diesen Kniff wäre das Spiel auf einem 120-Hz-Handy doppelt so schnell wie auf einem 60-Hz-Monitor.</p>
+  <p>Die Zeile <code>if (delta &gt; 200) delta = 200;</code> verhindert die sogenannte „Spiral of Death“: Wenn der Tab ein paar Sekunden im Hintergrund war, würde der Loop beim Zurückkommen sonst versuchen, hunderte verpasste Schritte auf einmal nachzuholen — und der Browser friert ein. Der Deckel bei 200 ms bedeutet: Maximal 12 Schritte Nachholbedarf, danach wird Zeit schlicht verworfen.</p>
+
+  <h2>Physik: drei Konstanten und eine wichtige Design-Entscheidung</h2>
+  <p>Die gesamte Flugphysik besteht aus diesen Werten:</p>
+
+<pre><code>const GRAVITY           = 0.45;
+const FLAP_IMPULSE      = -7.5;
+const TERMINAL_VELOCITY = 10;
+
+// pro Simulationsschritt:
+moleVY += GRAVITY;
+if (moleVY &gt; TERMINAL_VELOCITY) moleVY = TERMINAL_VELOCITY;
+moleY += moleVY;</code></pre>
+
+  <p>Die wichtigste Entscheidung steckt aber im Hüpfen selbst: <code>moleVY = FLAP_IMPULSE;</code> — die Geschwindigkeit wird <em>gesetzt</em>, nicht addiert. Ein Tap wirkt dadurch immer gleich, unabhängig davon, wie schnell der Hase gerade fällt. Das macht das Spiel lesbar: Der Spieler lernt <em>einen</em> Bogen, nicht unendlich viele. Zusätzlich gibt es einen Cooldown von 5 Frames zwischen zwei Hüpfern, damit hektisches Getrommel nicht in unkontrollierbares Dauersteigen ausartet. Was das für die Spielstrategie bedeutet, habe ich auf der <a href="tipps.html">Tipps-Seite</a> aufgeschrieben.</p>
+  <p>Dazu kommt reine Kosmetik, die das Ganze physisch wirken lässt: Die Rotation des Sprites folgt der Vertikalgeschwindigkeit mit einer Lerp-Glättung (<code>moleRotation += (target - moleRotation) * 0.15</code>), und beim Hüpfen wird der Hase kurz gestaucht (<code>moleSquash = 0.75</code>) und federt zurück. Beides ändert an der Kollision nichts — aber ohne diese zwei Zeilen fühlt sich das Spiel seltsam tot an. Ich habe es beim Entwickeln testweise ausgebaut und sofort wieder eingebaut.</p>
+
+  <h2>Der Sprite: Pixel-Art ohne einzige Bilddatei</h2>
+  <p>Der Osterhase ist keine PNG-Datei. Er ist ein Array aus Zeichenketten, in dem jedes Zeichen für eine Farbe steht:</p>
+
+<pre><code>const BUNNY_SPRITE = [
+  '00000WW000WW00000',
+  '0000WWPW0WWPW0000',
+  '0000WPPW0WPPW0000',
+  '000WWPPWWWPPWW000',
+  '00WWWWWWWWWWWWD00',
+  '0WWWWETWWWTEWWWD0',
+  //  … 14 Zeilen insgesamt
+];
+const BUNNY_COLORS = {
+  'W': [240, 235, 225],  // Fell
+  'P': [255, 160, 180],  // Ohren innen
+  'E': [ 40,  30,  60],  // Augen
+  // …
+};</code></pre>
+
+  <p>Beim Zeichnen laufen zwei verschachtelte Schleifen über das Raster und füllen für jedes Zeichen ein 3×3-Pixel-Rechteck (<code>MOLE_SIZE = 3</code>). Der Hase ist 17×14 Zeichen groß, auf dem Canvas also 51×42 Pixel. Um den Draw-Aufruf herum sichern <code>ctx.save()</code> und <code>ctx.restore()</code> den Canvas-Zustand, damit Rotation und Squash-Stretch nicht in den Rest der Szene bluten.</p>
+  <p>Warum so und nicht als Bilddatei? Erstens die Selbstauflage, dass alles in einer Datei steckt. Zweitens ist ein Sprite als Text im Editor direkt bearbeitbar — als aus dem Maulwurf des Vorgängerspiels ein Hase wurde (die Geschichte steht im <a href="devlog.html">Devlog</a>), habe ich buchstäblich Buchstaben ausgetauscht, bis die Ohren saßen.</p>
+
+  <h2>Das Paletten-System: Frühling wird Sommer</h2>
+  <p>Der Jahreszeitenwechsel ist mein Lieblingsfeature, und er ist erstaunlich wenig Code. Es gibt zwei vollständige Farbpaletten — <code>SPRING</code> und <code>SUMMER</code> — die jeweils dieselben benannten Rollen definieren: Himmel oben/unten, Boden, Zaun, Zaun-Schatten, Partikel, Text, Hintergrund-Details. Jede Farbe ist ein RGB-Tripel:</p>
+
+<pre><code>const SPRING = {
+  bg1:      [135, 206, 235],   // Himmelblau
+  ground:   [ 80, 160,  60],   // Frühlingsgrün
+  particle: [255, 200, 210],   // rosa Blüten
+  bgDetail: [255, 160, 190],   // Blütenblätter
+  // …
+};
+const SUMMER = {
+  bg1:      [ 30, 120, 200],   // sattes Nachmittagsblau
+  ground:   [ 40, 130,  40],
+  particle: [255, 240,  80],   // goldener Pollen
+  bgDetail: [255, 220,  60],   // Sonnenblumen
+  // …
+};
+
+function lerpColor(a, b, t) {
+  return [
+    Math.round(a[0] + (b[0] - a[0]) * t),
+    Math.round(a[1] + (b[1] - a[1]) * t),
+    Math.round(a[2] + (b[2] - a[2]) * t),
+  ];
+}
+
+function getPalette(score) {
+  const t = Math.min(score / 30, 1.0);
+  const p = {};
+  for (const key in SPRING) {
+    p[key] = lerpColor(SPRING[key], SUMMER[key], t);
+  }
+  return p;
+}</code></pre>
+
+  <p>Jeden Frame wird aus dem aktuellen Score ein Fortschrittswert <code>t</code> zwischen 0 und 1 berechnet (voll erreicht bei Punkt 30), und jede Farbrolle wird Kanal für Kanal linear zwischen beiden Paletten interpoliert. Alle Zeichenfunktionen fragen nur noch ihre Rolle ab — <code>palette.ground</code>, <code>palette.particle</code> — und wissen nichts von Jahreszeiten. Dadurch wechselt buchstäblich <em>alles</em> gleichzeitig und stufenlos die Farbe, ohne dass irgendein Element eigenen Animationscode bräuchte. Neue Jahreszeit? Wäre nur ein weiteres Paletten-Objekt.</p>
+
+  <h2>Hintergrund: der Slot-Hash-Trick</h2>
+  <p>Wolken, Blumen und Ostereier scrollen endlos vorbei. Die naive Umsetzung — Position aus dem aktuellen Scroll-Offset berechnen — hatte einen hässlichen Bug: Die Objekte zappelten vertikal, weil sich ihre berechnete Höhe mit jedem Frame minimal änderte. Die Lösung: Jedes Objekt gehört zu einem festen „Slot“ (einer ganzen Zahl), und seine Eigenschaften werden deterministisch aus der Slot-Nummer gehasht:</p>
+
+<pre><code>// Wolken: y-Position aus stabilem Slot-Index, nicht aus Pixel-Offset
+const hash = Math.abs((Math.sin(slot * 127.1 + 311.7) * 43758.5453) % 1);
+const cy = 18 + hash * 32;</code></pre>
+
+  <p>Der <code>sin</code>-Hash ist ein alter Shader-Trick: deterministisches Pseudo-Rauschen ohne Zufallszahlen-Speicher. Slot 17 hat damit für immer dieselbe Wolkenhöhe, egal wie weit die Welt gescrollt ist — kein Zappeln, kein Speicher für Objektlisten, und die Welt ist trotzdem „unendlich“. Dieselbe Technik entscheidet, ob auf einem Rasen-Slot ein Osterei liegt und in welcher der vier Farben.</p>
+
+  <h2>Partikel: ein Pool statt Müllabfuhr</h2>
+  <p>Hüpf-Wölkchen, Todes-Explosion und das Feuerwerk alle 10 Punkte teilen sich einen Pool aus 80 vorab angelegten Partikel-Objekten. Ein Partikel-Effekt aktiviert freie Objekte aus dem Pool und setzt Position, Geschwindigkeit, Lebensdauer und Farbe; abgelaufene Partikel werden auf <code>active: false</code> zurückgesetzt und wiederverwendet.</p>
+  <p>Der Grund ist der Garbage Collector: Würden bei jedem Hüpfer sechs neue Objekte erzeugt (und beim Feuerwerk 28), müsste die JavaScript-Engine regelmäßig aufräumen — und diese Pausen sind auf älteren Handys als Ruckler sichtbar. Mit dem Pool entsteht während eines Laufs überhaupt kein neuer Speichermüll. Aus demselben Grund sind auch die Farb-Strings der Ostereier vorgebaut statt pro Frame zusammengesetzt.</p>
+
+  <h2>Kollision: AABB mit eingebauter Gnade</h2>
+  <p>Die Kollision ist Axis-Aligned Bounding Box, der simpelste denkbare Ansatz: zwei Rechtecke überlappen, wenn sie sich auf beiden Achsen überlappen. Das genügt hier völlig, weil sich zur Kollisionszeit nichts dreht — die sichtbare Rotation des Hasen ist reine Kosmetik, die Hitbox bleibt achsparallel:</p>
+
+<pre><code>const HITBOX_INSET = 3;
+const moleHalfW = (BUNNY_W * MOLE_SIZE) / 2 - HITBOX_INSET;
+const moleHalfH = (BUNNY_H * MOLE_SIZE) / 2 - HITBOX_INSET;</code></pre>
+
+  <p>Der <code>HITBOX_INSET</code> macht die Hitbox rundum 3 Pixel kleiner als die Grafik. Das ist Standard-Praxis in Geschicklichkeitsspielen: Pixelgenaue Kollision sieht fair aus, fühlt sich aber willkürlich an, weil das Auge Berührungen großzügiger einschätzt als der Rechner. Die drei unsichtbaren Pixel Gnade sorgen dafür, dass sich knappe Durchflüge wie Können anfühlen statt wie Glück.</p>
+
+  <h2>Score, Speicherung und Bestenliste</h2>
+  <p>Der persönliche Rekord liegt im <code>localStorage</code> unter einem einzelnen Schlüssel — beim Game Over vergleichen, gegebenenfalls überschreiben, beim Laden auslesen. Sechs Zeilen, kein Server, funktioniert über Sitzungen hinweg.</p>
+  <p>Die globale Top-3-Bestenliste ist der einzige Teil des Spiels, der einen Server berührt: eine kleine Postgres-Datenbank bei Supabase, angesprochen direkt aus dem Browser über deren REST-API mit <code>fetch()</code>. Es wird nur geschrieben, wenn ein Score tatsächlich in die Top 3 gehört — das hält den Schreib-Traffic praktisch bei null. Gespeichert werden ausschließlich der eingegebene Name (max. 10 Zeichen) und die Punktzahl; Details dazu stehen in der <a href="datenschutz.html">Datenschutzerklärung</a>. Die kniffligste Stelle war übrigens nicht die Datenbank, sondern die iOS-Tastatur: Ein Canvas kann keinen Fokus bekommen, also fokussiert das Spiel ein unsichtbares <code>&lt;input&gt;</code>-Feld — und Safari lässt das nur zu, wenn der Fokus-Aufruf direkt aus einem Touch-Event kommt.</p>
+
+  <h2>Was ich beim nächsten Mal anders machen würde</h2>
+  <p>Zwei Dinge. Erstens würde ich die UI-Texte von Anfang an in ein Sprachobjekt auslagern — die Umstellung des Spiels auf Deutsch bedeutete, Strings quer durch den Render-Code zu suchen. Zweitens würde ich das Canvas von Anfang an für hochauflösende Displays skalieren (<code>devicePixelRatio</code>); aktuell rendert das Spiel intern in 400×600 und wird hochskaliert, was auf Retina-Displays minimal weicher aussieht als nötig. Beides steht auf der Liste — wie realistisch die ist, weiß jeder, der ein Feierabend-Projekt pflegt.</p>
+
+  <div class="author-box">
+    <img class="avatar" src="./assets/avatar-peter.svg" alt="" width="56" height="56">
+    <div>
+      <p><strong>Über den Autor</strong></p>
+      <p>Ich bin Peter Jacob, Webentwickler aus Hamburg. Easter Hop ist mein Feierabend-Projekt — die komplette Entstehungsgeschichte steht im <a href="devlog.html">Devlog</a>, die Spielstrategie auf der <a href="tipps.html">Tipps-Seite</a>. Fragen zum Code? Schreib mir eine <a href="mailto:moltybird@proton.me">E-Mail</a>.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2026 Easter Hop &mdash; Peter Jacob, Hamburg</p>
+  <p>
+    <a href="index.html">Start</a>
+    <a href="play.html">Spielen</a>
+    <a href="tipps.html">Tipps</a>
+    <a href="technik.html">Technik</a>
+    <a href="warum-browser-games.html">Blog</a>
+    <a href="devlog.html">Devlog</a>
+    <a href="ueber-mich.html">Über mich</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <a href="#" id="cookie-settings-link">Cookie-Einstellungen</a>
+  </p>
+  <p class="footer-note">Texte und Code von Peter Jacob. Beim Schreiben nutze ich teilweise Werkzeug-Unterstützung; jeder Text basiert auf meiner eigenen Entwicklungsarbeit und wird von mir geprüft.</p>
+</footer>
+<script src="./assets/site.js"></script>
+</body>
+</html>

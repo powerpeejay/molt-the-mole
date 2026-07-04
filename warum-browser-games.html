@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warum ich Browserspiele baue — Easter Hop</title>
+<meta name="description" content="Ein persönlicher Essay: Warum Browserspiele — sofort spielbar, ohne Installation, ohne Konto — im Jahr 2026 immer noch das beste Hobby-Format sind. Über Reibungslosigkeit, Beschränkungen als Werkzeug und das Gefühl, fertig zu werden.">
+<link rel="canonical" href="https://www.hopzy.de/warum-browser-games.html">
+<meta property="og:title" content="Warum ich Browserspiele baue">
+<meta property="og:description" content="Ein persönlicher Essay über Reibungslosigkeit, Beschränkungen als Werkzeug und das Gefühl, fertig zu werden.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.hopzy.de/warum-browser-games.html">
+<meta property="og:locale" content="de_DE">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1969267771076427" crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Warum ich Browserspiele baue",
+  "inLanguage": "de-DE",
+  "datePublished": "2026-04-20",
+  "dateModified": "2026-07-04",
+  "mainEntityOfPage": "https://www.hopzy.de/warum-browser-games.html",
+  "author": {
+    "@type": "Person",
+    "@id": "https://www.hopzy.de/ueber-mich.html#person",
+    "name": "Peter Jacob",
+    "url": "https://www.hopzy.de/ueber-mich.html"
+  }
+}
+</script>
+<link rel="stylesheet" href="./assets/seiten.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">HOP</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Start</a></li>
+      <li><a href="tipps.html">Tipps</a></li>
+      <li><a href="technik.html">Technik</a></li>
+      <li><a href="devlog.html">Devlog</a></li>
+      <li class="hide-mobile"><a href="ueber-mich.html">Über mich</a></li>
+      <li><a href="play.html" class="play">Spielen</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <h1 class="page-title">Warum ich Browserspiele baue</h1>
+  <p class="page-subtitle">Ein persönlicher Essay</p>
+
+  <div class="byline">
+    <img class="avatar" src="./assets/avatar-peter.svg" alt="Pixel-Avatar von Peter Jacob" width="42" height="42">
+    <div class="who">
+      <strong>Peter Jacob</strong> — Solo-Entwickler aus Hamburg<br>
+      Veröffentlicht: April 2026 · Aktualisiert: <time datetime="2026-07-04">Juli 2026</time> · <a href="ueber-mich.html">Über mich</a>
+    </div>
+  </div>
+
+  <p>Neulich hat mich jemand gefragt, warum ich Browserspiele baue — statt auf Steam zu veröffentlichen, auf itch.io, oder gleich eine Mobile-App zu machen. Die Frage hat mich überrascht, weil die Antwort für mich völlig offensichtlich ist. Aber als ich versucht habe, sie auszuformulieren, habe ich gemerkt: So offensichtlich ist sie gar nicht. Hier also mein Versuch einer Antwort.</p>
+
+  <h2>Die Sache mit der Reibung</h2>
+  <p>Ein Browserspiel hat eine Eigenschaft, die keine andere Vertriebsform hat: null Reibung. Nicht wenig Reibung — <em>null</em>. Du schickst jemandem einen Link. Die Person klickt drauf. Sie spielt. Kein App Store, kein Installations-Dialog, keine Konto-Erstellung, kein Ladebildschirm mit einem Balken, der bei 97 Prozent hängen bleibt. Das Spiel ist einfach da, sofort, in einem Tab, den jeder zu bedienen weiß.</p>
+  <p>Das klingt trivial, bis man einmal zusieht, wie jemand versucht, ein Handyspiel mit einem Familienmitglied zu teilen. „Es ist im App Store, such mal nach…“ — in dem Moment, in dem Reibung entsteht, ist die Hälfte der potenziellen Spieler weg. Bei einem Browserspiel steckst du den Link in eine WhatsApp-Nachricht, und das war's. Die Hürde ist ein einziger Fingertipp.</p>
+  <p>Ich denke viel über diese Reibungslosigkeit nach, weil ich Spiele für Menschen baue, die keine Gamer sind. Meine Eltern zum Beispiel. Meine Eltern werden niemals eine App installieren, um ein Spiel von mir zu spielen. Aber einen Link klicken sie an. Das ist mir wichtig.</p>
+
+  <h2>Die Beschränkung ist der Punkt</h2>
+  <p>Ich habe eine Regel: keine Abhängigkeiten, keine Build-Tools, keine Bundler. Das Spiel muss als einzelne HTML-Datei funktionieren (oder als eine Handvoll Dateien). Kein npm, kein Webpack, kein TypeScript-Compiler, keine Deployment-Pipeline. Datei öffnen. Fertig.</p>
+  <p>Wenn ich das erzähle, denken manche, das sei eine Einschränkung, die ich widerwillig ertrage. Es ist das Gegenteil — eine kreative Entscheidung, die ich aktiv will. Beschränkungen erzwingen Klarheit. Wenn man nicht zur Bibliothek greifen kann, schreibt man einfacheren Code. Wenn es keinen Build-Schritt gibt, kann keiner kaputtgehen. Wenn alles in eine Datei passt, kann man es tatsächlich im Kopf behalten.</p>
+
+  <blockquote>Der beste Code, den ich je geschrieben habe, entstand unter den engsten Beschränkungen.</blockquote>
+
+  <p>Das Partikelsystem von Easter Hop hat rund 40 Zeilen. Die Physik besteht aus drei Konstanten und drei Zeilen Mathematik pro Simulationsschritt — <a href="technik.html">auf der Technik-Seite</a> kann man sie unverändert nachlesen. Auf diese kleinen Systeme bin ich auf eine Art stolz, wie ich es auf deutlich größere Codebasen aus meinem Berufsleben nie war. Klein, vollständig, verstanden — das ist das Gefühl, um das es mir geht.</p>
+
+  <h2>Etwas fertig machen</h2>
+  <p>Die meisten Nebenprojekte werden nicht fertig. Sie werden angefangen, erreichen vielleicht 30 Prozent, und dann kommt etwas anderes dazwischen. Ich bin da keine Ausnahme — auf diversen Festplatten liegt ein Friedhof unfertiger Dinge, und ich vermute, das kennt jeder, der abends programmiert.</p>
+  <p>Browserspiele sind für mich das Format, in dem ich Dinge tatsächlich <em>abschließe</em>. Der Umfang begrenzt sich von selbst: Man braucht keinen Level-Editor, kein Tutorial-System, keinen Cloud-Save, kein Einstellungsmenü mit 40 Reglern. Man braucht einen Kern-Loop, der Spaß macht, und ein Grunderlebnis, das funktioniert. Damit kann man an einem Wochenende etwas Vollständiges ausliefern — und es danach wochenlang polieren, wenn man mag. Genau so ist es bei Easter Hop gelaufen; der Weg vom weißen Rechteck zum fertigen Spiel steht im <a href="devlog.html">Devlog</a>.</p>
+  <p>Dieses Gefühl, etwas abgeschlossen zu haben — ein Ding, das funktioniert, das jemand anderes <em>jetzt sofort</em> benutzen kann, das vor drei Tagen noch nicht existierte — ist der eigentliche Antrieb. Es geht nicht um Reichweite oder Einnahmen. Es geht um das Fertig-Gefühl. Aus Arbeitsprojekten bekomme ich es selten. Aus diesen kleinen Spielen bekomme ich es zuverlässig.</p>
+
+  <h2>Das offene Web ist immer noch gut</h2>
+  <p>Es gibt eine verbreitete These, das offene Web liege im Sterben — alles wandere in geschlossene Gärten, App Stores, Plattform-Ökosysteme. Ich finde diese Sicht traurig, und ich halte sie für falsch, zumindest für unvollständig. Das Web ist noch da. HTML funktioniert noch. Canvas rendert mit 60 Bildern pro Sekunde. Eine Seite, die ich heute auf GitHub Pages lege, ist auf absehbare Zeit für jeden Menschen mit einem Browser erreichbar — und kein Plattform-Betreiber kann sie entfernen, auslisten oder die Konditionen ändern.</p>
+  <p>Browserspiele zu bauen ist, im Kleinen, eine Stimme für diese Version des Internets: eine, in der man ein Ding unter eine URL legen kann und jeder es erreicht. Das ändert im Großen nichts. Aber ich verbringe meine Hobby-Zeit lieber damit, für das offene Web zu bauen, als für eine Plattform, die jederzeit den Teppich wegziehen kann.</p>
+  <p>Und noch etwas, das mir erst beim Schreiben dieses Textes klar geworden ist: Ein Browserspiel altert würdevoll. Die Flash-Spiele meiner Jugend sind tot, weil ihre Laufzeitumgebung gestorben ist. Ein Spiel aus purem HTML, CSS und JavaScript hat keine Laufzeitumgebung außer dem Browser selbst — und der Browser ist die am besten gepflegte Software der Welt. Es gibt keine Garantie, aber die Wette, dass diese eine HTML-Datei in zehn Jahren noch läuft, würde ich eingehen.</p>
+  <p>Darum baue ich Browserspiele. Klein, fertig, reibungslos, kostenlos — und meins.</p>
+
+  <div class="author-box">
+    <img class="avatar" src="./assets/avatar-peter.svg" alt="" width="56" height="56">
+    <div>
+      <p><strong>Über den Autor</strong></p>
+      <p>Ich bin Peter Jacob, Webentwickler aus Hamburg. Easter Hop ist mein Feierabend-Projekt — <a href="play.html">hier kannst du es spielen</a>, und auf der <a href="ueber-mich.html">Über-mich-Seite</a> steht, warum es das gibt. Feedback gern per <a href="mailto:moltybird@proton.me">E-Mail</a>.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2026 Easter Hop &mdash; Peter Jacob, Hamburg</p>
+  <p>
+    <a href="index.html">Start</a>
+    <a href="play.html">Spielen</a>
+    <a href="tipps.html">Tipps</a>
+    <a href="technik.html">Technik</a>
+    <a href="warum-browser-games.html">Blog</a>
+    <a href="devlog.html">Devlog</a>
+    <a href="ueber-mich.html">Über mich</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <a href="#" id="cookie-settings-link">Cookie-Einstellungen</a>
+  </p>
+  <p class="footer-note">Texte und Code von Peter Jacob. Beim Schreiben nutze ich teilweise Werkzeug-Unterstützung; jeder Text basiert auf meiner eigenen Entwicklungsarbeit und wird von mir geprüft.</p>
+</footer>
+<script src="./assets/site.js"></script>
+</body>
+</html>

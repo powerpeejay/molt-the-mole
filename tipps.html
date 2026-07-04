@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tipps &amp; Strategie — Easter Hop</title>
+<meta name="description" content="Ehrliche Tipps für einen hohen Score in Easter Hop, direkt vom Entwickler: die echte Physik hinter dem Hüpfen, wie du Lücken liest, die Schwierigkeits-Rampe in Zahlen und typische Fehler.">
+<link rel="canonical" href="https://www.hopzy.de/tipps.html">
+<meta property="og:title" content="Tipps &amp; Strategie — Easter Hop">
+<meta property="og:description" content="Ehrliche Tipps für einen hohen Score, direkt vom Entwickler — mit den echten Zahlen aus dem Spielcode.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.hopzy.de/tipps.html">
+<meta property="og:locale" content="de_DE">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1969267771076427" crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Tipps & Strategie für Easter Hop — vom Entwickler",
+  "inLanguage": "de-DE",
+  "datePublished": "2026-04-14",
+  "dateModified": "2026-07-04",
+  "mainEntityOfPage": "https://www.hopzy.de/tipps.html",
+  "author": {
+    "@type": "Person",
+    "@id": "https://www.hopzy.de/ueber-mich.html#person",
+    "name": "Peter Jacob",
+    "url": "https://www.hopzy.de/ueber-mich.html"
+  }
+}
+</script>
+<link rel="stylesheet" href="./assets/seiten.css">
+<style>
+  .tip-number {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 10px;
+    color: #fff;
+    background: var(--spring-green);
+    padding: 2px 8px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">HOP</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Start</a></li>
+      <li><a href="tipps.html" class="active">Tipps</a></li>
+      <li><a href="technik.html">Technik</a></li>
+      <li><a href="devlog.html">Devlog</a></li>
+      <li class="hide-mobile"><a href="ueber-mich.html">Über mich</a></li>
+      <li><a href="play.html" class="play">Spielen</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <h1 class="page-title">Tipps &amp; Strategie</h1>
+  <p class="page-subtitle">Ehrliche Ratschläge von der Person, die das Spiel gebaut hat — und trotzdem manchmal vor Punkt 10 stirbt.</p>
+
+  <div class="byline">
+    <img class="avatar" src="./assets/avatar-peter.svg" alt="Pixel-Avatar von Peter Jacob" width="42" height="42">
+    <div class="who">
+      <strong>Peter Jacob</strong> — Solo-Entwickler aus Hamburg<br>
+      Veröffentlicht: April 2026 · Aktualisiert: <time datetime="2026-07-04">Juli 2026</time> · <a href="ueber-mich.html">Über mich</a>
+    </div>
+  </div>
+
+  <p>Ich habe einen unfairen Vorteil: Ich kenne jede Zahl in diesem Spiel, weil ich sie selbst in den Code geschrieben habe. Genau deshalb kann ich dir sagen, welche Ratschläge wirklich stimmen — und welche verbreiteten Flappy-Bird-Weisheiten bei Easter Hop schlicht falsch sind, weil die Physik hier anders tickt. Alles, was folgt, basiert auf den echten Konstanten aus dem Spielcode und auf vielen, vielen eigenen Fehlversuchen beim Testen.</p>
+
+  <h2><span class="tip-number">01</span> Versteh zuerst, was ein Tap wirklich tut</h2>
+  <p>Der wichtigste Satz in diesem ganzen Guide: <strong>Ein Tap addiert keinen Schub — er setzt deine Geschwindigkeit.</strong> Im Code steht bei jedem Hüpfer wörtlich <code>moleVY = FLAP_IMPULSE</code>, also: Vertikalgeschwindigkeit wird auf −7,5 Pixel pro Frame <em>gesetzt</em>, egal wie schnell du gerade gefallen bist. Das hat zwei praktische Konsequenzen:</p>
+  <p>Erstens: Du kannst dich aus jedem noch so tiefen Sturz mit einem einzigen Tap retten, solange du noch nicht am Boden bist. Die Fallgeschwindigkeit ist bei 10 Pixeln pro Frame gedeckelt (Terminal Velocity), und ein Tap löscht sie komplett aus. Panik-Doppeltippen bringt also nichts — der erste Tap tut bereits die volle Arbeit.</p>
+  <p>Zweitens: Schnelles Dauertippen stapelt keinen Aufwärts-Boost. Es hält dich stattdessen konstant bei −7,5 — du steigst dann gleichmäßig wie ein Fahrstuhl nach oben, bis du gegen die Oberkante des nächsten Zauns knallst. Genau daran sterben die meisten Anfänger. Zusätzlich gibt es im Code einen Cooldown von 5 Frames (etwa 83 Millisekunden) zwischen zwei Hüpfern: Wer schneller tippt, dessen Eingaben werden schlicht ignoriert.</p>
+
+  <div class="callout">
+    <strong>Die Kernzahl</strong>
+    Nach einem Tap steigt der Hase rund 62 Pixel hoch und braucht dafür etwa 17 Frames (~0,28 Sekunden) bis zum Scheitelpunkt. Die kleinste Zaunlücke ist 100 Pixel hoch. Ein einziger, gut gesetzter Tap pro Lücke reicht fast immer.
+  </div>
+
+  <h2><span class="tip-number">02</span> Spiel den Rhythmus, nicht den Reflex</h2>
+  <p>Aus der Physik oben folgt die Grundtechnik: Lass den Hasen bewusst ein Stück fallen und setz dann <em>einen</em> gezielten Tap, der den Fall stoppt und einen neuen Bogen beginnt. Du kämpfst nicht gegen die Schwerkraft — du arbeitest in Pulsen mit ihr. Die Schwerkraft beträgt 0,45 Pixel pro Frame², das heißt: Nach einem Tap dauert es gut eine Viertelsekunde, bis der Hase oben ankommt, und dann noch einmal so lang, bis er wieder auf Ausgangshöhe ist. Dieser Bogen ist dein Metronom.</p>
+  <p>Konkret: Wenn du am Scheitelpunkt jedes Bogens erneut tippst, hältst du eine Höhe fast konstant. Wenn du erst kurz nach dem Scheitelpunkt tippst, sinkst du kontrolliert ab. Höhe gewinnen geht am saubersten mit zwei Taps im Abstand von etwa einer Viertelsekunde — nicht mit Getrommel.</p>
+
+  <h2><span class="tip-number">03</span> Schau auf die Lücke, nicht auf den Zaun</h2>
+  <p>Wenn ein Zaun näher kommt, springt der Blick automatisch auf das Hindernis — auf das Ding, das dich umbringt. Das ist der falsche Ort. Fixiere stattdessen die Mitte der Lücke. Dein Gehirn steuert die Taps dorthin, wo du hinschaust; das klingt banal, funktioniert aber verblüffend zuverlässig. Bei meinen Testrunden mit Freunden und Familie war das der eine Hinweis, der die Scores am schnellsten verbessert hat.</p>
+  <p>Feinheit dazu: Ziel eher auf das obere Drittel der Lücke. Die spitzen Zaunlatten ragen von oben <em>und</em> unten je etwa 10 Pixel in die Lücke hinein, aber dein gefährlichster Moment ist der Fall <em>nach</em> der Lücke — wer tief einfliegt, hat keinen Spielraum mehr nach unten, wenn direkt dahinter die nächste Lücke tiefer sitzt.</p>
+
+  <h2><span class="tip-number">04</span> Die Schwierigkeits-Rampe in echten Zahlen</h2>
+  <p>Easter Hop wird nicht plötzlich schwer, sondern kontinuierlich — und zwar exakt so:</p>
+  <ul>
+    <li><strong>Lücken:</strong> Start bei 150 Pixeln, pro Punkt 1,5 Pixel enger, Minimum 100 Pixel. Ab Punkt 33 ist die Lücke also dauerhaft auf dem Minimum.</li>
+    <li><strong>Tempo:</strong> Start bei 2,5 Pixeln pro Frame, pro Punkt +0,04, Maximum 5,0. Das Maximum erreichst du bei Punkt 63 — ab da scrollt die Welt exakt doppelt so schnell wie am Anfang.</li>
+    <li><strong>Abstand:</strong> Die Zäune stehen konstant 220 Pixel auseinander. Bei doppeltem Tempo bleibt dir also nur die halbe Zeit zwischen zwei Lücken.</li>
+  </ul>
+  <p>Daraus folgt eine ehrliche Einordnung deines Scores: Bis Punkt 10 ist das Spiel freundlich. Zwischen 10 und 33 zieht <em>beides</em> gleichzeitig an — Lücke und Tempo. Ab 33 ist die Lücke konstant und nur noch das Tempo steigt; viele empfinden 25–40 deshalb als die härteste Phase, weil sich das Spiel dort am schnellsten verändert. Wer die 40 überlebt, hat meist die Technik, um deutlich weiter zu kommen.</p>
+
+  <h2><span class="tip-number">05</span> Nutz den Jahreszeitenwechsel als Ankerpunkt</h2>
+  <p>Ab Punkt 1 beginnt die Welt, sich von Frühling zu Sommer zu färben; bei Punkt 30 ist der Übergang komplett — tiefblauer Himmel, sattes Grün, aus rosa Blüten werden Sonnenblumen. Ich habe diese Verwandlung ursprünglich als reines Schmuckstück eingebaut (<a href="technik.html">wie sie technisch funktioniert, steht hier</a>), aber sie taugt hervorragend als mentaler Meilenstein: „Erreiche den vollen Sommer“ ist ein greifbareres Ziel als eine abstrakte Zahl — und mit Punkt 30 liegst du fast genau an der Stelle, an der auch die Lücken ihr Minimum erreichen.</p>
+  <p>Alle 10 Punkte gibt es außerdem ein kleines Feuerwerk aus 28 Partikeln in Ostereier-Farben. Lass dich davon nicht ablenken — es explodiert direkt am Hasen, und der nächste Zaun kommt trotzdem.</p>
+
+  <h2><span class="tip-number">06</span> Typische Fehler (ich mache sie alle selbst)</h2>
+  <p><strong>Verkrampfen nach einem Beinahe-Crash.</strong> Du quetschst dich mit einem Pixel Luft durch eine Lücke, und die Hände spannen sich an. Der nächste Tap kommt zu früh oder zu spät. Die Physik hat sich nicht geändert — nur dein Puls. Einmal bewusst ausatmen hilft wirklich.</p>
+  <p><strong>Auf den Score schauen.</strong> Die Punktzahl steht groß und halbtransparent oben in der Mitte. Der Blick dorthin kostet dich fast immer den nächsten Zaun. Schau sie dir auf dem Game-Over-Bildschirm an, da läuft sie nicht weg.</p>
+  <p><strong>Sofort neu starten nach einem frustrierenden Tod.</strong> Wütendes Weiterhämmern produziert wütende Runs. Eine Sekunde Pause, Schultern lockern, dann neu. Das ist der billigste Score-Boost, den ich kenne.</p>
+  <p><strong>Zu hoch fliegen.</strong> Der Himmel ist genauso tödlich wie der Boden — die Kollisionsabfrage kennt kein Pardon: <code>if (mTop &lt;= 0) return true;</code>. Wer aus Vorsicht permanent oben klebt, stirbt an der Decke statt am Zaun.</p>
+
+  <h2><span class="tip-number">07</span> Mobil oder Desktop?</h2>
+  <p>Das Spiel läuft auf beidem gleich schnell — die Simulation rechnet auf jedem Gerät exakt 60 Schritte pro Sekunde, unabhängig von der Bildwiederholrate des Displays. Trotzdem fühlt es sich unterschiedlich an: Auf dem Desktop mit Leertaste ist die Latenz zwischen Absicht und Aktion minimal. Auf dem Smartphone kommen Touch-Verarbeitung und Display-Latenz dazu, dafür berichten einige Tester, dass sich das direkte Tippen auf die Scheibe rhythmischer anfühlt als eine Taste. Objektiv besser ist keins von beiden — aber wenn du zwischen den Geräten wechselst, gönn dir zwei, drei Aufwärmrunden. Dein Timing ist auf das jeweils andere Gerät geeicht.</p>
+  <p>Ein Mobil-Detail: Der Hitbox-Rahmen des Hasen ist bewusst 3 Pixel kleiner als die sichtbare Grafik. Was nach Streifschuss aussieht, ist oft noch kein Treffer. Dieses unsichtbare bisschen Gnade ist Absicht — pixelgenaue Kollision fühlt sich in schnellen Spielen unfair an, auch wenn sie technisch „korrekt“ wäre.</p>
+
+  <h2><span class="tip-number">08</span> Challenge-Runs für Fortgeschrittene</h2>
+  <p>Wenn die Grundtechnik sitzt, halten selbstgestellte Aufgaben das Spiel frisch. Ein paar, die ich selbst gern spiele:</p>
+  <ul>
+    <li><strong>Voller Sommer:</strong> Erreiche Punkt 30, ohne einmal zu sterben — in einem einzigen Anlauf ab Spielstart.</li>
+    <li><strong>Ein-Tap-Disziplin:</strong> 10 Zäune in Folge mit maximal einem Tap pro Lücke.</li>
+    <li><strong>Untenrum:</strong> Bleib einen ganzen Run im unteren Drittel des Bildschirms (Vorsicht: die spitzen Latten unten verzeihen wenig).</li>
+    <li><strong>Bestenlisten-Jagd:</strong> Die globale Top 3 wird von echten Menschen gehalten. Wer sie knackt, darf sich mit maximal 10 Zeichen verewigen.</li>
+  </ul>
+  <p>Keine dieser Challenges verändert das Spiel — aber jede schärft einen bestimmten Aspekt deiner Kontrolle. Und darum geht es am Ende: Easter Hop ist ein Rhythmus-Spiel, das sich als Geschicklichkeitsspiel verkleidet.</p>
+  <p>Viel Erfolg da draußen. Der Hase glaubt an dich.</p>
+
+  <div class="author-box">
+    <img class="avatar" src="./assets/avatar-peter.svg" alt="" width="56" height="56">
+    <div>
+      <p><strong>Über den Autor</strong></p>
+      <p>Ich bin Peter Jacob, Webentwickler aus Hamburg. Easter Hop ist mein Feierabend-Projekt: ein Browserspiel in einer einzigen HTML-Datei, ohne Frameworks, ohne Build-Tools. Wie es entstanden ist, steht im <a href="devlog.html">Devlog</a>; wie es technisch funktioniert, auf der <a href="technik.html">Technik-Seite</a>. Feedback gern per <a href="mailto:moltybird@proton.me">E-Mail</a>.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2026 Easter Hop &mdash; Peter Jacob, Hamburg</p>
+  <p>
+    <a href="index.html">Start</a>
+    <a href="play.html">Spielen</a>
+    <a href="tipps.html">Tipps</a>
+    <a href="technik.html">Technik</a>
+    <a href="warum-browser-games.html">Blog</a>
+    <a href="devlog.html">Devlog</a>
+    <a href="ueber-mich.html">Über mich</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <a href="#" id="cookie-settings-link">Cookie-Einstellungen</a>
+  </p>
+  <p class="footer-note">Texte und Code von Peter Jacob. Beim Schreiben nutze ich teilweise Werkzeug-Unterstützung; jeder Text basiert auf meiner eigenen Entwicklungsarbeit und wird von mir geprüft.</p>
+</footer>
+<script src="./assets/site.js"></script>
+</body>
+</html>

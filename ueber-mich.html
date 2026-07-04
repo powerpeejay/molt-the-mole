@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Über mich — Peter Jacob, der Entwickler hinter Easter Hop</title>
+<meta name="description" content="Wer hinter Easter Hop steckt: Peter Jacob, Webentwickler aus Hamburg. Warum aus einem Maulwurf ein Osterhase wurde, was die Keine-Abhängigkeiten-Regel bedeutet und warum Fertigwerden das eigentliche Ziel ist.">
+<link rel="canonical" href="https://www.hopzy.de/ueber-mich.html">
+<meta property="og:title" content="Über mich — Peter Jacob, der Entwickler hinter Easter Hop">
+<meta property="og:description" content="Wer hinter Easter Hop steckt: Solo-Entwickler Peter Jacob aus Hamburg.">
+<meta property="og:type" content="profile">
+<meta property="og:url" content="https://www.hopzy.de/ueber-mich.html">
+<meta property="og:locale" content="de_DE">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1969267771076427" crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "inLanguage": "de-DE",
+  "dateModified": "2026-07-04",
+  "mainEntity": {
+    "@type": "Person",
+    "@id": "https://www.hopzy.de/ueber-mich.html#person",
+    "name": "Peter Jacob",
+    "jobTitle": "Webentwickler",
+    "url": "https://www.hopzy.de/ueber-mich.html",
+    "email": "mailto:moltybird@proton.me",
+    "address": { "@type": "PostalAddress", "addressLocality": "Hamburg", "addressCountry": "DE" },
+    "knowsAbout": ["Webentwicklung", "HTML5 Canvas", "JavaScript", "Browserspiele"]
+  }
+}
+</script>
+<link rel="stylesheet" href="./assets/seiten.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">HOP</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Start</a></li>
+      <li><a href="tipps.html">Tipps</a></li>
+      <li><a href="technik.html">Technik</a></li>
+      <li><a href="devlog.html">Devlog</a></li>
+      <li class="hide-mobile"><a href="ueber-mich.html" class="active">Über mich</a></li>
+      <li><a href="play.html" class="play">Spielen</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <h1 class="page-title">Über mich</h1>
+  <p class="page-subtitle">Die Geschichte hinter einem kleinen Spiel, gebaut von einer Person in Hamburg.</p>
+
+  <div class="byline">
+    <img class="avatar" src="./assets/avatar-peter.svg" alt="Pixel-Avatar von Peter Jacob" width="42" height="42">
+    <div class="who">
+      <strong>Peter Jacob</strong> — Solo-Entwickler aus Hamburg<br>
+      Aktualisiert: <time datetime="2026-07-04">Juli 2026</time>
+    </div>
+  </div>
+
+  <p>Hallo, ich bin Peter Jacob — Webentwickler aus Hamburg. Tagsüber baue ich Websites und digitale Projekte, abends und am Wochenende baue ich Browserspiele. Kein Team, kein Budget, kein Businessplan: Easter Hop ist ein Feierabend-Projekt, und genau so soll es sich auch anfühlen. Es ist nicht mein erstes kleines Spiel, aber das erste, das ich mit allem Drumherum — Devlog, Technik-Artikeln, dieser Seite — richtig ins Netz gestellt habe.</p>
+
+  <p>Warum das Ganze? Weil das Gefühl, etwas <em>fertig</em> zu machen und es dann jedem Menschen mit einem Browser in die Hand drücken zu können, durch nichts zu ersetzen ist. Mehr dazu steht in meinem Essay <a href="warum-browser-games.html">„Warum ich Browserspiele baue“</a>.</p>
+
+  <h2>Warum Easter Hop?</h2>
+  <p>Das Spiel hieß ursprünglich „Molt the Mole“ — ein Flappy-Bird-artiger Runner, in dem ein kupferfarbener Roboter-Maulwurf durch unterirdische Server-Racks navigierte. Ich mochte es, aber es war ziemlich kalt und grau. Ostern 2026 rückte näher, und ich dachte: Was, wenn das Ganze Frühling wäre? Fröhliche Farben, ein Hase, Gartenzäune statt Server-Racks. Die Physik und die Architektur blieben; alles Sichtbare habe ich neu gemacht. Die einzelnen Schritte dieser Verwandlung sind im <a href="devlog.html">Devlog</a> dokumentiert.</p>
+  <p>Der Jahreszeiten-Wechsel — die Welt färbt sich mit steigendem Score von Frühling zu Sommer — entstand fast als Scherz: Ich wollte einfach sehen, ob ich zwei komplette Farbpaletten in Echtzeit ineinander überblenden kann. Es sah besser aus als erwartet, also wurde aus dem Experiment ein Feature. Wie es funktioniert, steht auf der <a href="technik.html">Technik-Seite</a>.</p>
+  <p>Der Name „Easter Hop“ stammt von meiner Tochter. Sie ist vier, hat mir beim Testen zugeschaut, auf den Hasen gezeigt und „hop hop“ gesagt. Damit war das entschieden.</p>
+
+  <h2>Die Keine-Abhängigkeiten-Regel</h2>
+  <p>Für diese kleinen Spiele habe ich eine selbstauferlegte Regel: keine Bibliotheken, keine Build-Tools, keine Bundler. Das ganze Spiel ist eine HTML-Datei (plus inzwischen ein paar Inhaltsseiten). Man kann sie im Browser öffnen, und sie funktioniert. Man kann in den Quelltext schauen, daraus lernen, Dinge übernehmen. Diese Art von Vollständigkeit finde ich zutiefst befriedigend — die Idee, dass das Ganze einfach <em>da</em> ist, verstehbar, portabel, ohne Infrastruktur, die irgendwann verschwinden könnte.</p>
+  <p>Die Regel ist außerdem ein Denkwerkzeug: Wenn man nicht zur Bibliothek greifen kann, schreibt man einfacheren Code. Das Partikelsystem von Easter Hop sind rund 40 Zeilen. Der Sprite-Renderer ist eine verschachtelte Schleife über ein Zeichen-Array. Nichts davon ist clever — und genau das ist der Punkt.</p>
+
+  <h2>Transparenz: Wie diese Texte entstehen</h2>
+  <p>Alle Inhalte auf dieser Seite basieren auf meiner eigenen Entwicklungsarbeit an diesem Spiel — der Code, die Zahlen, die Fehlschläge und die Anekdoten sind echt und aus erster Hand. Beim Ausformulieren nutze ich teilweise Schreib-Werkzeuge als Unterstützung; jeder Text wird von mir geprüft, korrigiert und freigegeben, bevor er online geht. Wenn dir trotzdem ein Fehler auffällt: <a href="mailto:moltybird@proton.me">Schreib mir</a>, ich korrigiere das.</p>
+
+  <h2>Wie es weitergeht</h2>
+  <p>Ehrlich gesagt: Ich weiß es nicht genau. Ich führe eine Ideenliste — ein anderes Jahreszeiten-Thema, eine Zwei-Spieler-Variante, vielleicht mal etwas, das kein Runner ist. Ob daraus echte Projekte werden, hängt an Zeit und Motivation; ich habe einen Job und eine Vierjährige. Aber ich werde weiter basteln, und der <a href="devlog.html">Devlog</a> bleibt der Ort, an dem das dokumentiert wird.</p>
+  <p>Wenn du Hallo sagen willst, einen Bug gefunden hast oder deinen Highscore-Screenshot loswerden möchtest: <a href="mailto:moltybird@proton.me">moltybird@proton.me</a>. Ich antworte wirklich.</p>
+
+  <hr class="divider">
+
+  <p style="font-size: 13px; color: var(--text-muted);">Easter Hop ist und bleibt kostenlos spielbar. Der Quelltext ist offen einsehbar — schau gern hinein.</p>
+</main>
+
+<footer>
+  <p>&copy; 2026 Easter Hop &mdash; Peter Jacob, Hamburg</p>
+  <p>
+    <a href="index.html">Start</a>
+    <a href="play.html">Spielen</a>
+    <a href="tipps.html">Tipps</a>
+    <a href="technik.html">Technik</a>
+    <a href="warum-browser-games.html">Blog</a>
+    <a href="devlog.html">Devlog</a>
+    <a href="ueber-mich.html">Über mich</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <a href="#" id="cookie-settings-link">Cookie-Einstellungen</a>
+  </p>
+  <p class="footer-note">Texte und Code von Peter Jacob. Beim Schreiben nutze ich teilweise Werkzeug-Unterstützung; jeder Text basiert auf meiner eigenen Entwicklungsarbeit und wird von mir geprüft.</p>
+</footer>
+<script src="./assets/site.js"></script>
+</body>
+</html>
