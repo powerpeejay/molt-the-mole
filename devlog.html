@@ -1,89 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Devlog — Easter Hop</title>
-<meta name="description" content="Development log for Easter Hop — a browser-based spring runner game. Read about the design decisions, pixel art process, and feature updates.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="description" content="Das Entwicklungstagebuch von Easter Hop: vom ersten weißen Rechteck im Januar über das Oster-Rebranding bis zur AdSense-Ablehnung und dem Neuaufbau der Seite — alle Entscheidungen, Fehlschläge und Learnings.">
+<link rel="canonical" href="https://www.hopzy.de/devlog.html">
+<meta property="og:title" content="Devlog — Easter Hop">
+<meta property="og:description" content="Das Entwicklungstagebuch von Easter Hop: alle Entscheidungen, Fehlschläge und Learnings, chronologisch dokumentiert.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.hopzy.de/devlog.html">
+<meta property="og:locale" content="de_DE">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1969267771076427" crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "Easter Hop Devlog",
+  "inLanguage": "de-DE",
+  "url": "https://www.hopzy.de/devlog.html",
+  "author": {
+    "@type": "Person",
+    "@id": "https://www.hopzy.de/ueber-mich.html#person",
+    "name": "Peter Jacob",
+    "url": "https://www.hopzy.de/ueber-mich.html"
+  }
+}
+</script>
+<link rel="stylesheet" href="./assets/seiten.css">
 <style>
-  :root {
-    --spring-sky:    #d0eef8;
-    --spring-green:  #4a8c30;
-    --spring-dark:   #1e3d14;
-    --blossom-pink:  #f48fb1;
-    --egg-yellow:    #fff176;
-    --text-primary:  #33691e;
-    --text-muted:    #558b2f;
-    --font-display:  'Silkscreen', cursive;
-    --font-body:     'IBM Plex Mono', monospace;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; background: var(--spring-sky); }
-
-  body {
-    font-family: var(--font-body);
-    color: var(--text-primary);
-    background: var(--spring-sky);
-    line-height: 1.8;
-  }
-
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    background: rgba(208, 238, 248, 0.92);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(74, 140, 48, 0.2);
-    padding: 0 24px;
-  }
-  nav .nav-inner {
-    max-width: 780px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-  }
-  nav .logo {
-    font-family: var(--font-display);
-    font-size: 16px;
-    color: var(--spring-dark);
-    text-decoration: none;
-  }
-  nav .nav-links { list-style: none; display: flex; gap: 24px; }
-  nav .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 13px; }
-  nav .nav-links a:hover { color: var(--spring-dark); }
-
-  main {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 96px 24px 80px;
-  }
-
-  .page-title {
-    font-family: var(--font-display);
-    font-size: clamp(24px, 5vw, 36px);
-    color: var(--spring-dark);
-    margin-bottom: 8px;
-  }
-  .page-subtitle {
-    color: var(--text-muted);
-    font-size: 14px;
-    margin-bottom: 56px;
-  }
-
   .entry {
     border-left: 3px solid var(--blossom-pink);
     padding: 0 0 48px 28px;
     position: relative;
-  }
-  .entry + .entry {
-    border-left: 3px solid var(--blossom-pink);
   }
   .entry::before {
     content: '';
@@ -95,7 +44,6 @@
     border-radius: 50%;
     background: var(--blossom-pink);
   }
-
   .entry-date {
     font-size: 12px;
     color: var(--text-muted);
@@ -106,11 +54,10 @@
     font-family: var(--font-display);
     font-size: 18px;
     color: var(--spring-dark);
-    margin-bottom: 14px;
+    margin: 0 0 14px;
   }
   .entry p { font-size: 14px; margin-bottom: 12px; }
   .entry p:last-child { margin-bottom: 0; }
-
   .tag {
     display: inline-block;
     font-size: 11px;
@@ -121,16 +68,6 @@
     background: rgba(74, 140, 48, 0.12);
     color: var(--spring-green);
   }
-
-  footer {
-    text-align: center;
-    padding: 32px 24px;
-    font-size: 13px;
-    color: var(--text-muted);
-    border-top: 1px solid rgba(74, 140, 48, 0.15);
-  }
-  footer a { color: var(--text-muted); text-decoration: none; margin: 0 8px; }
-  footer a:hover { color: var(--spring-dark); }
 </style>
 </head>
 <body>
@@ -139,152 +76,176 @@
   <div class="nav-inner">
     <a href="index.html" class="logo">HOP</a>
     <ul class="nav-links">
-      <li><a href="index.html#about">About</a></li>
-      <li><a href="about.html">Dev</a></li>
-      <li><a href="tips.html">Tips</a></li>
-      <li><a href="devlog.html" style="color: var(--spring-dark);">Devlog</a></li>
-      <li><a href="play.html" style="color: var(--spring-green);">Play</a></li>
+      <li><a href="index.html">Start</a></li>
+      <li><a href="tipps.html">Tipps</a></li>
+      <li><a href="technik.html">Technik</a></li>
+      <li><a href="devlog.html" class="active">Devlog</a></li>
+      <li class="hide-mobile"><a href="ueber-mich.html">Über mich</a></li>
+      <li><a href="play.html" class="play">Spielen</a></li>
     </ul>
   </div>
 </nav>
 
 <main>
   <h1 class="page-title">Devlog</h1>
-  <p class="page-subtitle">Notes on building Easter Hop — a browser game made entirely in vanilla HTML5 Canvas.</p>
+  <p class="page-subtitle">Notizen aus der Entwicklung von Easter Hop — einem Browserspiel, komplett in Vanilla HTML5 Canvas.</p>
 
-  <!-- ENTRY: April 2026 — Performance Pass -->
+  <div class="byline">
+    <img class="avatar" src="./assets/avatar-peter.svg" alt="Pixel-Avatar von Peter Jacob" width="42" height="42">
+    <div class="who">
+      <strong>Peter Jacob</strong> — Solo-Entwickler aus Hamburg<br>
+      Fortlaufend seit Januar 2026 · <a href="ueber-mich.html">Über mich</a>
+    </div>
+  </div>
+
+  <!-- EINTRAG: Juli 2026 — Neuaufstellung -->
+  <article class="entry">
+    <p class="entry-date">Juli 2026</p>
+    <h2 class="entry-title">Umbau: Deutsch, Rechtsseiten, weniger Ballast</h2>
+    <span class="tag">meta</span><span class="tag">content</span><span class="tag">recht</span>
+    <p>Der größte Umbau seit dem Rebranding, und diesmal ging es nicht um das Spiel selbst. Nach der zweiten AdSense-Ablehnung habe ich mich gründlich eingelesen — in Googles Richtlinien, in E-E-A-T, in die deutsche Rechtslage für werbefinanzierte Websites — und dann konsequent aufgeräumt.</p>
+    <p>Die Seite ist jetzt komplett auf Deutsch. Das war überfällig: Eine .de-Domain mit deutschem Impressum und englischen Texten war ein seltsamer Zwitter. Impressum und Datenschutzerklärung sind jetzt eigene, ordentliche Seiten (§ 5 DDG statt des veralteten TMG-Verweises, DSGVO-konforme Erklärung mit AdSense-Abschnitt). Die Schriften werden lokal gehostet statt von Google-Servern geladen. Die leeren Anzeigen-Platzhalter sind raus — solange keine Anzeigen freigeschaltet sind, haben graue Kästen mit Rahmen auf der Seite nichts verloren.</p>
+    <p>Außerdem habe ich beim Übersetzen alle Artikel gegen den echten Spielcode geprüft und dabei ein paar peinliche Abweichungen gefunden — im alten Technik-Text standen Physik-Konstanten, die längst nicht mehr stimmten. Jetzt zitieren alle Seiten den Code, der tatsächlich läuft. Ehrlichkeit ist billiger als Korrekturen.</p>
+  </article>
+
+  <!-- EINTRAG: April 2026 — Performance -->
   <article class="entry">
     <p class="entry-date">April 2026</p>
-    <h2 class="entry-title">Performance Pass</h2>
+    <h2 class="entry-title">Performance-Check auf alten Geräten</h2>
     <span class="tag">performance</span><span class="tag">mobile</span>
-    <p>After the AdSense rejection I spent some time cleaning up performance on low-end devices. The main issue was on older Android phones where the frame rate would dip noticeably on the death burst — 28 particles all spawning at once and the score animation triggering simultaneously. The fix was to stagger the particle spawning over two frames rather than all at once, which smoothed things out.</p>
-    <p>I also profiled the palette lerp calculation. It was running the full color interpolation for every drawable element every frame, including elements that hadn't changed. I added a dirty flag — the palette only recomputes when the score changes, not every frame. Tiny win on desktop, noticeable on mobile.</p>
-    <p>One other thing: I found that calling <code>ctx.save()</code> and <code>ctx.restore()</code> more often than necessary was adding up. I audited all the draw functions and consolidated the save/restore calls so we're only doing the minimum required. The game now runs at a solid 60fps on every device I've tested, including a 2018 mid-range Android.</p>
+    <p>Nach der AdSense-Ablehnung hatte ich Zeit und habe sie genutzt, um das Spiel auf möglichst vielen Geräten zu testen — inklusive eines Android-Mittelklasse-Handys von 2018 aus der Schublade. Ergebnis: stabile 60 fps, auch beim Feuerwerk mit 28 gleichzeitigen Partikeln.</p>
+    <p>Dass das funktioniert, liegt an Entscheidungen aus der frühen Entwicklung: Der Partikel-Pool erzeugt während eines Laufs keinerlei neue Objekte, die Farb-Strings der Ostereier sind vorgebaut statt pro Frame zusammengesetzt, und der Delta-Deckel im Game-Loop verhindert Nachhol-Orgien nach Tab-Wechseln. Die Details stehen auf der <a href="technik.html">Technik-Seite</a>.</p>
+    <p>Eine Sache habe ich auf der Liste gelassen statt sie zu bauen: Rendering in nativer Auflösung auf Retina-Displays. Aktuell rechnet das Spiel intern in 400×600 und wird hochskaliert. Auf sehr scharfen Displays sieht man das minimal — aber es ist mir den zusätzlichen Code bisher nicht wert gewesen.</p>
   </article>
 
-  <!-- ENTRY: April 2026 — AdSense Rejection -->
+  <!-- EINTRAG: April 2026 — AdSense-Ablehnung -->
   <article class="entry">
     <p class="entry-date">April 2026</p>
-    <h2 class="entry-title">AdSense Rejection &amp; What I'm Doing About It</h2>
+    <h2 class="entry-title">AdSense-Ablehnung — und was ich daraus mache</h2>
     <span class="tag">meta</span><span class="tag">content</span>
-    <p>Applied to Google AdSense last week and got rejected with the reason "low value content." Honest response: fair enough. The site had two content pages, a devlog with four entries all dated the same month, and a game. Google's crawlers have seen ten thousand sites like this and most of them are thin.</p>
-    <p>So I'm doing something about it. I've added a tips and strategy guide, an about page, a technical breakdown of how the game works, and a short essay about why I make browser games. I'm also filling in the devlog properly — there were real development stages that I didn't document at the time, so I'm writing them up now from notes and git history.</p>
-    <p>I'm not trying to game the system by padding content. These are things that are genuinely worth writing. If you found the technical page or the essay useful, that's the point. If Google approves the ads as a result, that's a nice bonus.</p>
+    <p>Letzte Woche kam die Antwort von Google AdSense: abgelehnt, Begründung „Low Value Content“. Meine ehrliche Reaktion: verständlich. Die Seite hatte zwei Inhaltsseiten, einen Devlog mit vier Einträgen aus demselben Monat und ein Spiel. Googles Prüfsysteme haben zehntausend solcher Seiten gesehen, und die meisten davon sind dünn.</p>
+    <p>Also tue ich etwas dagegen: ein Tipps-und-Strategie-Guide, eine Über-mich-Seite, eine technische Aufschlüsselung des Spiels und ein Essay darüber, warum ich überhaupt Browserspiele baue. Außerdem fülle ich den Devlog richtig auf — es gab echte Entwicklungsphasen, die ich damals nicht dokumentiert habe, und die schreibe ich jetzt aus Notizen und der Git-Historie nach.</p>
+    <p>Ich versuche nicht, das System mit Füllmaterial auszutricksen. Das sind Texte, die es wert sind, geschrieben zu werden. Wenn dir die Technik-Seite oder das Essay etwas bringt, ist das der Punkt. Wenn Google daraufhin die Anzeigen freischaltet, ist das ein netter Bonus.</p>
   </article>
 
-  <!-- ENTRY: Late March 2026 — Submitting to AdSense -->
+  <!-- EINTRAG: Ende März 2026 — AdSense-Bewerbung -->
   <article class="entry">
-    <p class="entry-date">Late March 2026</p>
-    <h2 class="entry-title">Submitting to Google AdSense</h2>
-    <span class="tag">meta</span><span class="tag">monetisation</span>
-    <p>The game has been live for about a month and getting a small but steady trickle of traffic — mostly from a Reddit post that got a few upvotes and a couple of links from browser-game directories. Nothing dramatic, but real people playing it. That felt like a reasonable point to try adding a small ad.</p>
-    <p>I added the AdSense publisher script to the index page and a leaderboard-format ad unit below the hero section. The ad slot shows a placeholder while the account is under review. The review process apparently takes up to two weeks. Submitted and waiting.</p>
+    <p class="entry-date">Ende März 2026</p>
+    <h2 class="entry-title">Bewerbung bei Google AdSense</h2>
+    <span class="tag">meta</span><span class="tag">monetarisierung</span>
+    <p>Das Spiel ist seit etwa einem Monat online und bekommt einen kleinen, stetigen Besucherstrom — hauptsächlich über einen Reddit-Post mit ein paar Upvotes und zwei, drei Verlinkungen aus Browser-Game-Verzeichnissen. Nichts Dramatisches, aber echte Menschen, die spielen. Das schien mir ein vernünftiger Zeitpunkt, eine kleine Anzeige zu versuchen.</p>
+    <p>Ich habe das AdSense-Skript eingebunden und einen Anzeigenplatz unter dem Hero-Bereich vorgesehen. Während der Prüfung zeigt der Slot nur einen Platzhalter. Die Prüfung dauert angeblich bis zu zwei Wochen. Eingereicht, jetzt heißt es warten.</p>
   </article>
 
-  <!-- ENTRY 4 (existing) -->
+  <!-- EINTRAG: März 2026 — #4 -->
   <article class="entry">
-    <p class="entry-date">March 2026</p>
-    <h2 class="entry-title">#4 — Mobile Polish &amp; Global Leaderboard</h2>
+    <p class="entry-date">März 2026</p>
+    <h2 class="entry-title">#4 — Mobile-Feinschliff &amp; globale Bestenliste</h2>
     <span class="tag">feature</span><span class="tag">mobile</span><span class="tag">backend</span>
-    <p>The local high score was fine for solo play but felt lonely. I added a global top-3 leaderboard backed by Supabase — a Postgres database with a simple REST API. No backend server required; the game posts scores directly from the browser using <code>fetch()</code>.</p>
-    <p>When a score qualifies for the top 3, the game transitions to a name-entry screen. Getting the keyboard to pop up on iOS was the trickiest part: canvas elements can't receive focus, so I added an off-screen <code>&lt;input&gt;</code> element that gets programmatically focused. Android triggers the keyboard automatically on focus; iOS Safari requires the focus call to originate from a touch event, so I hooked it into the <code>touchstart</code> listener.</p>
-    <p>Also fixed a longstanding visual bug where Easter eggs and clouds appeared to jump up and down. The root cause was computing their vertical position from the current pixel offset, which changed every frame. Switching to a slot-index-based hash — where each cloud or egg derives its position from a stable integer ID — made them scroll smoothly.</p>
+    <p>Der lokale Highscore war fürs Alleinspielen in Ordnung, fühlte sich aber einsam an. Also gibt es jetzt eine globale Top-3-Bestenliste auf Basis von Supabase — eine Postgres-Datenbank mit REST-API. Kein eigener Server nötig; das Spiel schickt Scores direkt aus dem Browser per <code>fetch()</code>.</p>
+    <p>Qualifiziert sich ein Score für die Top 3, wechselt das Spiel in einen Namenseingabe-Bildschirm. Der kniffligste Teil war die iOS-Tastatur: Ein Canvas kann keinen Fokus bekommen, also fokussiert das Spiel ein unsichtbares <code>&lt;input&gt;</code>-Element. Android öffnet die Tastatur beim Fokus automatisch; iOS Safari verlangt, dass der Fokus-Aufruf direkt aus einem Touch-Event stammt — deshalb hängt er im <code>touchstart</code>-Listener.</p>
+    <p>Außerdem endlich einen alten Grafikfehler behoben: Ostereier und Wolken zappelten vertikal. Die Ursache war, dass ihre Höhe aus dem aktuellen Pixel-Offset berechnet wurde, der sich jeden Frame ändert. Die Lösung — Position deterministisch aus einer stabilen Slot-Nummer hashen — beschreibe ich im Detail auf der <a href="technik.html">Technik-Seite</a>.</p>
   </article>
 
-  <!-- ENTRY: Mid March 2026 — Touch Controls -->
+  <!-- EINTRAG: Mitte März 2026 — Touch -->
   <article class="entry">
-    <p class="entry-date">Mid March 2026</p>
-    <h2 class="entry-title">Touch Controls &amp; Mobile Testing</h2>
+    <p class="entry-date">Mitte März 2026</p>
+    <h2 class="entry-title">Touch-Steuerung &amp; Mobile-Tests</h2>
     <span class="tag">mobile</span><span class="tag">input</span>
-    <p>The game used spacebar and mouse click from the start, but touch was an afterthought. Adding a <code>touchstart</code> listener was one line, but making it actually feel good on mobile took more work. The main problem was that tapping a touch screen has a 300ms default delay on many mobile browsers — a legacy feature from the era when double-tap meant zoom. Solving it required adding <code>touch-action: none</code> to the canvas CSS and calling <code>preventDefault()</code> on touch events.</p>
-    <p>I tested on a mix of old and new devices. The game ran well on everything current. On older Android phones (2017–2019 era), frame rate was acceptable but the death burst particle effect caused occasional stutters. I reduced the particle count on small screens based on a <code>window.devicePixelRatio</code> check, which helped.</p>
-    <p>One surprising find: several testers said they preferred touch to keyboard. Something about the tactile tap felt more satisfying than pressing a key. I have no explanation for this.</p>
+    <p>Das Spiel konnte von Anfang an Leertaste und Mausklick, Touch war ein Nachzügler. Der <code>touchstart</code>-Listener selbst ist eine Zeile — aber damit sich das Ganze auf dem Handy gut anfühlt, brauchte es mehr. Das Hauptproblem: Viele Mobile-Browser verzögern Tap-Events um bis zu 300 ms, ein Erbe aus der Zeit, als Doppeltippen „Zoom“ bedeutete. Die Lösung ist <code>touch-action: none</code> auf dem Canvas plus <code>preventDefault()</code> in den Touch-Handlern.</p>
+    <p>Getestet habe ich auf einer Mischung aus alten und neuen Geräten aus dem Familien- und Freundeskreis. Auf allem Aktuellen lief das Spiel anstandslos; auf älteren Android-Geräten (2017–2019) blieb die Framerate dank Partikel-Pool und sparsamem Rendering ebenfalls stabil.</p>
+    <p>Eine überraschende Erkenntnis: Mehrere Tester sagten, Touch fühle sich <em>besser</em> an als die Tastatur. Irgendetwas am direkten Tippen auf die Scheibe wirkt befriedigender als ein Tastendruck. Ich habe dafür keine Erklärung.</p>
   </article>
 
-  <!-- ENTRY 3 (existing) -->
+  <!-- EINTRAG: März 2026 — #3 -->
   <article class="entry">
-    <p class="entry-date">March 2026</p>
-    <h2 class="entry-title">#3 — Fireworks, Fences &amp; Lawn Decorations</h2>
-    <span class="tag">gameplay</span><span class="tag">visual</span>
-    <p>Three visual improvements this sprint. First, the brown wall-style obstacles got replaced with proper white picket fences — posts, horizontal rails, vertical planks, and pointed picket tips that extend into the gap from both sides. The fence body is off-white with a subtle shadow rail and a highlight strip on the leading edge of each post.</p>
-    <p>Second, Easter eggs now sit on the lawn and scroll past with the ground. They're tiny 8×10 pixel ovals in four color variants (pink, blue, yellow, lavender) with a white horizontal stripe. Combined with the scattered background flowers, the world feels genuinely inhabited.</p>
-    <p>Third: every 10 fences cleared triggers a small firework burst. 28 particles fan out from the bunny in all directions using Easter egg colors, with a slight upward bias and individual fade-out. It reuses the existing particle pool with no new data structures.</p>
+    <p class="entry-date">März 2026</p>
+    <h2 class="entry-title">#3 — Feuerwerk, Zäune &amp; Rasen-Deko</h2>
+    <span class="tag">gameplay</span><span class="tag">visuell</span>
+    <p>Drei sichtbare Verbesserungen in diesem Schwung. Erstens: Die braunen Mauer-Hindernisse sind jetzt richtige weiße Lattenzäune — Pfosten, zwei Querriegel, vertikale Planken und spitze Zaunlatten, die von beiden Seiten in die Lücke ragen. Der Zaunkörper ist gebrochen weiß mit Schattenriegel und einem Glanzstreifen an der Vorderkante jedes Pfostens.</p>
+    <p>Zweitens: Auf dem Rasen liegen jetzt Ostereier, die mit dem Boden vorbeiscrollen. Winzige Pixel-Ovale in vier Farbvarianten (rosa, blau, gelb, lavendel) mit weißem Querstreifen. Zusammen mit den verstreuten Hintergrundblumen wirkt die Welt endlich bewohnt.</p>
+    <p>Drittens: Alle 10 gemeisterten Zäune gibt es ein kleines Feuerwerk — 28 Partikel fächern in Ostereier-Farben vom Hasen aus in alle Richtungen, mit leichtem Aufwärtsdrall und individuellem Ausblenden. Es nutzt den vorhandenen Partikel-Pool, null neue Datenstrukturen.</p>
   </article>
 
-  <!-- ENTRY 2 (existing) -->
+  <!-- EINTRAG: März 2026 — #2 -->
   <article class="entry">
-    <p class="entry-date">March 2026</p>
-    <h2 class="entry-title">#2 — Easter Hop: The Rebrand</h2>
+    <p class="entry-date">März 2026</p>
+    <h2 class="entry-title">#2 — Easter Hop: das Rebranding</h2>
     <span class="tag">design</span><span class="tag">art</span>
-    <p>With Easter approaching I decided to transform the game's entire visual identity. The copper robot mole became a cream-white Easter bunny, drawn in the same 17×14 pixel grid. The bunny has pink ear interiors, a rose nose, dark eye pupils, blush cheeks, and shadowed paws — all defined by a colour key lookup table so no image assets are needed.</p>
-    <p>The underground cyber-cave aesthetic gave way to a spring meadow that transitions to golden summer as your score climbs. Two palette objects (SPRING and SUMMER) define sky, ground, obstacle, and particle colours; every frame lerps between them based on score. At score 30 the transformation is complete — the sky deepens to summer blue, ground turns rich green, and flower petals shift from pink blossoms to sunflower yellow.</p>
-    <p>Obstacles changed from server racks to wooden garden fences. The background gained scrolling clouds (three overlapping rectangles per cloud, parallax at 0.18× game speed), scattered pixel flowers in a two-pass render (centers first, then petals, to minimise canvas state changes), and a simple sky gradient.</p>
+    <p>Ostern rückte näher, und ich habe die komplette visuelle Identität des Spiels umgekrempelt. Aus dem kupferfarbenen Roboter-Maulwurf wurde ein cremeweißer Osterhase — gezeichnet im selben 17×14-Pixel-Raster. Rosa Ohren, Rosenäschen, dunkle Pupillen, rote Bäckchen, schattierte Pfoten: alles über eine Farb-Zuordnungstabelle definiert, ganz ohne Bilddateien.</p>
+    <p>Die unterirdische Cyber-Höhlen-Ästhetik wich einer Frühlingswiese, die mit steigendem Score in goldenen Sommer übergeht. Zwei Paletten-Objekte (SPRING und SUMMER) definieren Himmel, Boden, Hindernis- und Partikelfarben; jeden Frame wird zwischen ihnen interpoliert. Bei Punkt 30 ist die Verwandlung komplett — der Himmel vertieft sich zu Sommerblau, das Grün wird satt, und aus rosa Blütenblättern werden Sonnenblumengelb.</p>
+    <p>Die Hindernisse wurden von Server-Racks zu Gartenzäunen. Der Hintergrund bekam scrollende Wolken (drei überlappende Rechtecke pro Wolke, Parallaxe mit 0,18-facher Spielgeschwindigkeit), verstreute Pixel-Blumen in einem Zwei-Pass-Rendering (erst alle Blütenmitten, dann alle Blätter — minimiert die Canvas-Zustandswechsel) und einen einfachen Himmelsverlauf.</p>
   </article>
 
-  <!-- ENTRY 1 (existing) -->
+  <!-- EINTRAG: Februar 2026 — #1 -->
   <article class="entry">
-    <p class="entry-date">February 2026</p>
-    <h2 class="entry-title">#1 — Building the Core: Molt the Mole</h2>
-    <span class="tag">architecture</span><span class="tag">gameplay</span>
-    <p>Easter Hop started life as "Molt the Mole" — a Flappy Bird-style runner with a copper robot mole navigating server racks in an underground tunnel. The entire game runs in a single HTML file with no dependencies, no build step, and no external assets. Everything — sprite, physics, particles, UI — is rendered on an HTML5 Canvas element using the 2D API.</p>
-    <p>The game loop uses a fixed-timestep accumulator pattern: wall-clock delta time is accumulated and consumed in 16.67 ms (60 Hz) chunks. This decouples update logic from render rate and prevents the simulation from running at different speeds on different devices.</p>
-    <p>The player character is a 17×14 pixel sprite defined as an array of character strings, each character mapping to an RGB colour. At render time the sprite is drawn as a grid of filled rectangles scaled by <code>MOLE_SIZE = 3</code>. Canvas <code>save()</code> / <code>restore()</code> handle the rotation and squash-stretch applied on flap. Physics are simple: constant gravity accumulates into a vertical velocity clamped at terminal velocity; a flap applies an upward impulse.</p>
-    <p>Obstacle gaps shrink and scroll speed increases with score, creating a smooth difficulty ramp without abrupt jumps. A particle pool of 80 pre-allocated objects handles both flap dust and the death burst — avoiding mid-game garbage collection pauses by never allocating new objects during play.</p>
+    <p class="entry-date">Februar 2026</p>
+    <h2 class="entry-title">#1 — Der Kern: Molt the Mole</h2>
+    <span class="tag">architektur</span><span class="tag">gameplay</span>
+    <p>Easter Hop begann sein Leben als „Molt the Mole“ — ein Flappy-Bird-artiger Runner, in dem ein kupferner Roboter-Maulwurf durch Server-Racks in einem unterirdischen Tunnel navigiert. Das ganze Spiel läuft in einer einzigen HTML-Datei: keine Abhängigkeiten, kein Build-Schritt, keine externen Grafiken. Alles — Sprite, Physik, Partikel, UI — wird auf einem HTML5-Canvas mit der 2D-API gerendert.</p>
+    <p>Der Game-Loop nutzt das Fixed-Timestep-Akkumulator-Muster: Die reale Zeitdifferenz wird angesammelt und in 16,67-ms-Häppchen (60 Hz) abgearbeitet. Das entkoppelt die Spiellogik von der Bildrate — die Simulation läuft auf jedem Gerät gleich schnell.</p>
+    <p>Die Spielfigur ist ein 17×14-Pixel-Sprite aus Zeichenketten, jedes Zeichen steht für eine Farbe. Beim Rendern wird das Raster als Gitter gefüllter Rechtecke gezeichnet, skaliert mit <code>MOLE_SIZE = 3</code>. Canvas-<code>save()</code>/<code>restore()</code> kapseln Rotation und Squash-Stretch beim Hüpfen. Die Physik ist bewusst minimal: konstante Schwerkraft, gedeckelte Fallgeschwindigkeit, ein Hüpfer setzt die Vertikalgeschwindigkeit.</p>
+    <p>Die Lücken schrumpfen und das Tempo steigt mit dem Score — eine weiche Schwierigkeitsrampe ohne Sprünge. Ein Pool aus 80 vorab angelegten Partikel-Objekten bedient Hüpf-Staub und Todes-Explosion, damit während des Spiels niemals neue Objekte entstehen und der Garbage Collector still bleibt.</p>
   </article>
 
-  <!-- ENTRY: Mid February 2026 — Score System -->
+  <!-- EINTRAG: Mitte Februar 2026 — Score -->
   <article class="entry">
-    <p class="entry-date">Mid February 2026</p>
-    <h2 class="entry-title">Score System &amp; Local High Score</h2>
+    <p class="entry-date">Mitte Februar 2026</p>
+    <h2 class="entry-title">Punktesystem &amp; lokaler Highscore</h2>
     <span class="tag">feature</span><span class="tag">ui</span>
-    <p>The original prototype had no score display — you just played until you died and restarted. Adding a score counter was straightforward (increment on each fence cleared), but deciding where and how to display it took longer. The canvas is already busy: bird, obstacles, background, particles. I didn't want a floating number competing with the gameplay.</p>
-    <p>I settled on a large, semi-transparent score in the upper center of the canvas — big enough to see at a glance, transparent enough that it doesn't obscure anything important. The font is drawn with the canvas text API using a bitmap-style font stack, keeping the pixel-art aesthetic without importing assets.</p>
-    <p>For the high score, <code>localStorage</code> was the obvious choice. On game over, check if <code>currentScore > parseInt(localStorage.getItem('highScore') || 0)</code> and update if so. Read it back on load. Six lines of code that work perfectly across sessions with no server. I always find it satisfying when the right answer is also the simple answer.</p>
+    <p>Der erste Prototyp hatte gar keine Punkteanzeige — man spielte, bis man starb, und startete neu. Einen Zähler einzubauen war trivial (plus eins pro gemeistertem Zaun), aber die Frage, <em>wo und wie</em> er angezeigt wird, hat länger gedauert. Auf dem Canvas ist schon viel los: Hase, Zäune, Hintergrund, Partikel. Ich wollte keine schwebende Zahl, die mit dem Spielgeschehen konkurriert.</p>
+    <p>Geworden ist es eine große, halbtransparente Zahl oben in der Mitte — groß genug für einen Blick aus dem Augenwinkel, durchsichtig genug, um nichts Wichtiges zu verdecken. Gezeichnet wird sie mit der Canvas-Text-API in einem Monospace-Font mit Schlagschatten, passend zur Pixel-Ästhetik, ohne zusätzliche Assets.</p>
+    <p>Für den Rekord war <code>localStorage</code> die offensichtliche Wahl: beim Game Over vergleichen, gegebenenfalls überschreiben, beim Laden auslesen. Sechs Zeilen Code, funktioniert über Sitzungen hinweg, braucht keinen Server. Ich finde es immer befriedigend, wenn die richtige Antwort auch die einfache Antwort ist.</p>
   </article>
 
-  <!-- ENTRY: Early February 2026 — Sound -->
+  <!-- EINTRAG: Anfang Februar 2026 — Sound -->
   <article class="entry">
-    <p class="entry-date">Early February 2026</p>
-    <h2 class="entry-title">Adding Sound (and Removing It)</h2>
+    <p class="entry-date">Anfang Februar 2026</p>
+    <h2 class="entry-title">Sound: erst gescheitert, dann Musik</h2>
     <span class="tag">audio</span><span class="tag">ux</span>
-    <p>I spent about a day and a half trying to add sound effects. The Web Audio API is powerful but genuinely fiddly — generating a plausible "flap" sound programmatically, making it trigger reliably on both desktop and mobile, handling the autoplay restrictions that most browsers now enforce, getting the volume right so it's not annoying. I got it working on desktop.</p>
-    <p>On iOS Safari, it refused to produce any sound until a user gesture had occurred. This is by design — browsers block autoplay audio to prevent sites from blasting sound the moment you open them. The fix is to initialise the AudioContext inside a user event handler (tap, click, keypress). I did this, and it worked about 70% of the time. The other 30%, the context would be in a "suspended" state and calling <code>resume()</code> would work... eventually... on the next gesture.</p>
-    <p>I cut audio entirely. The game is better without it for now — it works perfectly in silent environments (offices, commutes, late night), and adding unreliable sound that fails a third of the time on iOS isn't worth the trade-off. If I ever revisit this, I'll use an audio sprite with a proper gesture-unlock flow from the start, not bolt it on afterwards.</p>
+    <p>Ich habe ungefähr anderthalb Tage damit verbracht, Soundeffekte einzubauen — und sie wieder rausgeworfen. Die Web-Audio-API ist mächtig, aber wirklich fummelig: ein plausibles „Hüpf“-Geräusch programmatisch erzeugen, es auf Desktop <em>und</em> Mobile zuverlässig auslösen, die Autoplay-Sperren der Browser umschiffen, die Lautstärke so treffen, dass sie nicht nervt. Auf dem Desktop lief es.</p>
+    <p>Auf iOS Safari kam kein Ton, bevor nicht eine Nutzergeste stattgefunden hatte — das ist Absicht, Browser blockieren Autoplay-Audio. Die Standardlösung (AudioContext in einem Event-Handler initialisieren) funktionierte bei mir in etwa 70 % der Fälle; im Rest hing der Context im „suspended“-Zustand und ließ sich erst bei der nächsten Geste wecken. Unzuverlässige Soundeffekte sind schlimmer als keine, also flogen sie raus.</p>
+    <p>Stattdessen gibt es jetzt etwas viel Einfacheres: eine Hintergrundmusik-Schleife über ein normales <code>&lt;audio&gt;</code>-Element, die beim ersten Tap startet (womit die Autoplay-Regel automatisch erfüllt ist) — plus ein kleiner Umschalter oben rechts im Spiel, um sie stummzuschalten. Kein Web-Audio, keine Race Conditions, funktioniert überall. Lektion gelernt: Erst die simple Lösung ausreizen, dann zur mächtigen greifen.</p>
   </article>
 
-  <!-- ENTRY: Late January 2026 — Physics Tuning -->
+  <!-- EINTRAG: Ende Januar 2026 — Physik -->
   <article class="entry">
-    <p class="entry-date">Late January 2026</p>
-    <h2 class="entry-title">Getting the Physics Right</h2>
-    <span class="tag">gameplay</span><span class="tag">physics</span>
-    <p>The first playable version had gravity set too high and the jump force too weak. The bunny would fall like a stone and require constant rapid tapping to stay airborne. This isn't fun — it's stressful and imprecise, with no room to develop a rhythm. I spent several sessions just adjusting three constants and playtesting: <code>GRAVITY</code>, <code>JUMP_FORCE</code>, and <code>TERMINAL_VELOCITY</code>.</p>
-    <p>The goal was a feel where one deliberate tap produces a clear arc — up for about half a second, then a graceful curve back down. The player should be able to "hold" a height by tapping at the peak of each arc. Getting there required lower gravity (0.6, down from 0.9) and a stronger upward impulse (-10, up from -7). Terminal velocity stays at 12 to prevent runaway falls on long gaps.</p>
-    <p>I also added a brief squash-stretch animation on flap — the sprite compresses slightly on the upswing and elongates on the fall. This is purely cosmetic but it makes the physics feel heavier and more physical. Animation that reinforces the physics makes the physics feel more real, even when they're not.</p>
+    <p class="entry-date">Ende Januar 2026</p>
+    <h2 class="entry-title">Die Physik richtig hinbekommen</h2>
+    <span class="tag">gameplay</span><span class="tag">physik</span>
+    <p>Die erste spielbare Version hatte zu starke Schwerkraft und zu schwachen Hüpf-Impuls. Die Figur fiel wie ein Stein und verlangte hektisches Dauertippen — das ist nicht fordernd, sondern stressig und unpräzise, ohne Raum für einen Rhythmus. Ich habe mehrere Abende nur damit verbracht, drei Konstanten zu verstellen und zu testen.</p>
+    <p>Gelandet bin ich bei <code>GRAVITY = 0.45</code>, <code>FLAP_IMPULSE = -7.5</code> und <code>TERMINAL_VELOCITY = 10</code> — ein Tap erzeugt einen klaren Bogen von etwa einer Viertelsekunde bis zum Scheitelpunkt, und am Scheitelpunkt erneut zu tippen hält die Höhe. Zwei Entscheidungen daneben waren mindestens so wichtig wie die Zahlen selbst: Ein Tap <em>setzt</em> die Geschwindigkeit, statt sie zu addieren (dadurch wirkt jeder Hüpfer identisch), und ein Cooldown von 5 Frames verhindert, dass Getrommel die Kontrolle übernimmt. Was das für Spieler bedeutet, steht inzwischen ausführlich auf der <a href="tipps.html">Tipps-Seite</a>.</p>
+    <p>Dazu kam die Squash-Stretch-Animation: Beim Hüpfen staucht sich das Sprite kurz und federt zurück, beim Fallen streckt es sich. Rein kosmetisch — aber Animation, die die Physik unterstreicht, lässt die Physik echter wirken, als sie ist.</p>
   </article>
 
-  <!-- ENTRY 0: January 2026 — First Prototype -->
+  <!-- EINTRAG: Januar 2026 — #0 -->
   <article class="entry">
-    <p class="entry-date">January 2026</p>
-    <h2 class="entry-title">#0 — First Prototype</h2>
-    <span class="tag">prototype</span><span class="tag">architecture</span>
-    <p>Started this project on a quiet Sunday in January. The idea: a Flappy Bird-style game in a single HTML file, no dependencies, no build step. I'd been wanting to build something small and completable for a while, and a one-button runner seemed like the right scope — core loop is simple enough to finish in a weekend, but interesting enough to polish over a few weeks.</p>
-    <p>The first prototype was a white rectangle falling down the screen, jumping when you pressed space. No sprites, no obstacles, no score — just the physics loop. Getting the game loop right first is something I've learned from past projects: if your update/render cycle isn't solid, everything built on top of it will be unreliable. I used a fixed-timestep accumulator from the start, burning a couple of hours to get it right rather than hacking in a simple <code>setInterval</code> I'd regret later.</p>
-    <p>By end of day one: a jumping rectangle, two moving obstacles with a gap between them, and collision detection that ended the run. Not pretty. But it was a game. You could play it, it had a goal, and you could fail. That's the foundation everything else is built on.</p>
+    <p class="entry-date">Januar 2026</p>
+    <h2 class="entry-title">#0 — Der erste Prototyp</h2>
+    <span class="tag">prototyp</span><span class="tag">architektur</span>
+    <p>Angefangen hat das Projekt an einem ruhigen Sonntag im Januar. Die Idee: ein Flappy-Bird-artiges Spiel in einer einzigen HTML-Datei, ohne Abhängigkeiten, ohne Build-Schritt. Ich wollte schon länger mal wieder etwas Kleines, <em>Abschließbares</em> bauen, und ein Ein-Knopf-Runner hat genau den richtigen Umfang: Der Kern-Loop ist an einem Wochenende fertig, aber interessant genug, um ihn wochenlang zu polieren.</p>
+    <p>Der erste Prototyp war ein weißes Rechteck, das den Bildschirm hinunterfiel und bei Leertaste sprang. Keine Sprites, keine Hindernisse, kein Score — nur der Physik-Loop. Den Game-Loop zuerst sauber zu bauen ist eine Lehre aus früheren Projekten: Wenn der Update-Render-Zyklus wackelt, wackelt alles darüber. Ich habe von Anfang an den Fixed-Timestep-Akkumulator benutzt und dafür ein paar Stunden investiert, statt ein schnelles <code>setInterval</code> hinzupfuschen, das ich später bereut hätte.</p>
+    <p>Am Ende von Tag eins: ein springendes Rechteck, zwei wandernde Hindernisse mit Lücke dazwischen und eine Kollisionsabfrage, die den Lauf beendet. Nicht hübsch. Aber ein Spiel — man konnte es spielen, es hatte ein Ziel, und man konnte scheitern. Das ist das Fundament, auf dem alles andere steht.</p>
   </article>
 
 </main>
 
 <footer>
-  <p>&copy; 2026 Easter Hop &mdash; Peter Jacob</p>
-  <a href="index.html">Home</a>
-  <a href="play.html">Play</a>
-  <a href="about.html">About</a>
-  <a href="tips.html">Tips</a>
-  <a href="tech.html">How It Works</a>
-  <a href="blog-browser-games.html">Blog</a>
-  <a href="index.html#privacy">Privacy</a>
-  <a href="index.html#impressum">Impressum</a>
+  <p>&copy; 2026 Easter Hop &mdash; Peter Jacob, Hamburg</p>
+  <p>
+    <a href="index.html">Start</a>
+    <a href="play.html">Spielen</a>
+    <a href="tipps.html">Tipps</a>
+    <a href="technik.html">Technik</a>
+    <a href="warum-browser-games.html">Blog</a>
+    <a href="devlog.html">Devlog</a>
+    <a href="ueber-mich.html">Über mich</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <a href="#" id="cookie-settings-link">Cookie-Einstellungen</a>
+  </p>
+  <p class="footer-note">Texte und Code von Peter Jacob. Beim Schreiben nutze ich teilweise Werkzeug-Unterstützung; jeder Text basiert auf meiner eigenen Entwicklungsarbeit und wird von mir geprüft.</p>
 </footer>
-
+<script src="./assets/site.js"></script>
 </body>
 </html>
