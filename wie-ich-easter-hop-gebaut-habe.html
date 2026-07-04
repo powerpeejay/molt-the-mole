@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wie ich Easter Hop gebaut habe — ein Flappy-Bird-Klon in einer HTML-Datei</title>
+<meta name="description" content="Der komplette Weg vom weißen Rechteck zum fertigen Browserspiel: Game-Loop, Physik, Pixel-Sprites, Paletten-System, Touch-Steuerung, Bestenliste ohne Server und Veröffentlichung auf GitHub Pages — mit echtem Code und ehrlichen Fehlschlägen.">
+<link rel="canonical" href="https://www.hopzy.de/wie-ich-easter-hop-gebaut-habe.html">
+<meta property="og:title" content="Wie ich Easter Hop gebaut habe — ein Flappy-Bird-Klon in einer HTML-Datei">
+<meta property="og:description" content="Vom weißen Rechteck zum fertigen Browserspiel: der komplette Bauplan mit echtem Code und ehrlichen Fehlschlägen.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.hopzy.de/wie-ich-easter-hop-gebaut-habe.html">
+<meta property="og:locale" content="de_DE">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1969267771076427" crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Wie ich Easter Hop gebaut habe — ein Flappy-Bird-Klon in einer HTML-Datei",
+  "inLanguage": "de-DE",
+  "datePublished": "2026-07-04",
+  "dateModified": "2026-07-04",
+  "mainEntityOfPage": "https://www.hopzy.de/wie-ich-easter-hop-gebaut-habe.html",
+  "author": {
+    "@type": "Person",
+    "@id": "https://www.hopzy.de/ueber-mich.html#person",
+    "name": "Peter Jacob",
+    "url": "https://www.hopzy.de/ueber-mich.html"
+  }
+}
+</script>
+<link rel="stylesheet" href="./assets/seiten.css">
+<style>
+  .toc {
+    background: rgba(232, 245, 233, 0.7);
+    border: 1px solid rgba(74, 140, 48, 0.18);
+    padding: 20px 24px;
+    margin: 0 0 40px;
+  }
+  .toc strong {
+    font-family: var(--font-display);
+    font-size: 11px;
+    display: block;
+    margin-bottom: 10px;
+    color: var(--spring-dark);
+  }
+  .toc ol { margin-bottom: 0; font-size: 13px; }
+  .toc a { text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">HOP</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Start</a></li>
+      <li><a href="tipps.html">Tipps</a></li>
+      <li><a href="technik.html">Technik</a></li>
+      <li><a href="devlog.html">Devlog</a></li>
+      <li class="hide-mobile"><a href="ueber-mich.html">Über mich</a></li>
+      <li><a href="play.html" class="play">Spielen</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <h1 class="page-title">Wie ich Easter Hop gebaut habe</h1>
+  <p class="page-subtitle">Ein Flappy-Bird-Klon in einer einzigen HTML-Datei — der komplette Weg vom weißen Rechteck zum fertigen Spiel, mit allem Code und allen Irrwegen.</p>
+
+  <div class="byline">
+    <img class="avatar" src="./assets/avatar-peter.svg" alt="Pixel-Avatar von Peter Jacob" width="42" height="42">
+    <div class="who">
+      <strong>Peter Jacob</strong> — Solo-Entwickler aus Hamburg<br>
+      Veröffentlicht: <time datetime="2026-07-04">4. Juli 2026</time> · <a href="ueber-mich.html">Über mich</a>
+    </div>
+  </div>
+
+  <p>Dieser Artikel ist der Text, den ich selbst gern gefunden hätte, bevor ich angefangen habe: eine vollständige, ehrliche Anleitung, wie ein kleines Browserspiel wirklich entsteht. Nicht als Tutorial mit perfekten Schritten, sondern so, wie es tatsächlich gelaufen ist — inklusive der Abende, an denen nichts funktioniert hat. Am Ende steht <a href="play.html">Easter Hop</a>: ein Flappy-Bird-Klon mit Osterhase, der in einer einzigen HTML-Datei lebt, ohne Framework, ohne Build-Tool, ohne eine einzige Bilddatei.</p>
+  <p>Jeder Code-Ausschnitt hier stammt unverändert aus dem Spiel. Du kannst alles im Quelltext von <a href="play.html">play.html</a> nachlesen — das ist Absicht und Teil des Konzepts.</p>
+
+  <div class="toc">
+    <strong>Inhalt</strong>
+    <ol>
+      <li><a href="#regel">Die Regel: eine Datei, null Abhängigkeiten</a></li>
+      <li><a href="#geruest">Das Grundgerüst: Canvas und Loop</a></li>
+      <li><a href="#physik">Physik, die sich gut anfühlt</a></li>
+      <li><a href="#sprite">Ein Sprite ohne Bilddatei</a></li>
+      <li><a href="#hindernisse">Hindernisse und die Schwierigkeitskurve</a></li>
+      <li><a href="#welt">Eine Welt, die die Jahreszeit wechselt</a></li>
+      <li><a href="#polish">Polish: Partikel, Screenshake, Squash</a></li>
+      <li><a href="#mobile">Mobile: wo die echten Probleme wohnen</a></li>
+      <li><a href="#leaderboard">Eine Bestenliste ohne eigenen Server</a></li>
+      <li><a href="#rebranding">Vom Maulwurf zum Osterhasen</a></li>
+      <li><a href="#veroeffentlichen">Veröffentlichen für 0 Euro</a></li>
+      <li><a href="#fazit">Was ich beim nächsten Spiel anders mache</a></li>
+    </ol>
+  </div>
+
+  <h2 id="regel">1. Die Regel: eine Datei, null Abhängigkeiten</h2>
+  <p>Bevor die erste Zeile Code entstand, stand eine Entscheidung: Das ganze Spiel kommt in <em>eine</em> HTML-Datei. Kein npm, kein Bundler, keine Engine, keine Assets. Diese Regel klingt nach Verzicht, ist aber das Gegenteil — sie ist der Grund, warum das Projekt fertig wurde. Jede Abhängigkeit, die man nicht hat, kann nicht kaputtgehen, nicht veralten und nicht konfiguriert werden müssen. Und ein Spiel, das man als eine Datei verschicken kann, hat null Reibung: Link anklicken, spielen. Warum mir das so wichtig ist, habe ich in einem <a href="warum-browser-games.html">eigenen Essay</a> aufgeschrieben.</p>
+  <p>Die praktische Konsequenz: alles wird auf einem HTML5-Canvas mit der 2D-API gezeichnet, alle Grafiken sind Code, und die einzige Ausnahme von der Regel ist inzwischen eine Musikdatei und — seit dem Ausbau dieser Website — ein gemeinsames Stylesheet für die Inhaltsseiten. Das Spiel selbst läuft nach wie vor autark.</p>
+
+  <h2 id="geruest">2. Das Grundgerüst: Canvas und Loop</h2>
+  <p>Tag eins war unglamourös: ein 400×600-Pixel-Canvas und ein weißes Rechteck, das fällt und bei Leertaste springt. Aber unter diesem Rechteck steckt bereits die wichtigste Architektur-Entscheidung des ganzen Projekts — der <strong>Fixed-Timestep-Game-Loop</strong>:</p>
+
+<pre><code>const FIXED_DT = 1000 / 60;
+let lastTime   = 0;
+let accumulator = 0;
+
+function gameLoop(timestamp) {
+  if (lastTime === 0) lastTime = timestamp;
+  let delta = timestamp - lastTime;
+  lastTime = timestamp;
+  if (delta &gt; 200) delta = 200;
+  accumulator += delta;
+  while (accumulator &gt;= FIXED_DT) {
+    update();
+    accumulator -= FIXED_DT;
+  }
+  render();
+  requestAnimationFrame(gameLoop);
+}</code></pre>
+
+  <p>Warum der Aufwand statt eines simplen <code>setInterval</code>? Weil <code>requestAnimationFrame</code> so oft feuert, wie das Display aktualisiert — auf meinem Monitor 60-mal pro Sekunde, auf einem modernen Smartphone gern 120-mal. Ohne Entkopplung liefe das Spiel auf dem Handy doppelt so schnell. Der Akkumulator sammelt die echte verstrichene Zeit und arbeitet sie in exakten 16,67-ms-Schritten ab: Die Simulation rechnet überall gleich, nur gezeichnet wird unterschiedlich oft.</p>
+  <p>Das <code>Math</code>-lose Detail <code>if (delta &gt; 200) delta = 200;</code> habe ich erst nach einem Bug ergänzt: Wechselt man den Tab und kommt nach einer Minute zurück, will der Loop 3.600 verpasste Schritte nachholen — der Browser friert ein. Der Deckel wirft überschüssige Zeit einfach weg. Solche Kleinigkeiten stehen in keinem Tutorial-Titel, kosten aber echte Debugging-Abende.</p>
+
+  <h2 id="physik">3. Physik, die sich gut anfühlt</h2>
+  <p>Die komplette Flugphysik sind drei Konstanten und drei Zeilen pro Simulationsschritt:</p>
+
+<pre><code>const GRAVITY           = 0.45;
+const FLAP_IMPULSE      = -7.5;
+const TERMINAL_VELOCITY = 10;
+
+moleVY += GRAVITY;
+if (moleVY &gt; TERMINAL_VELOCITY) moleVY = TERMINAL_VELOCITY;
+moleY += moleVY;</code></pre>
+
+  <p>Die Zahlen sehen banal aus, aber sie sind das Ergebnis mehrerer Abende reinen Playtestings. Die erste Version hatte Schwerkraft 0,9 und Impuls −7: Die Figur fiel wie ein Stein und verlangte panisches Dauertippen. Nicht schwer — <em>unangenehm</em>. Der Unterschied zwischen beidem ist die eigentliche Kunst bei einem Ein-Knopf-Spiel.</p>
+  <p>Zwei Design-Entscheidungen waren wichtiger als jede Zahl. Erstens: Ein Tap <em>setzt</em> die Geschwindigkeit (<code>moleVY = FLAP_IMPULSE</code>), er addiert nicht. Dadurch wirkt jeder Hüpfer identisch, egal wie schnell man gerade fällt — der Spieler lernt genau <em>einen</em> Bogen. Zweitens: ein Cooldown von 5 Frames zwischen zwei Hüpfern, damit hektisches Getrommel nicht in unkontrolliertes Dauersteigen ausartet. Was beides für die Spielstrategie bedeutet, steht ausführlich im <a href="tipps.html">Tipps-Guide</a>.</p>
+
+  <h2 id="sprite">4. Ein Sprite ohne Bilddatei</h2>
+  <p>Der Osterhase ist keine PNG. Er ist ein Array aus Zeichenketten — jedes Zeichen ein Pixel, jede Farbe ein Eintrag in einer Zuordnungstabelle:</p>
+
+<pre><code>const BUNNY_SPRITE = [
+  '00000WW000WW00000',
+  '0000WWPW0WWPW0000',
+  '0000WPPW0WPPW0000',
+  '000WWPPWWWPPWW000',
+  '00WWWWWWWWWWWWD00',
+  '0WWWWETWWWTEWWWD0',
+  // … 14 Zeilen insgesamt
+];
+const BUNNY_COLORS = {
+  'W': [240, 235, 225],  // Fell
+  'P': [255, 160, 180],  // Ohren innen
+  'E': [ 40,  30,  60],  // Augen
+  // …
+};</code></pre>
+
+  <p>Gezeichnet wird mit zwei verschachtelten Schleifen und <code>fillRect</code>, jedes Zeichen als 3×3-Pixel-Block. Das klingt primitiv, hat aber zwei enorme Vorteile: Das Sprite ist im Texteditor direkt bearbeitbar (ich habe die Ohren buchstäblich durch Buchstaben-Verschieben geformt), und es braucht keine einzige externe Datei. Der Nachteil — man wird kein Michelangelo mit 17×14 Zeichen — ist bei diesem Spielstil verschmerzbar.</p>
+
+  <h2 id="hindernisse">5. Hindernisse und die Schwierigkeitskurve</h2>
+  <p>Die Zäune sind Rechtecke mit Deko: Pfosten, Querriegel, Plankenlinien und spitze Zaunlatten, die in die Lücke ragen. Interessanter als das Zeichnen ist die Kurve dahinter:</p>
+
+<pre><code>function getGapSize(score)     { return Math.max(100, 150 - score * 1.5); }
+function getScrollSpeed(score) { return Math.min(5.0, 2.5 + score * 0.04); }</code></pre>
+
+  <p>Zwei Einzeiler steuern die gesamte Dramaturgie: Die Lücke schrumpft von 150 auf minimal 100 Pixel (erreicht bei Punkt 33), das Tempo verdoppelt sich von 2,5 auf 5,0 Pixel pro Frame (erreicht bei Punkt 63). Keine Level, keine Stufen — nur zwei stetige Funktionen. Beim Testen habe ich gelernt: Spieler spüren <em>Knicke</em> in der Schwierigkeit sofort und empfinden sie als unfair; stetige Kurven fühlen sich dagegen wie die eigene Ermüdung an.</p>
+  <p>Die Kollision ist schlichtes AABB (Rechteck-gegen-Rechteck) mit einem Trick: Die Hitbox ist rundum 3 Pixel kleiner als die sichtbare Grafik. Pixelgenaue Kollision wäre „korrekter", fühlt sich aber willkürlich an — das Auge bewertet Beinahe-Treffer großzügiger als der Rechner. Die unsichtbare Gnade lässt knappe Durchflüge wie Können wirken.</p>
+
+  <h2 id="welt">6. Eine Welt, die die Jahreszeit wechselt</h2>
+  <p>Das Feature, auf das ich am stolzesten bin, war ursprünglich ein Experiment: Die Welt färbt sich mit steigendem Score stufenlos von Frühling zu Sommer. Die Umsetzung ist verblüffend wenig Code — zwei komplette Farbpaletten und eine lineare Interpolation:</p>
+
+<pre><code>function getPalette(score) {
+  const t = Math.min(score / 30, 1.0);
+  const p = {};
+  for (const key in SPRING) {
+    p[key] = lerpColor(SPRING[key], SUMMER[key], t);
+  }
+  return p;
+}</code></pre>
+
+  <p>Der Kniff ist nicht die Interpolation, sondern die Disziplin: <em>Keine</em> Zeichenfunktion darf eine Farbe hart codieren. Alles fragt seine Rolle ab — <code>palette.ground</code>, <code>palette.particle</code>, <code>palette.obstacleLED</code> — und weiß nichts von Jahreszeiten. Dadurch wandert buchstäblich jedes Element gleichzeitig durch den Farbraum, vom Himmelsverlauf bis zu den Blütenblättern der Hintergrundblumen, ohne eine Zeile Animationscode. Die komplette technische Aufschlüsselung inklusive des Slot-Hash-Tricks für die endlos scrollenden Wolken und Ostereier steht auf der <a href="technik.html">Technik-Seite</a>.</p>
+
+  <h2 id="polish">7. Polish: Partikel, Screenshake, Squash</h2>
+  <p>Der Unterschied zwischen „funktioniert" und „fühlt sich gut an" liegt fast vollständig in Dingen, die spielmechanisch nichts tun:</p>
+  <ul>
+    <li><strong>Partikel:</strong> Sechs kleine Wölkchen bei jedem Hüpfer, 18 bei der Kollision, 28 beim Feuerwerk alle 10 Punkte. Alle aus einem Pool von 80 vorab angelegten Objekten — während eines Laufs wird kein einziges neues Objekt erzeugt, damit der Garbage Collector auf älteren Handys keine Ruckler produziert.</li>
+    <li><strong>Squash &amp; Stretch:</strong> Beim Hüpfen staucht sich der Hase kurz (<code>moleSquash = 0.75</code>) und federt zurück. Der älteste Trick der Animationsgeschichte, und er funktioniert immer noch.</li>
+    <li><strong>Screenshake:</strong> Beim Aufprall wackelt das Bild sechs Pixel weit und klingt exponentiell ab. Zwei Zeilen, riesiger Unterschied.</li>
+  </ul>
+  <p>Ich habe alle drei testweise deaktiviert, um das zu überprüfen: Das Spiel spielt sich identisch — und fühlt sich tot an. Wer nur eine Lektion aus diesem Artikel mitnimmt, dann diese: Plane für Polish genauso viel Zeit ein wie für Mechanik.</p>
+
+  <h2 id="mobile">8. Mobile: wo die echten Probleme wohnen</h2>
+  <p>Auf dem Desktop war das Spiel nach zwei Wochenenden im Wesentlichen fertig. Die restliche Zeit ging fast komplett in Mobile — und zwar in Probleme, die man vorher nicht erraten kann:</p>
+  <p><strong>Der 300-ms-Tap-Delay.</strong> Viele Mobile-Browser verzögern Klick-Events um bis zu 300 Millisekunden, ein Erbe der Doppeltipp-Zoom-Ära. Für ein Timing-Spiel ist das tödlich. Die Lösung: <code>touch-action: none</code> auf dem Canvas plus <code>preventDefault()</code> im <code>touchstart</code>-Handler.</p>
+  <p><strong>Die iOS-Tastatur.</strong> Für die Namenseingabe der Bestenliste braucht man eine Bildschirmtastatur — aber ein Canvas kann keinen Fokus bekommen. Der Standard-Workaround ist ein unsichtbares <code>&lt;input&gt;</code>-Feld, das programmatisch fokussiert wird. Auf Android reicht das; iOS Safari verlangt zusätzlich, dass der <code>focus()</code>-Aufruf synchron aus einem Touch-Event stammt. Diese eine Zeile an die richtige Stelle zu verschieben hat mich einen Abend gekostet.</p>
+  <p><strong>Audio.</strong> Mein erster Versuch mit programmatisch erzeugten Web-Audio-Soundeffekten scheiterte an iOS-Autoplay-Sperren, die sich nur zu 70 % zuverlässig umgehen ließen — und unzuverlässiger Sound ist schlimmer als keiner. Die finale Lösung ist bewusst simpel: eine Musikschleife über ein normales <code>&lt;audio&gt;</code>-Element, gestartet beim ersten Tap, mit Stumm-Schalter. Die ganze Leidensgeschichte steht im <a href="devlog.html">Devlog</a>.</p>
+
+  <h2 id="leaderboard">9. Eine Bestenliste ohne eigenen Server</h2>
+  <p>Ein lokaler Highscore in <code>localStorage</code> ist sechs Zeilen Code. Aber ein Highscore, den niemand sieht, ist einsam — also wollte ich eine globale Top 3. Ohne Server. Die Lösung: Supabase, eine gehostete Postgres-Datenbank mit automatischer REST-API. Das Spiel spricht sie direkt aus dem Browser an:</p>
+
+<pre><code>const res = await fetch(
+  SB_URL + '/rest/v1/scores?select=name,score&amp;order=score.desc&amp;limit=3',
+  { headers: SB_HEADERS }
+);</code></pre>
+
+  <p>Geschrieben wird nur, wenn ein Score tatsächlich in die Top 3 gehört — der Schreib-Traffic ist praktisch null, und der kostenlose Supabase-Tarif reicht auf Jahre. Gespeichert werden ausschließlich ein Spitzname (max. 10 Zeichen) und die Punktzahl, bewusst keine IP-Adressen oder Gerätedaten — Details dazu in der <a href="datenschutz.html">Datenschutzerklärung</a>. Die Bestenliste wird zusätzlich in <code>localStorage</code> gecacht, damit sie auch ohne Netz sofort angezeigt wird.</p>
+
+  <h2 id="rebranding">10. Vom Maulwurf zum Osterhasen</h2>
+  <p>Easter Hop hieß die ersten Wochen „Molt the Mole": ein kupferner Roboter-Maulwurf, unterirdische Server-Racks, kaltes Neonlicht. Technisch solide, atmosphärisch grau. Als Ostern näher rückte, habe ich ein Experiment gewagt: gleiche Physik, gleiche Architektur, komplett neue Haut.</p>
+  <p>Das Rebranding war der beste Test der Architektur, den ich mir hätte ausdenken können. Weil alle Farben im Paletten-System steckten und das Sprite ein Zeichen-Array war, bestand die Verwandlung fast nur aus Datenänderungen: neue Paletten, neues Sprite, Zäune statt Racks. Der Code, der sich <em>bewegt</em>, blieb unangetastet. Wenn deine Grafik sich nicht ohne Logik-Änderungen austauschen lässt, sind Darstellung und Simulation zu eng verheiratet — das habe ich hier zum ersten Mal wirklich verinnerlicht. Die alte Maulwurf-Version existiert übrigens noch als Git-Tag; weggeworfen wird nichts.</p>
+
+  <h2 id="veroeffentlichen">11. Veröffentlichen für 0 Euro</h2>
+  <p>Das Spiel liegt in einem GitHub-Repository, und GitHub Pages serviert es direkt aus dem <code>master</code>-Branch — kostenlos, mit HTTPS, ohne Server-Wartung. Der komplette Deploy-Prozess ist <code>git push</code>. Dazu kommt eine eigene Domain (hopzy.de, ein paar Euro im Jahr), die per CNAME-Eintrag auf GitHub zeigt.</p>
+  <p>Drei Stolperfallen, die ich unterwegs mitgenommen habe: Erstens, <strong>relative Pfade</strong> verwenden (<code>./assets/…</code> statt <code>/assets/…</code>), sonst brechen Ressourcen, sobald die Seite nicht im Domain-Root liegt. Zweitens, GitHub Pages kann <strong>keine echten 301-Redirects</strong> — wer URLs umbenennt, behilft sich mit Meta-Refresh-Stubs und <code>rel="canonical"</code>. Drittens, der Pages-Build hängt gelegentlich einfach fest; nicht panisch werden, neu anstoßen hilft.</p>
+
+  <h2 id="fazit">12. Was ich beim nächsten Spiel anders mache</h2>
+  <p>Nach einem halben Jahr mit diesem Projekt ist meine Liste kurz, aber ehrlich:</p>
+  <ul>
+    <li><strong>UI-Texte von Anfang an in ein Sprachobjekt.</strong> Die Umstellung des Spiels auf Deutsch bedeutete, hartcodierte Strings quer durch den Render-Code zu jagen.</li>
+    <li><strong>devicePixelRatio von Anfang an.</strong> Das Spiel rendert intern in 400×600 und wird hochskaliert; auf Retina-Displays sieht man das minimal. Nachrüsten ist mühsamer als von Beginn an richtig machen.</li>
+    <li><strong>Audio zuerst simpel denken.</strong> Anderthalb Tage Web-Audio-Kampf, dann war die Lösung ein <code>&lt;audio&gt;</code>-Tag. Erst die einfache Lösung ausreizen.</li>
+    <li><strong>Früher veröffentlichen.</strong> Die wertvollsten Erkenntnisse kamen von echten Spielern auf echten Geräten — jede Woche, die das Spiel privat blieb, war eine Woche ohne dieses Feedback.</li>
+  </ul>
+  <p>Und die eine Sache, die ich exakt wieder so machen würde: die Eine-Datei-Regel. Sie hat aus einem Projekt, das auf dem Festplatten-Friedhof hätte enden können, ein fertiges Spiel gemacht, das <a href="play.html">jeder sofort spielen kann</a>. Mehr über den Menschen dahinter steht auf der <a href="ueber-mich.html">Über-mich-Seite</a> — und wenn du selbst etwas baust und Fragen hast: <a href="mailto:peter@jacobdigital.de">Schreib mir</a>. Über Post zu diesem Artikel freue ich mich wirklich.</p>
+
+  <div class="author-box">
+    <img class="avatar" src="./assets/avatar-peter.svg" alt="" width="56" height="56">
+    <div>
+      <p><strong>Über den Autor</strong></p>
+      <p>Ich bin Peter Jacob, Webentwickler aus Hamburg. Easter Hop ist mein Feierabend-Projekt — die Entstehung Schritt für Schritt steht im <a href="devlog.html">Devlog</a>, die Systeme im Detail auf der <a href="technik.html">Technik-Seite</a>, die Spielstrategie im <a href="tipps.html">Tipps-Guide</a>. Feedback gern per <a href="mailto:peter@jacobdigital.de">E-Mail</a>.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2026 Easter Hop &mdash; Peter Jacob, Hamburg</p>
+  <p>
+    <a href="index.html">Start</a>
+    <a href="play.html">Spielen</a>
+    <a href="tipps.html">Tipps</a>
+    <a href="technik.html">Technik</a>
+    <a href="warum-browser-games.html">Blog</a>
+    <a href="devlog.html">Devlog</a>
+    <a href="ueber-mich.html">Über mich</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <a href="#" id="cookie-settings-link">Cookie-Einstellungen</a>
+  </p>
+  <p class="footer-note">Texte und Code von Peter Jacob. Beim Schreiben nutze ich teilweise Werkzeug-Unterstützung; jeder Text basiert auf meiner eigenen Entwicklungsarbeit und wird von mir geprüft.</p>
+</footer>
+<script src="./assets/site.js"></script>
+</body>
+</html>
