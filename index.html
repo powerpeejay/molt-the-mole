@@ -1,17 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Easter Hop — A Spring Meadow Runner</title>
-<meta name="description" content="Easter Hop is a free browser game where you guide an Easter bunny through a blooming spring meadow. Tap to hop, dodge garden fences, and watch the world transform from spring to golden summer.">
-<!-- TODO: Replace ca-pub-1969267771076427 with your Google AdSense publisher ID -->
+<title>Easter Hop — kostenloses Browserspiel aus Hamburg</title>
+<meta name="description" content="Easter Hop ist ein kostenloses Browserspiel: Steuere einen Osterhasen durch eine blühende Frühlingswiese, die sich mit jedem Punkt in goldene Sommerfelder verwandelt. Ohne Download, ohne Anmeldung — einfach spielen.">
+<link rel="canonical" href="https://www.hopzy.de/">
+<meta property="og:title" content="Easter Hop — kostenloses Browserspiel">
+<meta property="og:description" content="Steuere einen Osterhasen durch eine Frühlingswiese, die sich beim Spielen in Sommer verwandelt. Ein-Knopf-Spiel, direkt im Browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.hopzy.de/">
+<meta property="og:locale" content="de_DE">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1969267771076427"
      crossorigin="anonymous"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://www.hopzy.de/#website",
+      "url": "https://www.hopzy.de/",
+      "name": "Easter Hop",
+      "inLanguage": "de-DE",
+      "publisher": { "@id": "https://www.hopzy.de/ueber-mich.html#person" }
+    },
+    {
+      "@type": "VideoGame",
+      "name": "Easter Hop",
+      "url": "https://www.hopzy.de/play.html",
+      "gamePlatform": "Web Browser",
+      "genre": "Arcade",
+      "playMode": "SinglePlayer",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any",
+      "inLanguage": "de-DE",
+      "isAccessibleForFree": true,
+      "author": { "@id": "https://www.hopzy.de/ueber-mich.html#person" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://www.hopzy.de/ueber-mich.html#person",
+      "name": "Peter Jacob",
+      "url": "https://www.hopzy.de/ueber-mich.html",
+      "jobTitle": "Webentwickler",
+      "address": { "@type": "PostalAddress", "addressLocality": "Hamburg", "addressCountry": "DE" }
+    }
+  ]
+}
+</script>
 <style>
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: normal; font-weight: 400; font-display: swap;
+    src: url('./assets/fonts/ibm-plex-mono-400.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: normal; font-weight: 500; font-display: swap;
+    src: url('./assets/fonts/ibm-plex-mono-500.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: normal; font-weight: 600; font-display: swap;
+    src: url('./assets/fonts/ibm-plex-mono-600.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Silkscreen';
+    font-style: normal; font-weight: 400; font-display: swap;
+    src: url('./assets/fonts/silkscreen-400.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Silkscreen';
+    font-style: normal; font-weight: 700; font-display: swap;
+    src: url('./assets/fonts/silkscreen-700.woff2') format('woff2');
+  }
+
   :root {
     --spring-sky:     #d0eef8;
     --spring-light:   #e8f5e9;
@@ -138,7 +202,6 @@
     overflow: hidden;
   }
 
-  /* Spring sky gradient background */
   .hero::before {
     content: '';
     position: absolute;
@@ -151,7 +214,6 @@
       );
     z-index: -2;
   }
-  /* Soft dot pattern overlay */
   .hero::after {
     content: '';
     position: absolute;
@@ -184,7 +246,6 @@
     line-height: 1.6;
   }
 
-  /* Bunny character pixel art */
   .hero-mole {
     width: 120px;
     height: 96px;
@@ -363,57 +424,46 @@
     text-align: center;
   }
 
-  /* ===== AD PLACEHOLDER ===== */
-  .ad-section {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 24px 40px;
-    text-align: center;
-  }
-  .ad-leaderboard {
-    display: inline-block;
-    width: 728px;
-    max-width: 100%;
-    height: 90px;
-    background: rgba(200, 230, 201, 0.3);
-    border: 1px solid rgba(74, 140, 48, 0.2);
-  }
-
-  /* ===== PRIVACY / TERMS / CONTACT ===== */
-  .legal {
+  /* ===== ARTIKEL-TEASER ===== */
+  .articles {
     border-top: 1px solid rgba(74, 140, 48, 0.15);
   }
-  .legal h2 {
-    font-size: 22px;
-    margin-bottom: 24px;
-  }
-  .legal h3 {
-    font-family: var(--font-display);
-    font-size: 13px;
-    color: var(--spring-green);
+  .article-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
     margin-top: 24px;
-    margin-bottom: 8px;
   }
-  .legal p, .legal li {
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.8;
-  }
-  .legal ul {
-    padding-left: 20px;
-    margin-bottom: 16px;
-  }
-  .legal li {
-    margin-bottom: 4px;
-  }
-  .legal a {
-    color: var(--spring-green);
+  .article-card {
+    display: block;
+    background: rgba(232, 245, 233, 0.5);
+    border: 1px solid rgba(74, 140, 48, 0.12);
+    padding: 24px;
     text-decoration: none;
+    transition: border-color 0.3s, background 0.3s;
   }
-  .legal a:hover {
-    text-decoration: underline;
+  .article-card:hover {
+    border-color: rgba(74, 140, 48, 0.45);
+    background: rgba(255, 255, 255, 0.5);
+  }
+  .article-card h3 {
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--text-bright);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .article-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 0;
+    line-height: 1.6;
   }
 
+  /* ===== KONTAKT ===== */
+  .contact-section {
+    border-top: 1px solid rgba(74, 140, 48, 0.15);
+  }
   .contact-email {
     font-family: var(--font-display);
     font-size: 16px;
@@ -435,21 +485,19 @@
     margin: 0 auto;
     padding: 40px 24px;
     border-top: 1px solid rgba(74, 140, 48, 0.15);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
+    text-align: center;
   }
   footer p {
     font-size: 12px;
     color: var(--text-muted);
-    margin-bottom: 0;
+    margin-bottom: 12px;
   }
   footer .footer-links {
     display: flex;
     gap: 20px;
     list-style: none;
+    justify-content: center;
+    flex-wrap: wrap;
   }
   footer .footer-links a {
     font-size: 12px;
@@ -459,6 +507,12 @@
   footer .footer-links a:hover {
     color: var(--spring-green);
   }
+  footer .footer-note {
+    font-size: 11px;
+    margin-top: 16px;
+    margin-bottom: 0;
+    opacity: 0.85;
+  }
 
   /* ===== RESPONSIVE ===== */
   @media (max-width: 768px) {
@@ -467,6 +521,9 @@
       gap: 32px;
     }
     .steps {
+      grid-template-columns: 1fr;
+    }
+    .article-grid {
       grid-template-columns: 1fr;
     }
     nav .nav-links {
@@ -497,15 +554,14 @@
   <div class="nav-inner">
     <a href="#" class="logo">HOP</a>
     <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#howto">How to Play</a></li>
-      <li><a href="about.html">Dev</a></li>
-      <li><a href="tips.html">Tips</a></li>
+      <li><a href="#about">Das Spiel</a></li>
+      <li><a href="#howto">So geht's</a></li>
+      <li><a href="tipps.html">Tipps</a></li>
+      <li><a href="technik.html">Technik</a></li>
       <li><a href="devlog.html">Devlog</a></li>
-      <li><a href="#privacy">Privacy</a></li>
-      <li><a href="#impressum">Impressum</a></li>
-      <li><a href="#contact">Contact</a></li>
-      <li><a href="play.html" style="color: var(--spring-green);">Play</a></li>
+      <li><a href="ueber-mich.html">Über mich</a></li>
+      <li><a href="#contact">Kontakt</a></li>
+      <li><a href="play.html" style="color: var(--spring-green);">Spielen</a></li>
     </ul>
   </div>
 </nav>
@@ -516,224 +572,148 @@
     <canvas id="mole-canvas" width="51" height="42"></canvas>
   </div>
   <h1 class="hero-title"><span>Easter Hop</span></h1>
-  <p class="hero-subtitle">Guide a fluffy Easter bunny through a blooming spring meadow that transforms into golden summer fields. One tap. Endless spring.</p>
-  <a href="play.html" class="play-btn">Play Now <span class="arrow">&#9654;</span></a>
+  <p class="hero-subtitle">Steuere einen flauschigen Osterhasen durch eine blühende Frühlingswiese, die sich beim Spielen in goldene Sommerfelder verwandelt. Ein Knopf. Endloser Frühling.</p>
+  <a href="play.html" class="play-btn">Jetzt spielen <span class="arrow">&#9654;</span></a>
   <div class="hero-stats">
     <div class="hero-stat">
       <span class="num">1</span>
-      <span class="label">Button</span>
+      <span class="label">Knopf</span>
     </div>
     <div class="hero-stat">
       <span class="num">&infin;</span>
-      <span class="label">Meadow</span>
+      <span class="label">Wiese</span>
     </div>
     <div class="hero-stat">
       <span class="num">0</span>
-      <span class="label">Cost</span>
+      <span class="label">Kosten</span>
     </div>
   </div>
 </section>
 
-<!-- ===== AD ===== -->
-<div class="ad-section">
-  <!-- TODO: Replace ca-pub-1969267771076427 and XXXXXXXXXX with your AdSense IDs -->
-  <ins class="adsbygoogle ad-leaderboard"
-       data-ad-client="ca-pub-1969267771076427"
-       data-ad-slot="XXXXXXXXXX"></ins>
-</div>
-
-<!-- ===== ABOUT ===== -->
+<!-- ===== DAS SPIEL ===== -->
 <section class="about" id="about">
-  <span class="section-label">About the Game</span>
-  <h2>What is Easter Hop?</h2>
+  <span class="section-label">Das Spiel</span>
+  <h2>Was ist Easter Hop?</h2>
   <div class="about-grid">
     <div class="about-main">
-      <p>Easter Hop is a free, browser-based endless runner inspired by the iconic Flappy Bird formula, reimagined with a cheerful Easter twist. You control a fluffy Easter bunny with cream fur, pink-lined ears, and rosy cheeks, hopping through a blooming spring meadow just in time for Easter.</p>
+      <p>Easter Hop ist ein kostenloses Browserspiel nach dem klassischen Flappy-Bird-Prinzip — neu gedacht als fröhliches Frühlingsspiel. Du steuerst einen Osterhasen mit cremeweißem Fell, rosa Ohren und roten Bäckchen durch eine blühende Wiese voller Blumen und versteckter Ostereier.</p>
 
-      <p>The gameplay is delightfully simple: tap, click, or press spacebar to give the bunny an upward boost. Gravity constantly pulls downward, and the meadow scrolls relentlessly from right to left. Your only goal is to thread the bunny through the gaps in pairs of wooden garden fences that line the path. Each fence pair you clear earns one point. Hit a fence, the sky, or the ground, and the run is over.</p>
+      <p>Die Steuerung ist bewusst simpel: Tippen, klicken oder die Leertaste drücken gibt dem Hasen einen Schub nach oben. Die Schwerkraft zieht ihn ständig nach unten, und die Wiese scrollt unaufhaltsam von rechts nach links. Dein Ziel: den Hasen durch die Lücken zwischen den weißen Gartenzäunen manövrieren. Jedes gemeisterte Zaunpaar bringt einen Punkt. Berührst du einen Zaun, den Himmel oder den Boden, ist der Lauf vorbei.</p>
 
-      <p>What makes Easter Hop special is its living, evolving world. When you begin a run, the environment is fresh and bright: sky blue above, lush spring-green below, flowers dotting the background, and cheerful pastel Easter eggs scattered throughout. As your score climbs, the world deepens into rich summer colors. Sky blue deepens to a vibrant afternoon blue, greens saturate, and the flower accents shift from pink blossoms to golden sunflowers and orange poppies.</p>
+      <p>Das Besondere an Easter Hop ist seine lebendige Welt: Zu Beginn ist alles frisch und hell — Himmelblau, sattes Frühlingsgrün, rosa Blüten. Mit steigender Punktzahl vertieft sich die Welt in kräftige Sommerfarben. Der Himmel wird zu sattem Nachmittagsblau, das Grün intensiver, und aus rosa Blüten werden goldene Sonnenblumen und orangefarbene Mohnblumen. Bei 30 Punkten ist die Verwandlung komplett.</p>
 
-      <p>This color transition is seamless. Every element in the game, from the sky gradient to the grass texture to the particle effects, smoothly interpolates between a spring palette and a summer palette based on your current score. The result is a visual journey that rewards skilled play with an increasingly warm and beautiful environment.</p>
+      <p>Dieser Farbübergang läuft stufenlos: Jedes Element im Spiel — vom Himmelsverlauf über die Grastextur bis zu den Partikeleffekten — wird fließend zwischen einer Frühlings- und einer Sommerpalette interpoliert, abhängig von deinem aktuellen Punktestand. Wer gut spielt, wird mit einer immer wärmeren, schöneren Umgebung belohnt. Wie das technisch funktioniert, erkläre ich auf der <a href="technik.html">Technik-Seite</a>.</p>
 
-      <p>The fence obstacles are rendered as proper wooden garden fences with vertical planks, two horizontal rails, and decorative flower blooms on the sides. Pointed picket tips line the edges of each gap. Three plank-style variants keep the scenery varied. Flowers on the fence sides bloom and pulse as you pass, adding a living, organic feel to each obstacle.</p>
+      <p>Der Schwierigkeitsgrad steigt sanft, aber unerbittlich: Die Scrollgeschwindigkeit nimmt mit jedem Punkt leicht zu, und die Lücken zwischen den Zäunen werden enger — von anfangs 150 Pixeln bis auf minimal 100. Für hohe Punktzahlen braucht es echtes Timing und Konzentration. Ein paar ehrliche Ratschläge dazu gibt es auf der <a href="tipps.html">Tipps-Seite</a>.</p>
 
-      <p>Difficulty ramps gradually but relentlessly. The scroll speed increases slightly with each point, and the gap between fence pairs narrows over time. What starts as a comfortable 150-pixel opening shrinks to a minimum of 100 pixels, demanding precise timing. Combined with the increasing speed, high scores require real focus and coordination.</p>
-
-      <p>Easter Hop is built entirely in vanilla JavaScript and HTML5 Canvas with no external dependencies. It runs in any modern browser on desktop or mobile, with full support for keyboard, mouse, and touch controls. Your best score is saved locally so you can always try to beat your personal record.</p>
+      <p>Easter Hop ist komplett in Vanilla JavaScript und HTML5 Canvas gebaut, ohne externe Bibliotheken. Es läuft in jedem modernen Browser auf Desktop und Smartphone, mit Tastatur, Maus und Touch. Dein bester Score wird lokal gespeichert — und wer es in die globalen Top 3 schafft, darf sich in der Bestenliste verewigen.</p>
     </div>
     <div class="about-sidebar">
       <div class="feature-card">
-        <h3>Evolving World</h3>
-        <p>Watch the environment transform from a fresh spring meadow to golden summer fields as your score increases. Every color smoothly transitions across 30 score thresholds.</p>
+        <h3>Lebendige Welt</h3>
+        <p>Die Umgebung verwandelt sich von der Frühlingswiese in goldene Sommerfelder, während dein Score steigt. Jede Farbe wechselt stufenlos über 30 Punkte hinweg.</p>
       </div>
       <div class="feature-card">
-        <h3>Easter Bunny</h3>
-        <p>A hand-crafted pixel art bunny with cream fur, pink ear detail, and rosy cheeks. Velocity-based rotation and squash-stretch animation bring the little hopper to life.</p>
+        <h3>Osterhase</h3>
+        <p>Ein handgezeichneter Pixel-Hase mit cremefarbenem Fell, rosa Ohren und roten Bäckchen. Rotation und Squash-Stretch-Animation machen den kleinen Hüpfer lebendig.</p>
       </div>
       <div class="feature-card">
-        <h3>Garden Fence Obstacles</h3>
-        <p>Navigate between wooden fence panels with vertical planks, horizontal rails, pointed picket tips, and small flower blooms that pulse as you pass.</p>
+        <h3>Gartenzaun-Hindernisse</h3>
+        <p>Weiße Lattenzäune mit Querriegeln, spitzen Zaunlatten und kleinen Blüten, die pulsieren, wenn du vorbeifliegst.</p>
       </div>
       <div class="feature-card">
-        <h3>Particle Effects</h3>
-        <p>Flap bursts and death explosions use a pooled particle system that adapts to the current palette — pink blossoms in spring, golden pollen in summer.</p>
+        <h3>Partikeleffekte</h3>
+        <p>Hüpf-Wölkchen und Feuerwerk nutzen ein gepooltes Partikelsystem, das sich der aktuellen Palette anpasst — rosa Blüten im Frühling, goldener Pollen im Sommer.</p>
       </div>
       <div class="feature-card">
-        <h3>Zero Dependencies</h3>
-        <p>Pure HTML5 Canvas and vanilla JavaScript. No frameworks, no build tools, no downloads. Open the page and play instantly in any modern browser.</p>
+        <h3>Null Abhängigkeiten</h3>
+        <p>Pures HTML5 Canvas und Vanilla JavaScript. Keine Frameworks, keine Build-Tools, kein Download. Seite öffnen und sofort spielen.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== HOW TO PLAY ===== -->
+<!-- ===== SO GEHT'S ===== -->
 <section class="howto" id="howto">
-  <span class="section-label">Getting Started</span>
-  <h2>How to Play</h2>
+  <span class="section-label">Erste Schritte</span>
+  <h2>So spielst du</h2>
   <div class="steps">
     <div class="step">
       <span class="step-num">01</span>
-      <h3>Launch</h3>
-      <p>Open the game and you will see the bunny floating on the start screen, bobbing gently against the spring sky, waiting for your command.</p>
+      <h3>Starten</h3>
+      <p>Öffne das Spiel — der Hase schwebt auf dem Startbildschirm und wippt sanft vor dem Frühlingshimmel, bereit für deinen Befehl.</p>
     </div>
     <div class="step">
       <span class="step-num">02</span>
-      <h3>Hop</h3>
-      <p>Tap, click, or press Space to give the bunny an upward boost. Gravity constantly pulls downward, so you need to keep hopping to stay airborne.</p>
+      <h3>Hüpfen</h3>
+      <p>Tippe, klicke oder drücke die Leertaste, um dem Hasen einen Schub nach oben zu geben. Die Schwerkraft zieht ihn ständig nach unten — bleib im Rhythmus.</p>
     </div>
     <div class="step">
       <span class="step-num">03</span>
-      <h3>Navigate</h3>
-      <p>Thread the bunny through the gaps in the garden fences. Each fence pair cleared is one point. The gaps shrink and speed increases as you progress.</p>
+      <h3>Durchmanövrieren</h3>
+      <p>Lenke den Hasen durch die Lücken in den Gartenzäunen. Jedes Zaunpaar zählt einen Punkt. Die Lücken werden enger, das Tempo steigt.</p>
     </div>
   </div>
   <div class="controls-row">
-    <div class="control-key"><span class="key">Space</span> Keyboard</div>
-    <div class="control-key"><span class="key">Click</span> Mouse</div>
-    <div class="control-key"><span class="key">Tap</span> Touch</div>
+    <div class="control-key"><span class="key">Leertaste</span> Tastatur</div>
+    <div class="control-key"><span class="key">Klick</span> Maus</div>
+    <div class="control-key"><span class="key">Tipp</span> Touch</div>
   </div>
 </section>
 
-<!-- ===== PRIVACY POLICY ===== -->
-<section class="legal" id="privacy">
-  <span class="section-label">Legal</span>
-  <h2>Privacy Policy</h2>
-  <p>Last updated: March 2026</p>
-
-  <h3>Information We Collect</h3>
-  <p>Easter Hop is a client-side browser game. We do not collect, store, or transmit any personal information to our servers. The only data stored is your high score, which is saved locally on your device using your browser's localStorage feature. This data never leaves your device.</p>
-
-  <h3>Third-Party Advertising</h3>
-  <p>This site uses Google AdSense to display advertisements. Google and its advertising partners may use cookies and similar technologies to serve ads based on your prior visits to this website or other websites. You can opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google's Ad Settings</a>.</p>
-  <p>Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits. Google's use of advertising cookies enables it and its partners to serve ads based on visits to this site and/or other sites on the Internet. Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Ads Settings</a>.</p>
-
-  <h3>Cookies</h3>
-  <p>We do not set any first-party cookies. Third-party advertising services (Google AdSense) may set cookies as described above. You can control cookie behavior through your browser settings.</p>
-
-  <h3>Analytics</h3>
-  <p>We do not currently use any analytics or tracking tools beyond what is provided by the third-party advertising platform.</p>
-
-  <h3>Children's Privacy</h3>
-  <p>Easter Hop does not knowingly collect personal information from children under 13. Since we do not collect any personal data at all, no special provisions are necessary. The advertising displayed is managed by Google AdSense and subject to their policies regarding child-directed content.</p>
-
-  <h3>Changes to This Policy</h3>
-  <p>We may update this privacy policy from time to time. Any changes will be reflected on this page with an updated revision date.</p>
-
-  <h3>Contact</h3>
-  <p>If you have questions about this privacy policy, please contact us at <a href="mailto:moltybird@proton.me">moltybird@proton.me</a>.</p>
+<!-- ===== ARTIKEL ===== -->
+<section class="articles" id="artikel">
+  <span class="section-label">Hinter den Kulissen</span>
+  <h2>Mehr lesen</h2>
+  <div class="article-grid">
+    <a class="article-card" href="tipps.html">
+      <h3>Tipps &amp; Strategie</h3>
+      <p>Ehrliche Ratschläge vom Entwickler, der manchmal selbst vor Punkt 10 stirbt: Rhythmus statt Hektik, der Blick auf die Lücke und was der Jahreszeitenwechsel mit deinem Kopf macht.</p>
+    </a>
+    <a class="article-card" href="technik.html">
+      <h3>Wie das Spiel funktioniert</h3>
+      <p>Game-Loop, Physik, Pixel-Sprites aus Zeichenketten, Paletten-Interpolation und Kollisionserkennung — der komplette Blick unter die Haube, mit echtem Code.</p>
+    </a>
+    <a class="article-card" href="devlog.html">
+      <h3>Devlog</h3>
+      <p>Vom ersten weißen Rechteck im Januar bis zum Oster-Rebrand: alle Entwicklungsschritte, Fehlschläge und Learnings, chronologisch dokumentiert.</p>
+    </a>
+    <a class="article-card" href="warum-browser-games.html">
+      <h3>Warum ich Browserspiele baue</h3>
+      <p>Ein persönlicher Essay über Reibungslosigkeit, selbstauferlegte Beschränkungen und das gute Gefühl, etwas wirklich fertigzustellen.</p>
+    </a>
+  </div>
 </section>
 
-<!-- ===== TERMS OF SERVICE ===== -->
-<section class="legal" id="terms">
-  <h2>Terms of Service</h2>
-  <p>Last updated: February 2026</p>
-
-  <h3>Acceptance of Terms</h3>
-  <p>By accessing and playing Easter Hop, you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, please do not use this website.</p>
-
-  <h3>Description of Service</h3>
-  <p>Easter Hop is a free, browser-based game provided "as is" for entertainment purposes. The game requires no account creation, no downloads, and no personal information to play.</p>
-
-  <h3>Intellectual Property</h3>
-  <p>All game code, artwork, character designs, and written content on this website are the property of the site owner. You may not copy, modify, distribute, or create derivative works from this content without prior written permission.</p>
-
-  <h3>User Conduct</h3>
-  <p>You agree not to:</p>
-  <ul>
-    <li>Attempt to exploit, hack, or reverse-engineer the game for malicious purposes</li>
-    <li>Use automated scripts or bots to interact with the game</li>
-    <li>Interfere with other users' ability to access or enjoy the game</li>
-    <li>Use the website for any unlawful purpose</li>
-  </ul>
-
-  <h3>Disclaimer of Warranties</h3>
-  <p>The game is provided "as is" without warranties of any kind, express or implied. We do not guarantee that the game will be available at all times, free of errors, or compatible with all devices and browsers.</p>
-
-  <h3>Limitation of Liability</h3>
-  <p>In no event shall the site owner be liable for any indirect, incidental, special, or consequential damages arising from your use of or inability to use the game.</p>
-
-  <h3>Modifications</h3>
-  <p>We reserve the right to modify these terms at any time. Continued use of the website after changes constitutes acceptance of the new terms.</p>
-
-  <h3>Contact</h3>
-  <p>For questions regarding these terms, contact us at <a href="mailto:moltybird@proton.me">moltybird@proton.me</a>.</p>
-</section>
-
-<!-- ===== IMPRESSUM ===== -->
-<section class="legal" id="impressum">
-  <span class="section-label">Legal Notice</span>
-  <h2>Impressum</h2>
-  <p>Angaben gemäß § 5 TMG:</p>
-  <p>
-    Peter Jacob<br>
-    Lofotenstr. 20b<br>
-    22145 Hamburg<br>
-    Deutschland
-  </p>
-  <h3>Kontakt</h3>
-  <p>E-Mail: <a href="mailto:moltybird@proton.me">moltybird@proton.me</a></p>
-  <h3>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h3>
-  <p>
-    Peter Jacob<br>
-    Lofotenstr. 20b<br>
-    22145 Hamburg
-  </p>
-  <h3>Haftungsausschluss</h3>
-  <p>Die Inhalte dieser Website wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Easter Hop ist ein privates, nicht-kommerzielles Browserspiel-Projekt.</p>
-</section>
-
-<!-- ===== CONTACT ===== -->
-<section class="legal" id="contact">
-  <span class="section-label">Get in Touch</span>
-  <h2>Contact</h2>
-  <p>Have feedback, found a bug, or just want to share your high score? Reach out:</p>
+<!-- ===== KONTAKT ===== -->
+<section class="contact-section" id="contact">
+  <span class="section-label">Sag Hallo</span>
+  <h2>Kontakt</h2>
+  <p>Feedback, ein Bug oder einfach ein Highscore-Screenshot? Schreib mir:</p>
   <a href="mailto:moltybird@proton.me" class="contact-email">&#9993; moltybird@proton.me</a>
 </section>
 
 <!-- ===== FOOTER ===== -->
 <footer>
-  <p>&copy; 2026 Easter Hop. All rights reserved.</p>
+  <p>&copy; 2026 Easter Hop &mdash; Peter Jacob, Hamburg</p>
   <ul class="footer-links">
-    <li><a href="#privacy">Privacy</a></li>
-    <li><a href="#terms">Terms</a></li>
-    <li><a href="#impressum">Impressum</a></li>
-    <li><a href="about.html">About</a></li>
-    <li><a href="tips.html">Tips</a></li>
-    <li><a href="tech.html">How It Works</a></li>
-    <li><a href="blog-browser-games.html">Blog</a></li>
+    <li><a href="play.html">Spielen</a></li>
+    <li><a href="tipps.html">Tipps</a></li>
+    <li><a href="technik.html">Technik</a></li>
+    <li><a href="warum-browser-games.html">Blog</a></li>
     <li><a href="devlog.html">Devlog</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="play.html">Play</a></li>
+    <li><a href="ueber-mich.html">Über mich</a></li>
+    <li><a href="#contact">Kontakt</a></li>
+    <li><a href="impressum.html">Impressum</a></li>
+    <li><a href="datenschutz.html">Datenschutz</a></li>
+    <li><a href="#" id="cookie-settings-link">Cookie-Einstellungen</a></li>
   </ul>
+  <p class="footer-note">Texte und Code von Peter Jacob. Beim Schreiben nutze ich teilweise Werkzeug-Unterstützung; jeder Text basiert auf meiner eigenen Entwicklungsarbeit und wird von mir geprüft.</p>
 </footer>
 
-<!-- AdSense init -->
-<script>
-(window.adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+<script src="./assets/site.js"></script>
 
-<!-- Render bunny sprite on hero canvas -->
+<!-- Hasen-Sprite auf dem Hero-Canvas rendern -->
 <script>
 (function() {
   const SPRITE = [

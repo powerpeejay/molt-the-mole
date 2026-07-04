@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Easter Hop</title>
-<!-- TODO: Replace ca-pub-1969267771076427 with your Google AdSense publisher ID -->
+<title>Easter Hop — jetzt spielen</title>
+<meta name="description" content="Spiele Easter Hop direkt im Browser: Tippe oder drücke die Leertaste, um den Osterhasen durch die Gartenzäune zu lenken. Kostenlos, ohne Download.">
+<link rel="canonical" href="https://www.hopzy.de/play.html">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1969267771076427"
      crossorigin="anonymous"></script>
 <style>
@@ -32,55 +33,28 @@
     image-rendering: crisp-edges;
     flex-shrink: 0;
   }
-  #ad-container {
-    flex-shrink: 0;
+  #back-link {
+    position: fixed;
+    top: 10px;
+    left: 12px;
+    z-index: 10;
+    font-family: monospace;
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    background: rgba(0,0,0,0.35);
+    padding: 4px 10px;
   }
-  .ad-skyscraper {
-    display: inline-block;
-    width: 300px;
-    height: 600px;
-    background: #111;
-    border: 1px solid #333;
-  }
-  .ad-banner {
-    display: none;
-    width: 320px;
-    height: 100px;
-    background: #111;
-    border: 1px solid #333;
-  }
-  @media (max-width: 759px) {
-    #game-container {
-      flex-direction: column;
-    }
-    .ad-skyscraper {
-      display: none !important;
-    }
-    .ad-banner {
-      display: inline-block;
-    }
-  }
+  #back-link:hover { color: #fff; }
 </style>
 </head>
 <body>
 <input id="name-input" type="text" maxlength="10" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
   style="position:fixed;left:-9999px;top:50%;width:1px;height:1px;opacity:0;font-size:16px;border:none;outline:none;background:transparent;">
+<a id="back-link" href="index.html">&larr; hopzy.de</a>
 <div id="game-container">
   <canvas id="game"></canvas>
-  <div id="ad-container">
-    <!-- TODO: Replace ca-pub-1969267771076427 and XXXXXXXXXX with your AdSense publisher ID and ad slot ID -->
-    <ins class="adsbygoogle ad-skyscraper"
-         data-ad-client="ca-pub-1969267771076427"
-         data-ad-slot="XXXXXXXXXX"></ins>
-    <ins class="adsbygoogle ad-banner"
-         data-ad-client="ca-pub-1969267771076427"
-         data-ad-slot="XXXXXXXXXX"></ins>
-  </div>
 </div>
-<script>
-(window.adsbygoogle = window.adsbygoogle || []).push({});
-(window.adsbygoogle = window.adsbygoogle || []).push({});
-</script>
 <script>
 // ============================================================
 // SECTION 1: CANVAS SETUP & RESPONSIVE SCALING
@@ -94,15 +68,8 @@ canvas.width = W;
 canvas.height = H;
 
 function resizeCanvas() {
-  const isWide = window.innerWidth >= 760;
-  let availW, availH;
-  if (isWide) {
-    availW = window.innerWidth - 300 - 32;
-    availH = window.innerHeight - 16;
-  } else {
-    availW = window.innerWidth - 16;
-    availH = window.innerHeight - 100 - 32;
-  }
+  const availW = window.innerWidth - 16;
+  const availH = window.innerHeight - 16;
   const scale = Math.min(availW / W, availH / H);
   canvas.style.width  = Math.floor(W * scale) + 'px';
   canvas.style.height = Math.floor(H * scale) + 'px';
@@ -398,7 +365,7 @@ async function fetchLeaderboard() {
 }
 
 async function submitScore(name, s) {
-  const cleanName = name.trim().toUpperCase().slice(0, 10) || 'BUNNY';
+  const cleanName = name.trim().toUpperCase().slice(0, 10) || 'HASE';
   try {
     await fetch(SB_URL + '/rest/v1/scores', {
       method: 'POST',
@@ -944,11 +911,11 @@ function render() {
     const sub = 0.5 + Math.sin(frameCount * 0.05) * 0.3;
     ctx.save();
     ctx.globalAlpha = sub;
-    drawText('Tap or Press Space', W / 2, H - 140, 16, [80, 55, 20]);
+    drawText('Tippen oder Leertaste', W / 2, H - 140, 16, [80, 55, 20]);
     ctx.restore();
 
     if (bestScore > 0) {
-      drawText('Best: ' + bestScore, W / 2, H - 100, 14, [100, 65, 20]);
+      drawText('Rekord: ' + bestScore, W / 2, H - 100, 14, [100, 65, 20]);
     }
   }
 
@@ -957,10 +924,10 @@ function render() {
     ctx.fillStyle = 'rgba(20, 10, 40, 0.75)';
     ctx.fillRect(0, 0, W, H);
 
-    drawText('NEW HIGH SCORE!', W / 2, 130, 28, [255, 220, 60]);
+    drawText('NEUER REKORD!', W / 2, 130, 28, [255, 220, 60]);
     drawPixelNumber(score, W / 2, 185, 48, [255, 255, 255]);
 
-    drawText('ENTER YOUR NAME', W / 2, 260, 15, [200, 180, 255]);
+    drawText('GIB DEINEN NAMEN EIN', W / 2, 260, 15, [200, 180, 255]);
 
     // Name input box
     const boxW = 220, boxH = 44;
@@ -981,7 +948,7 @@ function render() {
     ctx.fillText((nameInput + cursor).toUpperCase(), W / 2, boxY + boxH / 2);
     ctx.restore();
 
-    drawText('ENTER to confirm', W / 2, 355, 13, [160, 150, 200]);
+    drawText('ENTER bestaetigt', W / 2, 355, 13, [160, 150, 200]);
   }
 
   // Game over
@@ -989,16 +956,16 @@ function render() {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
     ctx.fillRect(0, 0, W, H);
 
-    drawText('THE BUNNY FLOPPED', W / 2, 130, 24, palette.text);
-    drawText('Back in the basket.', W / 2, 165, 13, palette.textGlow);
+    drawText('DER HASE IST HIN', W / 2, 130, 24, palette.text);
+    drawText('Zurueck in den Korb.', W / 2, 165, 13, palette.textGlow);
 
-    drawText('Score', W / 2, 210, 14, palette.textGlow);
+    drawText('Punkte', W / 2, 210, 14, palette.textGlow);
     drawPixelNumber(score, W / 2, 248, 42, palette.text);
 
     // Leaderboard
     const lb = loadLeaderboard();
     if (lb.length > 0) {
-      drawText('TOP SCORES', W / 2, 300, 13, [255, 220, 60]);
+      drawText('BESTENLISTE', W / 2, 300, 13, [255, 220, 60]);
       const medals = ['#FFD700', '#C0C0C0', '#CD7F32'];
       lb.forEach((entry, i) => {
         const ey = 325 + i * 34;
@@ -1017,7 +984,7 @@ function render() {
     const ra = 0.5 + Math.sin(frameCount * 0.05) * 0.3;
     ctx.save();
     ctx.globalAlpha = ra;
-    drawText('Tap or Press Space', W / 2, H - 60, 16, palette.text);
+    drawText('Tippen oder Leertaste', W / 2, H - 60, 16, palette.text);
     ctx.restore();
   }
 
